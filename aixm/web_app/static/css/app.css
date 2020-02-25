@@ -1,0 +1,48 @@
+html, body/*, and all other map parent selectors*/ {
+  height: 100%;
+  width: 100%;
+}
+
+.node {}
+
+.link {
+    stroke: #999;
+    stroke-opacity: .6;
+    stroke-width: 1px;
+}
+
+.features-area, .graph-area {
+    padding-top: 15px;
+}
+
+.svg-area {
+    border: 1px groove gray;
+    margin: 15px;
+    border-radius: 4px;
+}
+
+.feature-list {
+    margin-top: 15px;
+    //overflow:scroll;
+    //overflow-scrolling: touch;
+}
+
+/* layout.css Style */
+.upload-drop-zone {
+  height: 200px;
+  border-width: 2px;
+  margin-bottom: 20px;
+}
+
+/* skin.css Style*/
+.upload-drop-zone {
+  color: #ccc;
+  border-style: dashed;
+  border-color: #ccc;
+  line-height: 200px;
+  text-align: center
+}
+.upload-drop-zone.drop {
+  color: #222;
+  border-color: #222;
+}
