@@ -1,0 +1,8 @@
+name: aixm
+dependencies:
+- python
+- pytest
+- pytest-cov
+- lxml
+- PyYAML
+- Flask
