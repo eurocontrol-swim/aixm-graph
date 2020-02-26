@@ -30,33 +30,36 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-import sys
+from typing import Dict
 
-from flask import Flask
+from aixm.features import AIXMFeature
 
-from aixm.web_app.views import aixm_blueprint
-
-sys.path.insert(0, '/media/alex/Data/dev/work/eurocontrol/aixm/')
-
-from pkg_resources import resource_filename
-
-from aixm.parser import process_aixm
-from aixm.utils import load_config, get_samples_filepath
+AIXM_FEATURES: Dict[str, AIXMFeature] = {}
 
 
-app = Flask(__name__)
-app.register_blueprint(aixm_blueprint)
+def get_aixm_feature(uuid: str):
+    feature = AIXM_FEATURES.get(uuid)
 
-app_config = load_config(filename=resource_filename(__name__, 'config.yml'))
-app.config.update(app_config)
+    if feature is None:
+        raise ValueError("Feature not found")
+
+    return feature
 
 
-if __name__ == '__main__':
-    # filepath, ns_message = get_samples_filepath('BD_2019-01-03_26fe8f56-0c48-4047-ada0-4e1bd91ed4cf.xml'), \
-    #                        "http://www.aixm.aero/schema/5.1/message"
-    filepath, ns_message = get_samples_filepath('EA_AIP_DS_FULL_20170701.xml'), \
-                           "http://www.aixm.aero/schema/5.1.1/message"
+def get_aixm_features_per_uuid():
+    return AIXM_FEATURES
 
-    # feature_elements = process_aixm(filepath=filepath, element_tag=f'{{{ns_message}}}hasMember', config=app.config)
 
-    app.run(host="0.0.0.0", port=3000)
+def get_aixm_features_by_name(name: str):
+    for _, feature in AIXM_FEATURES.items():
+        if feature.el.name == name:
+            yield feature
+
+
+def save_aixm_feature(feature: AIXMFeature):
+    AIXM_FEATURES[feature.uuid] = feature
+
+
+def reset_aixm_features():
+    global AIXM_FEATURES
+    AIXM_FEATURES = {}

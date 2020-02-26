@@ -33,7 +33,7 @@ __author__ = "EUROCONTROL (SWIM)"
 import math
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Dict, Tuple, Union
+from typing import Optional, Dict, Tuple, Union, List
 
 import yaml
 from lxml import etree
@@ -63,11 +63,15 @@ def get_tag_without_ns(element: etree.Element):
     return tag
 
 
-def get_attrib_value(attribs: Dict[str, str], name: str, ns: str, value_prefix: Optional[str] = None):
+def get_attrib_value(attribs: Dict[str, str], name: str, ns: str, value_prefixes: Optional[List[str]] = None):
+    value_prefixes = value_prefixes or []
     result = attribs[f'{{{ns}}}{name}']
 
-    if value_prefix is not None and result.startswith(value_prefix):
-        result = result[len(value_prefix):]
+    for value_prefix in value_prefixes:
+
+        if result.startswith(value_prefix):
+            result = result[len(value_prefix):]
+            break
 
     return result
 

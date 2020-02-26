@@ -37,6 +37,21 @@
 //
 //}(jQuery);
 
+$(document).ready(function(){
+    $.ajax({
+        type: "POST",
+        url: "/load_aixm",
+        dataType : "json",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify({filepath: "/media/alex/Data/dev/work/eurocontrol/aixm/samples/EA_AIP_DS_FULL_20170701.xml"}),
+        success : function(result) {
+            result.forEach(function(data) {
+                featuresList.add(data);
+            });
+        }
+    });
+});
+
 var data = {
   "nodes": [
     {

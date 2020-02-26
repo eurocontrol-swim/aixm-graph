@@ -37,18 +37,27 @@ from lxml import etree
 
 from aixm.features import AIXMFeature, Extension, XLinkElement
 from aixm.utils import get_tag_without_ns, timeit
+from aixm import cache
 
 _logger = logging.getLogger(__name__)
 
+message_namespaces = ['http://www.aixm.aero/schema/5.1.1/message', 'http://www.aixm.aero/schema/5.1/message']
 
-def load_features(context, config) -> Dict[str, AIXMFeature]:
-    features_dict = {}
+
+def get_message_namespace(filepath):
+    for event, elem in etree.iterparse(filepath, events=('end',)):
+        if event == 'end':
+            for ns in message_namespaces:
+                if ns in elem.nsmap.values():
+                    return ns
+
+
+def feature_generator(context, config):
     for event, elem in context:
         if event == 'end':
             feature_element = elem[0]
             feature_name = get_tag_without_ns(feature_element)
             feature = AIXMFeature(element=feature_element, keys_properties=config[feature_name]["keys"] or [])
-            features_dict[feature.uuid] = feature
 
             # clean up obsolete elements
             elem.clear()
@@ -56,12 +65,10 @@ def load_features(context, config) -> Dict[str, AIXMFeature]:
                 del elem.getparent()[0]
             del elem
 
-    return features_dict
+            yield feature
 
 
-@timeit
-def assign_associations(features_dict: Dict[str, AIXMFeature]) -> Tuple[Dict[str, AIXMFeature], List[XLinkElement]]:
-    broker_links = []
+def assign_associations(features_dict: Dict[str, AIXMFeature]) -> Dict[str, AIXMFeature]:
     for _, source_feature in features_dict.items():
         for source_data in source_feature.feature_data:
             for xlink in source_data.xlinks:
@@ -71,18 +78,19 @@ def assign_associations(features_dict: Dict[str, AIXMFeature]) -> Tuple[Dict[str
                     for target_data in target_feature.feature_data:
                         target_data.add_extension(source_extension)
                 else:
-                    broker_links.append(xlink)
+                    source_data.broken_xlinks.append(xlink)
 
-    return features_dict, broker_links
+    return features_dict
 
 
-def process_aixm(filepath, element_tag, config):
-    context = etree.iterparse(filepath, events=('end',), tag=element_tag, remove_comments=True)
+def process_aixm(filepath, features_config):
+    message_ns = get_message_namespace(filepath)
 
-    features = load_features(context, config['FEATURES'])
+    context = etree.iterparse(filepath, events=('end',), tag=f'{{{message_ns}}}hasMember', remove_comments=True)
+
+    for feature in feature_generator(context, features_config):
+        cache.save_aixm_feature(feature)
 
     del context
 
-    assign_associations(features)
-
-    return features
+    assign_associations(cache.get_aixm_features_per_uuid())

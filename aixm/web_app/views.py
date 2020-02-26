@@ -30,7 +30,14 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-from flask import Blueprint, send_from_directory
+import json
+from collections import defaultdict
+
+from flask import Blueprint, send_from_directory, request, current_app as app
+
+from aixm import cache
+from aixm.parser import process_aixm
+from aixm.utils import get_samples_filepath
 
 aixm_blueprint = Blueprint('geofencing_viewer',
                            __name__,
@@ -66,3 +73,26 @@ def send_img(path):
 def favicon():
     return send_from_directory('web_app/static/img', 'favicon.png', mimetype='image/png')
 
+
+@aixm_blueprint.route('/load_aixm', methods=['POST'])
+def load_aixm():
+    data = request.get_json()
+
+    process_aixm(filepath=data['filepath'], features_config=app.config['FEATURES'])
+
+    feature_names = app.config['FEATURES'].keys()
+    stat = defaultdict(dict)
+
+    for feature_name in feature_names:
+        stat[feature_name]['count'] = sum(1 for _ in cache.get_aixm_features_by_name(feature_name))
+        stat[feature_name]['has_broken_xlinks'] = any((f.has_broken_xlinks()
+                                                       for f in cache.get_aixm_features_by_name(feature_name)))
+
+    return json.dumps([
+        {
+            'name': key,
+            'count': value['count'],
+            'has_broken_xlinks': value['has_broken_xlinks']
+        }
+        for key, value in stat.items() if value['count'] > 0
+    ])

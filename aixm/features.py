@@ -49,7 +49,14 @@ class XMLSerializable(ABC):
         pass
 
 
-class Element(XMLSerializable):
+class JSONSerializable(ABC):
+
+    @abstractmethod
+    def to_json(self):
+        pass
+
+
+class Element(XMLSerializable, JSONSerializable):
 
     def __init__(self,
                  name: str,
@@ -86,6 +93,12 @@ class Element(XMLSerializable):
 
         return el
 
+    def to_json(self):
+        return {
+            'name': self.name,
+            'value': self.text
+        }
+
 
 class XLinkElement(Element):
 
@@ -96,22 +109,36 @@ class XLinkElement(Element):
     @classmethod
     def from_lxml(cls, element: etree.Element):
         obj = cls(**cls.parse_element(element))
-
-        obj.uuid = get_attrib_value(element.attrib, name='href', ns=element.nsmap["xlink"], value_prefix='urn:uuid:')
+        if 'urn:uuid.882e849c-682d-4e95-ac19-a7808d55cdbb' in element.attrib.values():
+            print()
+        obj.uuid = get_attrib_value(element.attrib,
+                                    name='href',
+                                    ns=element.nsmap["xlink"],
+                                    value_prefixes=['urn:uuid:', 'urn:uuid.'])
 
         return obj
+
+    def to_json(self):
+        return {
+            'name': self.name,
+            'uuid': self.uuid
+        }
 
     @property
     def size(self):
         return super().size + sys.getsizeof(self.uuid)
 
 
-class Extension(XMLSerializable):
+class Extension(XMLSerializable, JSONSerializable):
     prefix = 'mxia'
 
     def __init__(self, name: str, uuid: str):
         self.name = name
         self.uuid = uuid
+
+    @property
+    def feature_name(self):
+        return self.name[3:]
 
     def to_lxml(self, nsmap: Dict[str, str]):
         ns = nsmap.get(self.prefix)
@@ -124,18 +151,25 @@ class Extension(XMLSerializable):
 
         return el
 
+    def to_json(self):
+        return {
+            'name': self.feature_name,
+            'uuid': self.uuid
+        }
+
     @property
     def size(self):
         return sys.getsizeof(self.name) + sys.getsizeof(self.uuid) + sys.getsizeof(self)
 
 
-class FeatureData:
+class FeatureData(JSONSerializable):
 
     def __init__(self, element: etree.Element, key_properties: List[str]):
         self.el = Element.from_lxml(element)
 
         self.keys: List[Element] = self._retrieve_keys(element, key_properties)
         self.xlinks: List[XLinkElement] = self._retrieve_xlinks(element)
+        self.broken_xlinks: List[XLinkElement] = []
         self.extensions: List[Extension] = []
 
     @property
@@ -148,11 +182,17 @@ class FeatureData:
 
     @property
     def size(self):
-        return sum([i.size for i in (self.props() + self.extensions)]) + sys.getsizeof(self) + sys.getsizeof(self) + \
+        return sum([i.size for i in self.props()]) + sys.getsizeof(self) + sys.getsizeof(self) + \
             sys.getsizeof(self.keys) + sys.getsizeof(self.xlinks) + sys.getsizeof(self.extensions)
 
+    def links(self):
+        return self.xlinks + self.extensions
+
     def props(self):
-        return self.keys + self.xlinks
+        return self.keys + self.links()
+
+    def has_broken_xlinks(self):
+        return len(self.broken_xlinks) > 0
 
     @staticmethod
     def _retrieve_keys(element: etree.Element, keys: List[str]) -> List[Element]:
@@ -176,14 +216,21 @@ class FeatureData:
 
         return root
 
+    def to_json(self):
+        return {
+            'keys': [key.to_json() for key in self.keys],
+            'links': [link.to_json()  for link in self.links()],
+            'broken_links': [link.to_json()  for link in self.broken_xlinks]
+        }
 
-class Feature:
+
+class Feature(JSONSerializable):
 
     def __init__(self, element: etree.Element, keys_properties: List[str]):
         self.el = Element.from_lxml(element)
 
         self.uuid: str = element.find('./gml:identifier', element.nsmap).text
-        self.id: str = get_attrib_value(element.attrib, name='id', ns=element.nsmap["gml"], value_prefix='uuid.')
+        self.id: str = get_attrib_value(element.attrib, name='id', ns=element.nsmap["gml"], value_prefixes=['uuid.'])
 
         feature_data_elements = element.findall(self.get_feature_data_xpath(), namespaces=element.nsmap)
 
@@ -203,6 +250,9 @@ class Feature:
     def stat(self):
         return [f.stat for f in self.feature_data]
 
+    def has_broken_xlinks(self):
+        return any([data.has_broken_xlinks() for data in self.feature_data])
+
     def get_feature_data_xpath(self):
         return ""
 
@@ -211,6 +261,9 @@ class Feature:
 
     def __hash__(self):
         return hash(self.uuid)
+
+    def to_json(self):
+        return [data.to_json() for data in self.feature_data]
 
 
 class AIXMFeatureData(FeatureData):
