@@ -32,11 +32,14 @@ __author__ = "EUROCONTROL (SWIM)"
 
 import json
 from collections import defaultdict
+from functools import partial
 
 from flask import Blueprint, send_from_directory, request, current_app as app
 
 from aixm import cache
+from aixm.graph import get_graph
 from aixm.parser import process_aixm
+from aixm.stats import get_stats
 from aixm.utils import get_samples_filepath
 
 aixm_blueprint = Blueprint('geofencing_viewer',
@@ -80,19 +83,27 @@ def load_aixm():
 
     process_aixm(filepath=data['filepath'], features_config=app.config['FEATURES'])
 
-    feature_names = app.config['FEATURES'].keys()
-    stat = defaultdict(dict)
+    stats = get_stats()
 
-    for feature_name in feature_names:
-        stat[feature_name]['count'] = sum(1 for _ in cache.get_aixm_features_by_name(feature_name))
-        stat[feature_name]['has_broken_xlinks'] = any((f.has_broken_xlinks()
-                                                       for f in cache.get_aixm_features_by_name(feature_name)))
+    return json.dumps({
+        "stats": [
+            {
+                'name': key,
+                'count': value['count'],
+                'has_broken_xlinks': value['has_broken_xlinks']
+            }
+            for key, value in stats.items() if value['count'] > 0
+        ]
+    })
 
-    return json.dumps([
-        {
-            'name': key,
-            'count': value['count'],
-            'has_broken_xlinks': value['has_broken_xlinks']
+
+@aixm_blueprint.route('/graph/<feature_name>', methods=['GET'])
+def load_graph(feature_name: str):
+    nodes, links = get_graph(feature_name)
+
+    return json.dumps({
+        'graph': {
+            'nodes': nodes,
+            'links': links
         }
-        for key, value in stat.items() if value['count'] > 0
-    ])
+    })

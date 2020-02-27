@@ -27,43 +27,24 @@ http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
+from collections import defaultdict
+from functools import partial
+
+from flask import current_app as app
 
 __author__ = "EUROCONTROL (SWIM)"
 
-from typing import Dict
-
-from aixm.features import AIXMFeature
-
-AIXM_FEATURES: Dict[str, AIXMFeature] = {}
+from aixm import cache
 
 
-def get_aixm_feature(uuid: str):
-    feature = AIXM_FEATURES.get(uuid)
+def get_stats():
+    feature_names = app.config['FEATURES'].keys()
+    stat = defaultdict(dict)
 
-    if feature is None:
-        raise ValueError("Feature not found")
+    for feature_name in feature_names:
+        features_callback = partial(cache.get_aixm_features_by_name, feature_name)
 
-    return feature
+        stat[feature_name]['count'] = sum(1 for _ in features_callback())
+        stat[feature_name]['has_broken_xlinks'] = any((f.has_broken_xlinks() for f in features_callback()))
 
-
-def get_aixm_features():
-    return AIXM_FEATURES
-
-
-def get_aixm_features_by_uuid(uuid: str):
-    return AIXM_FEATURES.get(uuid)
-
-
-def get_aixm_features_by_name(name: str):
-    for _, feature in AIXM_FEATURES.items():
-        if feature.el.name == name:
-            yield feature
-
-
-def save_aixm_feature(feature: AIXMFeature):
-    AIXM_FEATURES[feature.uuid] = feature
-
-
-def reset_aixm_features():
-    global AIXM_FEATURES
-    AIXM_FEATURES = {}
+    return stat

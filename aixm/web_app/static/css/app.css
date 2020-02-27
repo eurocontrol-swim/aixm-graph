@@ -23,8 +23,9 @@ html, body/*, and all other map parent selectors*/ {
 
 .feature-list {
     margin-top: 15px;
-    //overflow:scroll;
-    //overflow-scrolling: touch;
+    max-height: 800px;
+    overflow:scroll;
+    overflow-scrolling: touch;
 }
 
 /* layout.css Style */

@@ -30,40 +30,34 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-from typing import Dict
-
+from aixm import cache
 from aixm.features import AIXMFeature
 
-AIXM_FEATURES: Dict[str, AIXMFeature] = {}
+
+def node_from_feature(feature: AIXMFeature):
+    return {
+        'name': feature.el.name,
+        'id': feature.uuid
+    }
 
 
-def get_aixm_feature(uuid: str):
-    feature = AIXM_FEATURES.get(uuid)
-
-    if feature is None:
-        raise ValueError("Feature not found")
-
-    return feature
+def link_from_features(source: AIXMFeature, target: AIXMFeature):
+    return {
+        'source': source.uuid,
+        'target': target.uuid
+    }
 
 
-def get_aixm_features():
-    return AIXM_FEATURES
+def get_graph(feature_name: str):
+    nodes = []
+    links = []
 
+    for source in cache.get_aixm_features_by_name(feature_name):
+        nodes.append(node_from_feature(source))
+        for xlink in (source.feature_data[0].xlinks + source.feature_data[0].extensions):
+            target = cache.get_aixm_features_by_uuid(xlink.uuid)
+            if target is not None:
+                nodes.append(node_from_feature(target))
+                links.append(link_from_features(source, target))
 
-def get_aixm_features_by_uuid(uuid: str):
-    return AIXM_FEATURES.get(uuid)
-
-
-def get_aixm_features_by_name(name: str):
-    for _, feature in AIXM_FEATURES.items():
-        if feature.el.name == name:
-            yield feature
-
-
-def save_aixm_feature(feature: AIXMFeature):
-    AIXM_FEATURES[feature.uuid] = feature
-
-
-def reset_aixm_features():
-    global AIXM_FEATURES
-    AIXM_FEATURES = {}
+    return nodes, links

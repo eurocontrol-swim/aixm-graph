@@ -93,4 +93,4 @@ def process_aixm(filepath, features_config):
 
     del context
 
-    assign_associations(cache.get_aixm_features_per_uuid())
+    assign_associations(cache.get_aixm_features())
