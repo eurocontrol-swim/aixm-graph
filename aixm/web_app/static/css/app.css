@@ -15,10 +15,8 @@ html, body/*, and all other map parent selectors*/ {
     padding-top: 15px;
 }
 
-.svg-area {
-    border: 1px groove gray;
+#graph {
     margin: 15px;
-    border-radius: 4px;
 }
 
 .feature-list {

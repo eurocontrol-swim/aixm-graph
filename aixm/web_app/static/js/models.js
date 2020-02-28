@@ -31,9 +31,7 @@ Vue.component('feature-item', {
             dataType : "json",
             contentType: "application/json; charset=utf-8",
             success : function(result) {
-                console.log(result);
-                reset_svg();
-                update_graph(result.graph.links, result.graph.nodes);
+                createGraph(result.graph)
             }
         });
     }

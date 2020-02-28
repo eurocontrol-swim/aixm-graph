@@ -30,6 +30,8 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
+from typing import List, Dict
+
 from aixm import cache
 from aixm.features import AIXMFeature
 
@@ -37,27 +39,46 @@ from aixm.features import AIXMFeature
 def node_from_feature(feature: AIXMFeature):
     return {
         'name': feature.el.name,
+        'abbrev': feature.abbrev,
         'id': feature.uuid
     }
 
 
-def link_from_features(source: AIXMFeature, target: AIXMFeature):
+def edge_from_features(source: AIXMFeature, target: AIXMFeature):
     return {
-        'source': source.uuid,
-        'target': target.uuid
+        'from': source.uuid,
+        'to': target.uuid
     }
+
+
+def _edge_exists(edges: List[Dict[str, str]], edge: Dict[str, str]):
+    reverse_edge = {
+        'from': edge['to'],
+        'to': edge['from']
+    }
+
+    return edge in edges or reverse_edge in edges
 
 
 def get_graph(feature_name: str):
     nodes = []
-    links = []
+    edges = []
 
     for source in cache.get_aixm_features_by_name(feature_name):
-        nodes.append(node_from_feature(source))
+
+        node = node_from_feature(source)
+        if node not in nodes:
+            nodes.append(node)
+
         for xlink in (source.feature_data[0].xlinks + source.feature_data[0].extensions):
             target = cache.get_aixm_features_by_uuid(xlink.uuid)
             if target is not None:
-                nodes.append(node_from_feature(target))
-                links.append(link_from_features(source, target))
+                node = node_from_feature(target)
+                if node not in nodes:
+                    nodes.append(node)
 
-    return nodes, links
+                edge = edge_from_features(source, target)
+                if not _edge_exists(edges, edge):
+                    edges.append(edge_from_features(source, target))
+
+    return nodes, edges

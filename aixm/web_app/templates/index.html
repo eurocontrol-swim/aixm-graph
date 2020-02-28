@@ -8,8 +8,10 @@
 	 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
 	    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
 		<link rel="stylesheet" href="/css/app.css">
-        <script src="https://d3js.org/d3.v4.min.js" type="text/javascript"></script>
-        <script src="https://d3js.org/d3-selection-multi.v1.js"></script>
+        <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+<!--        <script src="https://d3js.org/d3.v4.min.js" type="text/javascript"></script>-->
+<!--        <script src="https://d3js.org/d3-selection-multi.v1.js"></script>-->
         <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 
     </head>
@@ -83,8 +85,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col svg-area">
-                        <svg width="1200" height="800"></svg>
+                    <div class="col" id="graph">
                     </div>
                 </div>
             </div>

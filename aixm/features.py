@@ -226,11 +226,12 @@ class FeatureData(JSONSerializable):
 
 class Feature(JSONSerializable):
 
-    def __init__(self, element: etree.Element, keys_properties: List[str]):
+    def __init__(self, element: etree.Element, keys_properties: List[str], abbrev: str):
         self.el = Element.from_lxml(element)
 
         self.uuid: str = element.find('./gml:identifier', element.nsmap).text
         self.id: str = get_attrib_value(element.attrib, name='id', ns=element.nsmap["gml"], value_prefixes=['uuid.'])
+        self.abbrev = abbrev
 
         feature_data_elements = element.findall(self.get_feature_data_xpath(), namespaces=element.nsmap)
 

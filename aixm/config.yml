@@ -2,1046 +2,706 @@
 FEATURES:
   AerialRefuelling:
     keys:
-    abbrev:
-    color:
+      - designatorPrefix
+      - designatorNumber
+      - designatorSuffix
+      - designatorDirection
+    abbrev: ARF
+    colour:
+    label:
   AeronauticalGroundLight:
     keys:
-    abbrev:
-    color:
+      - type
+      - name
+    abbrev: AGL
+    colour:
+    label:
   AircraftGroundService:
     keys:
-    abbrev:
-    color:
+      - type
+    abbrev: ACG
+    colour:
+    label:
   AircraftStand:
     keys:
-    abbrev:
-    color:
+      - designator
+      - type
+    abbrev: AST
+    colour:
+    label:
   AirportClearanceService:
     keys:
-    abbrev:
-    color:
+      - name
+    abbrev: ACS
+    colour:
+    label:
   AirportHeliport:
     keys:
       - designator
     abbrev: AHP
-    color:
+    colour:
+    label:
   AirportHeliportCollocation:
     keys:
-    abbrev:
-    color:
+    abbrev: AHC
+    colour:
+    label:
   AirportHotSpot:
     keys:
-    abbrev:
-    color:
+      - designator
+    abbrev: AHT
+    colour:
+    label:
   AirportProtectionAreaMarking:
     keys:
-    abbrev:
-    color:
+    abbrev: APM
+    colour:
+    label:
   AirportSuppliesService:
     keys:
-    abbrev:
-    color:
+      - fuelSupply
+      - oilSupply
+      - nitrogenSupply
+      - oxygenSupply
+    abbrev: ASV
+    colour:
+    label:
   Airspace:
     keys:
-    abbrev:
-    color:
+      - designator
+      - type
+    abbrev: ASE
+    colour:
+    label:
   AirspaceBorderCrossing:
     keys:
-    abbrev:
-    color:
+    abbrev: ABC
+    colour:
+    label:
   AirTrafficControlService:
     keys:
-    abbrev:
-    color:
+      - location
+      - type
+    abbrev: ATC
+    colour:
+    label:
   AirTrafficManagementService:
     keys:
-    abbrev:
-    color:
+    abbrev: ATM
+    colour:
+    label:
   AltimeterSource:
     keys:
-    abbrev:
-    color:
+    abbrev: ALT
+    colour:
+    label:
   AngleIndication:
     keys:
-    abbrev:
-    color:
+    abbrev: AIN
+    colour:
+    label:
   ApproachLightingSystem:
     keys:
-    abbrev:
-    color:
+    abbrev: APL
+    colour:
+    label:
   Apron:
     keys:
-    abbrev:
-    color:
+      - name
+    abbrev: APN
+    colour:
+    label:
   ApronElement:
     keys:
-    abbrev:
-    color:
+      - type
+    abbrev: AEL
+    colour:
+    label:
   ApronLightSystem:
     keys:
-    abbrev:
-    color:
+      - color
+    abbrev: ALS
+    colour:
+    label:
   ApronMarking:
     keys:
-    abbrev:
-    color:
+    abbrev: AMK
+    colour:
+    label:
   ArrestingGear:
     keys:
-    abbrev:
-    color:
+      - location
+      - length
+      - width
+      - status
+    abbrev: AGR
+    colour:
+    label:
   ArrivalLeg:
     keys:
-    abbrev:
-    color:
+      - length
+    abbrev: ARL
+    colour:
+    label:
   ArrivalFeederLeg:
     keys:
-    abbrev:
-    color:
+      - length
+    abbrev: AFL
+    colour:
+    label:
   AuthorityForAirspace:
     keys:
-    abbrev:
-    color:
+      - type
+    abbrev: AFA
+    colour:
+    label:
   Azimuth:
     keys:
-    abbrev:
-    color:
+      - designator
+      - type
+    abbrev: AZM
+    colour:
+    label:
   ChangeOverPoint:
     keys:
-    abbrev:
-    color:
+    abbrev: COP
+    colour:
+    label:
   CheckpointINS:
     keys:
-    abbrev:
-    color:
+      - category
+      - position
+    abbrev: CNS
+    colour:
+    label:
   CheckpointVOR:
     keys:
-    abbrev:
-    color:
+      - category
+      - position
+    abbrev: CVO
+    colour:
+    label:
   CirclingArea:
     keys:
-    abbrev:
-    color:
+    abbrev: CIA
+    colour:
+    label:
   DeicingArea:
     keys:
-    abbrev:
-    color:
+    abbrev: DAA
+    colour:
+    label:
   DeicingAreaMarking:
     keys:
-    abbrev:
-    color:
+    abbrev: DAM
+    colour:
+    label:
   DepartureLeg:
     keys:
-    abbrev:
-    color:
+    abbrev: DLG
+    colour:
+    label:
   DesignatedPoint:
     keys:
       - designator
     abbrev: DPN
-    color:
+    colour:
+    label:
   DirectionFinder:
     keys:
-    abbrev:
-    color:
+    abbrev: DFN
+    colour:
+    label:
   DistanceIndication:
     keys:
-    abbrev:
-    color:
+    abbrev: DIN
+    colour:
+    label:
   DME:
     keys:
-    abbrev:
-    color:
+      - type
+      - designator
+    abbrev: DME
+    colour:
+    label:
   Elevation:
     keys:
-    abbrev:
-    color:
+    abbrev: ELV
+    colour:
+    label:
   FinalLeg:
     keys:
-    abbrev:
-    color:
+    abbrev: FLG
+    colour:
+    label:
   FireFightingService:
     keys:
-    abbrev:
-    color:
+    abbrev: FFS
+    colour:
+    label:
   FlightRestriction:
     keys:
-    abbrev:
-    color:
+    abbrev: FRS
+    colour:
+    label:
   FloatingDockSite:
     keys:
-    abbrev:
-    color:
+    abbrev: FGD
+    colour:
+    label:
   GeoBorder:
     keys:
-    abbrev:
-    color:
+      - type
+    abbrev: GBR
+    colour:
+    label:
   Glidepath:
     keys:
-    abbrev:
-    color:
+      - designator
+    abbrev: GPT
+    colour:
+    label:
   GroundTrafficControlService:
     keys:
-    abbrev:
-    color:
+    abbrev: GTC
+    colour:
+    label:
   GuidanceLine:
     keys:
-    abbrev:
-    color:
+      - type
+      - designator
+    abbrev: GLN
+    colour:
+    label:
   GuidanceLineLightSystem:
     keys:
-    abbrev:
-    color:
+      - colour
+    abbrev: GLL
+    colour:
+    label:
   GuidanceLineMarking:
     keys:
-    abbrev:
-    color:
+    abbrev: GLM
+    colour:
+    label:
   HoldingAssessment:
     keys:
-    abbrev:
-    color:
+    abbrev: HAS
+    colour:
+    label:
   HoldingPattern:
     keys:
-    abbrev:
-    color:
+    abbrev: HPT
+    colour:
+    label:
   InformationService:
     keys:
-    abbrev:
-    color:
+    abbrev: ISV
+    colour:
+    label:
   InitialLeg:
     keys:
-    abbrev:
-    color:
+    abbrev: ILG
+    colour:
+    label:
   InstrumentApproachProcedure:
     keys:
-    abbrev:
-    color:
+    abbrev: IAP
+    colour:
+    label:
   IntermediateLeg:
     keys:
-    abbrev:
-    color:
+    abbrev: INL
+    colour:
+    label:
   Localizer:
     keys:
-    abbrev:
-    color:
+      - designator
+    abbrev: LLZ
+    colour:
+    label:
   MarkerBeacon:
     keys:
-    abbrev:
-    color:
+      - designator
+    abbrev: MBC
+    colour:
+    label:
   MarkingBuoy:
     keys:
-    abbrev:
-    color:
+      - type
+      - designator
+    abbrev: MKB
+    colour:
+    label:
   MissedApproachLeg:
     keys:
-    abbrev:
-    color:
+    abbrev: MAL
+    colour:
+    label:
   Navaid:
     keys:
       - type
       - designator
     abbrev: NAV
-    color:
+    colour:
+    label:
   NavigationArea:
     keys:
-    abbrev:
-    color:
+      - navigationAreaType
+      - sector
+    abbrev: NAA
+    colour:
+    label:
   NavigationAreaRestriction:
     keys:
-    abbrev:
-    color:
+      - type
+    abbrev: NAN
+    colour:
+    label:
   NDB:
     keys:
-    abbrev:
-    color:
+      - keys
+    abbrev: NDB
+    colour:
+    label:
   NonMovementArea:
     keys:
-    abbrev:
-    color:
+    abbrev: NMA
+    colour:
+    label:
   ObstacleArea:
     keys:
-    abbrev:
-    color:
+    abbrev: OAR
+    colour:
+    label:
   OrganisationAuthority:
     keys:
       - name
     abbrev: ORG
-    color:
+    colour:
+    label:
   PassengerLoadingBridge:
     keys:
-    abbrev:
-    color:
+    abbrev: PLB
+    colour:
+    label:
   PassengerService:
     keys:
-    abbrev:
-    color:
+    abbrev: PSV
+    colour:
+    label:
   PilotControlledLighting:
     keys:
-    abbrev:
-    color:
+    abbrev: PCG
+    colour:
+    label:
   PrecisionApproachRadar:
     keys:
-    abbrev:
-    color:
+    abbrev: PAR
+    colour:
+    label:
   PrimarySurveillanceRadar:
     keys:
-    abbrev:
-    color:
+      - location
+    abbrev: PSR
+    colour:
+    label:
   ProcedureDME:
     keys:
-    abbrev:
-    color:
+    abbrev: PDM
+    colour:
+    label:
   RadioCommunicationChannel:
     keys:
-    abbrev:
-    color:
+    abbrev: RCC
+    colour:
+    label:
   RadioFrequencyArea:
     keys:
-    abbrev:
-    color:
+      - type
+    abbrev: RFA
+    colour:
+    label:
   Road:
     keys:
-    abbrev:
-    color:
+      - designator
+    abbrev: ROA
+    colour:
+    label:
   Route:
     keys:
-    abbrev:
-    color:
+      - designatorPrefix
+      - designatorNumber
+      - designatorSecondLetter
+      - type
+    abbrev: RTE
+    colour:
+    label:
   RouteDME:
     keys:
-    abbrev:
-    color:
+    abbrev: RDM
+    colour:
+    label:
   RouteSegment:
     keys:
     abbrev: RSG
-    color:
+    colour:
+    label:
   RulesProcedures:
     keys:
-    abbrev:
-    color:
+    abbrev: RUP
+    colour:
+    label:
   Runway:
     keys:
       - designator
       - type
     abbrev: RWY
-    color:
+    colour:
+    label:
   RunwayBlastPad:
     keys:
-    abbrev:
-    color:
+    abbrev: RBP
+    colour:
+    label:
   RunwayCentrelinePoint:
     keys:
-    abbrev:
-    color:
+      - designator
+    abbrev: RCP
+    colour:
+    label:
   RunwayDirection:
     keys:
       - designator
     abbrev: RDN
-    color:
+    colour:
+    label:
   RunwayDirectionLightSystem:
     keys:
-    abbrev:
-    color:
+    abbrev: RLS
+    colour:
+    label:
   RunwayElement:
     keys:
-    abbrev:
-    color:
+    abbrev: REL
+    colour:
+    label:
   RunwayMarking:
     keys:
-    abbrev:
-    color:
+    abbrev: RMG
+    colour:
+    label:
   RunwayProtectArea:
     keys:
-    abbrev:
-    color:
+      - type
+    abbrev: RPA
+    colour:
+    label:
   RunwayProtectAreaLightSystem:
     keys:
-    abbrev:
-    color:
+    abbrev: RPL
+    colour:
+    label:
   RunwayVisualRange:
     keys:
-    abbrev:
-    color:
+    abbrev: RVR
+    colour:
+    label:
   SafeAltitudeArea:
     keys:
-    abbrev:
-    color:
+    abbrev: SAA
+    colour:
+    label:
   SDF:
     keys:
-    abbrev:
-    color:
+      - designator
+    abbrev: SDF
+    colour:
+    label:
   SeaplaneLandingArea:
     keys:
-    abbrev:
-    color:
+    abbrev: SLA
+    colour:
+    label:
   SeaplaneRampSite:
     keys:
-    abbrev:
-    color:
+    abbrev: SPR
+    colour:
+    label:
   SearchRescueService:
     keys:
-    abbrev:
-    color:
+      - type
+    abbrev: SRE
+    colour:
+    label:
   SecondarySurveillanceRadar:
     keys:
-    abbrev:
-    color:
+    abbrev: SSV
+    colour:
+    label:
   SignificantPointInAirspace:
     keys:
-    abbrev:
-    color:
+    abbrev: SPA
+    colour:
+    label:
   SpecialDate:
     keys:
-    abbrev:
-    color:
+    abbrev: SPD
+    colour:
+    label:
   SpecialNavigationStation:
     keys:
-    abbrev:
-    color:
+    abbrev: SNS
+    colour:
+    label:
   SpecialNavigationSystem:
     keys:
-    abbrev:
-    color:
+      - designator
+      - type
+    abbrev: SNY
+    colour:
+    label:
   StandardInstrumentArrival:
     keys:
-    abbrev:
-    color:
+      - designator
+    abbrev: SIA
+    colour:
+    label:
   StandardInstrumentDeparture:
     keys:
-    abbrev:
-    color:
+      - designator
+    abbrev: SID
+    colour:
+    label:
   StandardLevelColumn:
     keys:
-    abbrev:
-    color:
+    abbrev: SLC
+    colour:
+    label:
   StandardLevelSector:
     keys:
-    abbrev:
-    color:
+    abbrev: SLS
+    colour:
+    label:
   StandardLevelTable:
     keys:
-    abbrev:
-    color:
+    abbrev: SLB
+    colour:
+    label:
   StandMarking:
     keys:
-    abbrev:
-    color:
+    abbrev: SMK
+    colour:
+    label:
   SurveyControlPoint:
     keys:
-    abbrev:
-    color:
+      - designator
+    abbrev: SCP
+    colour:
+    label:
   TACAN:
     keys:
-    abbrev:
-    color:
+      - designator
+    abbrev: TCN
+    colour:
+    label:
   TaxiHoldingPosition:
     keys:
-    abbrev:
-    color:
+    abbrev: THP
+    colour:
+    label:
   TaxiHoldingPositionLightSystem:
     keys:
-    abbrev:
-    color:
+    abbrev: THL
+    colour:
+    label:
   TaxiHoldingPositionMarking:
     keys:
-    abbrev:
-    color:
+    abbrev: THM
+    colour:
+    label:
   Taxiway:
     keys:
-    abbrev:
-    color:
+      - designator
+      - type
+    abbrev: TWY
+    colour:
+    label:
   TaxiwayElement:
     keys:
-    abbrev:
-    color:
+      - type
+    abbrev: TWE
+    colour:
+    label:
   TaxiwayLightSystem:
     keys:
-    abbrev:
-    color:
+      - colour
+    abbrev: TWL
+    colour:
+    label:
   TaxiwayMarking:
     keys:
-    abbrev:
-    color:
+    abbrev: TWM
+    colour:
+    label:
   TerminalArrivalArea:
     keys:
-    abbrev:
-    color:
+    abbrev: TAA
+    colour:
+    label:
   TouchDownLiftOff:
     keys:
-    abbrev:
-    color:
+      - designator
+    abbrev: TLA
+    colour:
+    label:
   TouchDownLiftOffLightSystem:
     keys:
-    abbrev:
-    color:
+    abbrev: TLS
+    colour:
+    label:
   TouchDownLiftOffMarking:
     keys:
-    abbrev:
-    color:
+    abbrev: TLM
+    colour:
+    label:
   TouchDownLiftOffSafeArea:
     keys:
-    abbrev:
-    color:
+    abbrev: TSA
+    colour:
+    label:
   Unit:
     keys:
-    abbrev:
-    color:
+      - designator
+      - type
+    abbrev: UNI
+    colour:
+    label:
   UnplannedHolding:
     keys:
-    abbrev:
-    color:
+    abbrev: UHG
+    colour:
+    label:
   VerticalStructure:
     keys:
-    abbrev:
-    color:
+    abbrev: VST
+    colour:
+    label:
   VisualGlideSlopeIndicator:
     keys:
-    abbrev:
-    color:
+      - type
+    abbrev: VGI
+    colour:
+    label:
   VOR:
     keys:
-    abbrev:
-    color:
+      - designator
+      - type
+    abbrev: VOR
+    colour:
+    label:
   WorkArea:
     keys:
-    abbrev:
-    color:
-#
-#    AerialRefuelling:
-#      keys:
-#      targets:
-#        InformationService:
-#          xpath: "./aixm:"
-#        AirTrafficControlService:
-#          xpath: "./aixm:"
-#        AirTrafficManagementService:
-#          xpath: "./aixm:"
-#    AircraftStand:
-#      keys:
-#      targets:
-#        GuidanceLine:
-#          xpath: "./aixm:"
-#        Road:
-#          xpath: "./aixm:"
-#        DeicingArea:
-#          xpath: "./aixm:"
-#        PassengerLoadingBridge:
-#          xpath: "./aixm:"
-#        StandMarking:
-#          xpath: "./aixm:"
-#    AirportHeliport:
-#      keys:
-#      targets:
-#        Runway:
-#          xpath: "./aixm:associatedAirportHeliport"
-#        Taxiway:
-#          xpath: "./aixm:associatedAirportHeliport"
-#        Apron:
-#          xpath: "./aixm:"
-#        Road:
-#          xpath: "./aixm:"
-#        TouchDownLiftOff:
-#          xpath: "./aixm:"
-#        WorkArea:
-#          xpath: "./aixm:"
-#        SurveyControlPoint:
-#          xpath: "./aixm:"
-#        NonMovementArea:
-#          xpath: "./aixm:"
-#        AirportHeliportCollocation:
-#          xpath: "./aixm:"
-#        AirportHotSpot:
-#          xpath: "./aixm:"
-#        RadarSystem:
-#          xpath: "./aixm:"
-#        InformationService:
-#          xpath: "./aixm:"
-#        GroundTrafficControlService:
-#          xpath: "./aixm:"
-#        AirTrafficControlService:
-#          xpath: "./aixm:"
-#        AirportGroundService:
-#          xpath: "./aixm:"
-#        AngleIndication:
-#          xpath: "./aixm:"
-#        DistanceIndication:
-#          xpath: "./aixm:"
-#        Navaid:
-#          xpath: "./aixm:"
-#        NavigationSystemCheckpoint:
-#          xpath: "./aixm:"
-#        DesignatedPoint:
-#          xpath: "./aixm:"
-#        SignificantPointInAirspace:
-#          xpath: "./aixm:"
-#        AeronauticalGroundLight:
-#          xpath: "./aixm:"
-#        Unit:
-#          xpath: "./aixm:"
-#        ObstacleArea:
-#          xpath: "./aixm:"
-#        TerminalArrivalArea:
-#          xpath: "./aixm:"
-#        NavigationArea:
-#          xpath: "./aixm:"
-#        Procedure:
-#          xpath: "./aixm:"
-#        FinalLeg:
-#          xpath: "./aixm:"
-#        SafeAltitudeArea:
-#          xpath: "./aixm:"
-#        ChangeOverPoint:
-#          xpath: "./aixm:"
-#        RulesProcedures:
-#          xpath: "./aixm:"
-#    AirportHeliportProtectionArea:
-#      keys:
-#      targets:
-#        AirportProtectionAreaMarking:
-#          xpath: "./aixm:"
-#    AirportSuppliesService:
-#      keys:
-#      targets:
-#        ApronElement:
-#          xpath: "./aixm:"
-#    Airspace:
-#      keys:
-#      targets:
-#        AuthorityForAirspace:
-#          xpath: "./aixm:"
-#        StandardLevelSector:
-#          xpath: "./aixm:"
-#        InformationService:
-#          xpath: "./aixm:"
-#        AirTrafficControlService:
-#          xpath: "./aixm:"
-#        AirTrafficManagementService:
-#          xpath: "./aixm:"
-#        SearchRescueService:
-#          xpath: "./aixm:"
-#        SignificantPointInAirspace:
-#          xpath: "./aixm:"
-#        AirspaceBorderCrossing:
-#          xpath: "./aixm:"
-#        AerialRefuelling:
-#          xpath: "./aixm:"
-#        RulesProcedures:
-#          xpath: "./aixm:"
-#    AltimeterSource:
-#      keys:
-#      targets:
-#        AirportHeliport:
-#          xpath: "./aixm:"
-#    AngleIndication:
-#      keys:
-#      targets:
-#        SegmentLeg:
-#          xpath: "./aixm:"
-#    Apron:
-#      keys:
-#      targets:
-#        GuidanceLine:
-#          xpath: "./aixm:"
-#        ApronElement:
-#          xpath: "./aixm:"
-#        DeicingArea:
-#          xpath: "./aixm:"
-#        ApronLightSystem:
-#          xpath: "./aixm:"
-#        ApronMarking:
-#          xpath: "./aixm:"
-#    ApronElement:
-#      keys:
-#      targets:
-#        AircraftStand:
-#          xpath: "./aixm:"
-#    DME:
-#      keys:
-#      targets:
-#        ProcedureDME:
-#          xpath: "./aixm:"
-#        RouteDME:
-#          xpath: "./aixm:"
-#    DeicingArea:
-#      keys:
-#      targets:
-#        DeicingAreaMarking:
-#          xpath: "./aixm:"
-#    DesignatedPoint:
-#      keys:
-#      targets:
-#        AngleIndication:
-#          xpath: "./aixm:"
-#        DistanceIndication:
-#          xpath: "./aixm:"
-#        SignificantPointInAirspace:
-#          xpath: "./aixm:"
-#        TerminalArrivalArea:
-#          xpath: "./aixm:"
-#        NavigationArea:
-#          xpath: "./aixm:"
-#        FinalLeg:
-#          xpath: "./aixm:"
-#        SafeAltitudeArea:
-#          xpath: "./aixm:"
-#        ChangeOverPoint:
-#          xpath: "./aixm:"
-#    DirectionFinder:
-#      keys:
-#      targets:
-#        AirTrafficControlService:
-#          xpath: "./aixm:"
-#    DistanceIndication:
-#      keys:
-#      targets:
-#        SegmentLeg:
-#          xpath: "./aixm:"
-#    FloatingDockSite:
-#      keys:
-#      targets:
-#        SeaplaneLandingArea:
-#          xpath: "./aixm:"
-#    GroundLightSystem:
-#      keys:
-#      targets:
-#        PilotControlledLighting:
-#          xpath: "./aixm:"
-#        VerticalStructure:
-#          xpath: "./aixm:"
-#    GuidanceLine:
-#      keys:
-#      targets:
-#        TaxiHoldingPosition:
-#          xpath: "./aixm:"
-#        GuidanceLineLightSystem:
-#          xpath: "./aixm:"
-#        GuidanceLineMarking:
-#          xpath: "./aixm:"
-#    HoldingPattern:
-#      keys:
-#      targets:
-#        HoldingAssessment:
-#          xpath: "./aixm:"
-#        InformationService:
-#          xpath: "./aixm:"
-#        AirTrafficControlService:
-#          xpath: "./aixm:"
-#    InformationService:
-#      keys:
-#      targets:
-#        DirectionFinder:
-#          xpath: "./aixm:"
-#    InstrumentApproachProcedure:
-#      keys:
-#      targets:
-#        CirclingArea:
-#          xpath: "./aixm:"
-#        TerminalArrivalArea:
-#          xpath: "./aixm:"
-#        ApproachLeg:
-#          xpath: "./aixm:"
-#    MarkerBeacon:
-#      keys:
-#      targets:
-#        VerticalStructure:
-#          xpath: "./aixm:"
-#    Navaid:
-#      keys:
-#      targets:
-#        AngleIndication:
-#          xpath: "./aixm:"
-#        DistanceIndication:
-#          xpath: "./aixm:"
-#        SignificantPointInAirspace:
-#          xpath: "./aixm:"
-#        TerminalArrivalArea:
-#          xpath: "./aixm:"
-#        NavigationArea:
-#          xpath: "./aixm:"
-#        Procedure:
-#          xpath: "./aixm:"
-#        FinalLeg:
-#          xpath: "./aixm:"
-#        SafeAltitudeArea:
-#          xpath: "./aixm:"
-#        ChangeOverPoint:
-#          xpath: "./aixm:"
-#    NavaidEquipment:
-#      keys:
-#      targets:
-#        RadioFrequencyArea:
-#          xpath: "./aixm:"
-#        VerticalStructure:
-#          xpath: "./aixm:"
-#    OrganisationAuthority:
-#      keys:
-#      targets:
-#        AuthorityForAirspace:
-#          xpath: "./aixm:"
-#        RadarSystem:
-#          xpath: "./aixm:"
-#        SpecialDate:
-#          xpath: "./aixm:"
-#        Unit:
-#          xpath: "./aixm:"
-#        ObstacleArea:
-#          xpath: "./aixm:"
-#        VerticalStructure:
-#          xpath: "./aixm:"
-#        Route:
-#          xpath: "./aixm:"
-#    PassengerService:
-#      keys:
-#      targets:
-#        VerticalStructure:
-#          xpath: "./aixm:"
-#    PrecisionApproachRadar:
-#      keys:
-#      targets:
-#        RadioFrequencyArea:
-#          xpath: "./aixm:"
-#    Procedure:
-#      keys:
-#      targets:
-#        InformationService:
-#          xpath: "./aixm:"
-#        AirTrafficControlService:
-#          xpath: "./aixm:"
-#        NavigationAreaRestriction:
-#          xpath: "./aixm:"
-#    RadarSystem:
-#      keys:
-#      targets:
-#        Procedure:
-#          xpath: "./aixm:"
-#    RadioCommunicationChannel:
-#      keys:
-#      targets:
-#        RadioFrequencyArea:
-#          xpath: "./aixm:"
-#        Service:
-#          xpath: "./aixm:"
-#    Route:
-#      keys:
-#      targets:
-#        Airspace:
-#          xpath: "./aixm:"
-#        RouteSegment:
-#          xpath: "./aixm:routeFormed"
-#    Runway:
-#      keys:
-#      targets:
-#        RunwayDirection:
-#          xpath: "./aixm:"
-#        RunwayElement:
-#          xpath: "./aixm:"
-#        TaxiHoldingPosition:
-#          xpath: "./aixm:"
-#        TouchDownLiftOff:
-#          xpath: "./aixm:"
-#        RunwayMarking:
-#          xpath: "./aixm:"
-#        RadarSystem:
-#          xpath: "./aixm:"
-#    RunwayCentrelinePoint:
-#      keys:
-#      targets:
-#        GuidanceLine:
-#          xpath: "./aixm:"
-#        AngleIndication:
-#          xpath: "./aixm:"
-#        DistanceIndication:
-#          xpath: "./aixm:"
-#        DesignatedPoint:
-#          xpath: "./aixm:"
-#        SignificantPointInAirspace:
-#          xpath: "./aixm:"
-#        TerminalArrivalArea:
-#          xpath: "./aixm:"
-#        NavigationArea:
-#          xpath: "./aixm:"
-#        FinalLeg:
-#          xpath: "./aixm:"
-#        SafeAltitudeArea:
-#          xpath: "./aixm:"
-#        ChangeOverPoint:
-#          xpath: "./aixm:"
-#    RunwayDirection:
-#      keys:
-#      targets:
-#        RunwayProtectArea:
-#          xpath: "./aixm:"
-#        RunwayCentrelinePoint:
-#          xpath: "./aixm:"
-#        ArrestingGear:
-#          xpath: "./aixm:"
-#        VisualGlideSlopeIndicator:
-#          xpath: "./aixm:"
-#        RunwayVisualRange:
-#          xpath: "./aixm:"
-#        RunwayBlastPad:
-#          xpath: "./aixm:"
-#        RunwayDirectionLightSystem:
-#          xpath: "./aixm:"
-#        ApproachLightingSystem:
-#          xpath: "./aixm:"
-#        Navaid:
-#          xpath: "./aixm:"
-#        ObstacleArea:
-#          xpath: "./aixm:"
-#    RunwayElement:
-#      keys:
-#      targets:
-#        RunwayDirection:
-#          xpath: "./aixm:"
-#    RunwayProtectArea:
-#      keys:
-#      targets:
-#        RunwayProtectAreaLightSystem:
-#          xpath: "./aixm:"
-#    SafeAltitudeArea:
-#      keys:
-#      targets:
-#        Procedure:
-#          xpath: "./aixm:"
-#    SeaplaneLandingArea:
-#      keys:
-#      targets:
-#        MarkingBuoy:
-#          xpath: "./aixm:"
-#    SeaplaneRampSite:
-#      keys:
-#      targets:
-#        SeaplaneLandingArea:
-#          xpath: "./aixm:"
-#    SecondarySurveillanceRadar:
-#      keys:
-#      targets:
-#        RadioFrequencyArea:
-#          xpath: "./aixm:"
-#    SegmentLeg:
-#      keys:
-#      targets:
-#        ProcedureDME:
-#          xpath: "./aixm:"
-#    Service:
-#      keys:
-#      targets:
-#        VerticalStructure:
-#          xpath: "./aixm:"
-#    SpecialNavigationStation:
-#      keys:
-#      targets:
-#        RadioFrequencyArea:
-#          xpath: "./aixm:"
-#        VerticalStructure:
-#          xpath: "./aixm:"
-#    SpecialNavigationSystem:
-#      keys:
-#      targets:
-#        SpecialNavigationStation:
-#          xpath: "./aixm:"
-#        Procedure:
-#          xpath: "./aixm:"
-#    StandardInstrumentArrival:
-#      keys:
-#      targets:
-#        ArrivalLeg:
-#          xpath: "./aixm:"
-#    StandardInstrumentDeparture:
-#      keys:
-#      targets:
-#        NavigationArea:
-#          xpath: "./aixm:"
-#        DepartureLeg:
-#          xpath: "./aixm:"
-#    StandardLevelColumn:
-#      keys:
-#      targets:
-#        StandardLevelSector:
-#          xpath: "./aixm:"
-#    StandardLevelTable:
-#      keys:
-#      targets:
-#        StandardLevelColumn:
-#          xpath: "./aixm:"
-#    TaxiHoldingPosition:
-#      keys:
-#      targets:
-#        TaxiHoldingPositionLightSystem:
-#          xpath: "./aixm:"
-#        TaxiHoldingPositionMarking:
-#          xpath: "./aixm:"
-#    Taxiway:
-#      keys:
-#      targets:
-#        TaxiwayElement:
-#          xpath: "./aixm:"
-#        GuidanceLine:
-#          xpath: "./aixm:"
-#        DeicingArea:
-#          xpath: "./aixm:"
-#        TaxiwayLightSystem:
-#          xpath: "./aixm:"
-#        TaxiwayMarking:
-#          xpath: "./aixm:"
-#    TaxiwayElement:
-#      keys:
-#      targets:
-#        TaxiwayMarking:
-#          xpath: "./aixm:"
-#    TouchDownLiftOff:
-#      keys:
-#      targets:
-#        GuidanceLine:
-#          xpath: "./aixm:"
-#        TouchDownLiftOffSafeArea:
-#          xpath: "./aixm:"
-#        TouchDownLiftOffLightSystem:
-#          xpath: "./aixm:"
-#        TouchDownLiftOffMarking:
-#          xpath: "./aixm:"
-#        AngleIndication:
-#          xpath: "./aixm:"
-#        DistanceIndication:
-#          xpath: "./aixm:"
-#        Navaid:
-#          xpath: "./aixm:"
-#        DesignatedPoint:
-#          xpath: "./aixm:"
-#        SignificantPointInAirspace:
-#          xpath: "./aixm:"
-#        TerminalArrivalArea:
-#          xpath: "./aixm:"
-#        NavigationArea:
-#          xpath: "./aixm:"
-#        FinalLeg:
-#          xpath: "./aixm:"
-#        SafeAltitudeArea:
-#          xpath: "./aixm:"
-#        ChangeOverPoint:
-#          xpath: "./aixm:"
-#    Unit:
-#      keys:
-#      targets:
-#        Service:
-#          xpath: "./aixm:"
-#        VerticalStructure:
-#          xpath: "./aixm:"
-#    UnplannedHolding:
-#      keys:
-#      targets:
-#        HoldingAssessment:
-#          xpath: "./aixm:"
-#    VOR:
-#      keys:
-#      targets:
-#        InformationService:
-#          xpath: "./aixm:"
-#        CheckpointVOR:
-#          xpath: "./aixm:"
-#    VerticalStructure:
-#      keys:
-#      targets:
-#        AeronauticalGroundLight:
-#          xpath: "./aixm:"
-#        ObstacleArea:
-#          xpath: "./aixm:"
+    abbrev: WAR
+    colour:
+    label:

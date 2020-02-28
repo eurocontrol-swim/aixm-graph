@@ -99,11 +99,11 @@ def load_aixm():
 
 @aixm_blueprint.route('/graph/<feature_name>', methods=['GET'])
 def load_graph(feature_name: str):
-    nodes, links = get_graph(feature_name)
+    nodes, edges = get_graph(feature_name)
 
     return json.dumps({
         'graph': {
             'nodes': nodes,
-            'links': links
+            'edges': edges
         }
     })

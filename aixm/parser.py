@@ -57,7 +57,9 @@ def feature_generator(context, config):
         if event == 'end':
             feature_element = elem[0]
             feature_name = get_tag_without_ns(feature_element)
-            feature = AIXMFeature(element=feature_element, keys_properties=config[feature_name]["keys"] or [])
+            feature = AIXMFeature(element=feature_element,
+                                  keys_properties=config[feature_name]["keys"] or [],
+                                  abbrev=config[feature_name]["abbrev"])
 
             # clean up obsolete elements
             elem.clear()
