@@ -30,55 +30,110 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-from typing import List, Dict
+from typing import List, Dict, Optional, Union, Any
 
 from aixm import cache
 from aixm.features import AIXMFeature
 
 
+class Node:
+
+    def __init__(self, id: str, name: str, abbrev: str):
+        self.id = id
+        self.name = name
+        self.abbrev = abbrev
+
+    def __eq__(self, other):
+        return self.id == other.id and self.name == other.name and self.abbrev == other.abbrev
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'abbrev': self.abbrev
+        }
+
+
+class Edge:
+
+    def __init__(self, source: str, target: str):
+        self.source = source
+        self.target = target
+
+    def __eq__(self, other):
+        return (self.source == other.source and self.target == other.target) or \
+               (self.source == other.target and self.target == other.source)
+
+    def to_json(self):
+        return {
+            'source': self.source,
+            'target': self.target
+        }
+
+
+class Graph:
+
+    def __init__(self, nodes: Optional[List[Node]] = None, edges: Optional[List[Edge]] = None):
+        self.nodes = nodes or []
+        self.edges = edges or []
+
+    def __add__(self, other):
+        self.add_nodes(other.nodes)
+        self.add_edges(other.edges)
+
+        return self
+
+    @staticmethod
+    def _add_items_to_list(item_list: List[Any], items: Any):
+        if not isinstance(items, list):
+            items = [items]
+
+        for node in items:
+            if node not in item_list:
+                item_list.append(node)
+
+    def add_nodes(self, nodes: Union[List[Node], Node]):
+        self._add_items_to_list(self.nodes, nodes)
+
+    def add_edges(self, edges: Union[List[Edge], Edge]):
+        self._add_items_to_list(self.edges, edges)
+
+    def to_json(self):
+        return {
+            'nodes': [node.to_json() for node in self.nodes],
+            'edges': [edge.to_json() for edge in self.edges]
+        }
+
+
 def node_from_feature(feature: AIXMFeature):
-    return {
-        'name': feature.el.name,
-        'abbrev': feature.abbrev,
-        'id': feature.uuid
-    }
+    return Node(id=feature.uuid, name=feature.el.name, abbrev=feature.abbrev)
 
 
 def edge_from_features(source: AIXMFeature, target: AIXMFeature):
-    return {
-        'from': source.uuid,
-        'to': target.uuid
-    }
+    return Edge(source=source.uuid, target=target.uuid)
 
 
-def _edge_exists(edges: List[Dict[str, str]], edge: Dict[str, str]):
-    reverse_edge = {
-        'from': edge['to'],
-        'to': edge['from']
-    }
+def get_feature_graph(feature: AIXMFeature) -> Graph:
+    graph = Graph()
 
-    return edge in edges or reverse_edge in edges
+    graph.add_nodes(node_from_feature(feature))
+
+    for xlink in (feature.feature_data[0].xlinks + feature.feature_data[0].extensions):
+        target = cache.get_aixm_feature_by_uuid(xlink.uuid)
+        if target is not None:
+            graph.add_nodes(node_from_feature(target))
+
+            graph.add_edges(edge_from_features(feature, target))
+
+    return graph
 
 
-def get_graph(feature_name: str):
-    nodes = []
-    edges = []
+def get_graph(feature_name: Optional[str] = None) -> Graph:
+    graph = Graph()
 
-    for source in cache.get_aixm_features_by_name(feature_name):
+    features = cache.get_features() if feature_name is None else cache.get_aixm_features_by_name(feature_name)
 
-        node = node_from_feature(source)
-        if node not in nodes:
-            nodes.append(node)
+    for feature in features:
+        graph += get_feature_graph(feature)
 
-        for xlink in (source.feature_data[0].xlinks + source.feature_data[0].extensions):
-            target = cache.get_aixm_features_by_uuid(xlink.uuid)
-            if target is not None:
-                node = node_from_feature(target)
-                if node not in nodes:
-                    nodes.append(node)
-
-                edge = edge_from_features(source, target)
-                if not _edge_exists(edges, edge):
-                    edges.append(edge_from_features(source, target))
-
-    return nodes, edges
+    return graph

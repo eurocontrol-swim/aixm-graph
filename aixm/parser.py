@@ -95,4 +95,4 @@ def process_aixm(filepath, features_config):
 
     del context
 
-    assign_associations(cache.get_aixm_features())
+    assign_associations(cache.get_aixm_features_dict())

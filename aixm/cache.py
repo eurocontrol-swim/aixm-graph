@@ -46,18 +46,20 @@ def get_aixm_feature(uuid: str):
     return feature
 
 
-def get_aixm_features():
+def get_aixm_features_dict():
     return AIXM_FEATURES
 
 
-def get_aixm_features_by_uuid(uuid: str):
+def get_aixm_feature_by_uuid(uuid: str):
     return AIXM_FEATURES.get(uuid)
 
 
+def get_features():
+    return (feature for _, feature in AIXM_FEATURES.items())
+
+
 def get_aixm_features_by_name(name: str):
-    for _, feature in AIXM_FEATURES.items():
-        if feature.el.name == name:
-            yield feature
+    return (feature for feature in get_features() if feature.el.name == name)
 
 
 def save_aixm_feature(feature: AIXMFeature):

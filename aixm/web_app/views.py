@@ -37,7 +37,7 @@ from functools import partial
 from flask import Blueprint, send_from_directory, request, current_app as app
 
 from aixm import cache
-from aixm.graph import get_graph
+from aixm.graph import get_graph, get_feature_graph
 from aixm.parser import process_aixm
 from aixm.stats import get_stats
 from aixm.utils import get_samples_filepath
@@ -77,6 +77,11 @@ def favicon():
     return send_from_directory('web_app/static/img', 'favicon.png', mimetype='image/png')
 
 
+########
+# API
+########
+
+
 @aixm_blueprint.route('/load_aixm', methods=['POST'])
 def load_aixm():
     data = request.get_json()
@@ -98,12 +103,20 @@ def load_aixm():
 
 
 @aixm_blueprint.route('/graph/<feature_name>', methods=['GET'])
-def load_graph(feature_name: str):
-    nodes, edges = get_graph(feature_name)
+def get_graph_for_feature_name(feature_name: str):
+    graph = get_graph(feature_name)
 
     return json.dumps({
-        'graph': {
-            'nodes': nodes,
-            'edges': edges
-        }
+        'graph': graph.to_json()
+    })
+
+
+@aixm_blueprint.route('/feature/<uuid>/graph', methods=['GET'])
+def get_graph_for_feature_uuid(uuid: str):
+    feature = cache.get_aixm_feature_by_uuid(uuid)
+
+    graph = get_feature_graph(feature)
+
+    return json.dumps({
+        'graph': graph.to_json()
     })
