@@ -30,10 +30,9 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-import sys
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from typing import Any, Optional, Dict, List, Tuple
+from typing import Optional, Dict, List
 
 from lxml import etree
 from lxml.etree import QName
@@ -67,11 +66,6 @@ class Element(XMLSerializable, JSONSerializable):
         self.text = text or ""
         self.attrib = deepcopy(attrib) if attrib else {}
         self.prefix = prefix or ""
-
-    @property
-    def size(self):
-        attrib_size = sum([sys.getsizeof(v) for _, v in self.attrib.items()])
-        return sys.getsizeof(self.name) + sys.getsizeof(self.text) + sys.getsizeof(self.prefix) + attrib_size + sys.getsizeof(self)
 
     @staticmethod
     def parse_element(element: etree.Element) -> Dict:
@@ -109,8 +103,6 @@ class XLinkElement(Element):
     @classmethod
     def from_lxml(cls, element: etree.Element):
         obj = cls(**cls.parse_element(element))
-        if 'urn:uuid.882e849c-682d-4e95-ac19-a7808d55cdbb' in element.attrib.values():
-            print()
         obj.uuid = get_attrib_value(element.attrib,
                                     name='href',
                                     ns=element.nsmap["xlink"],
@@ -123,10 +115,6 @@ class XLinkElement(Element):
             'name': self.name,
             'uuid': self.uuid
         }
-
-    @property
-    def size(self):
-        return super().size + sys.getsizeof(self.uuid)
 
 
 class Extension(XMLSerializable, JSONSerializable):
@@ -157,10 +145,6 @@ class Extension(XMLSerializable, JSONSerializable):
             'uuid': self.uuid
         }
 
-    @property
-    def size(self):
-        return sys.getsizeof(self.name) + sys.getsizeof(self.uuid) + sys.getsizeof(self)
-
 
 class FeatureData(JSONSerializable):
 
@@ -171,19 +155,6 @@ class FeatureData(JSONSerializable):
         self.xlinks: List[XLinkElement] = self._retrieve_xlinks(element)
         self.broken_xlinks: List[XLinkElement] = []
         self.extensions: List[Extension] = []
-
-    @property
-    def stat(self):
-        return [
-            len(self.keys),
-            len(self.xlinks),
-            len(self.extensions)
-        ]
-
-    @property
-    def size(self):
-        return sum([i.size for i in self.props()]) + sys.getsizeof(self) + sys.getsizeof(self) + \
-            sys.getsizeof(self.keys) + sys.getsizeof(self.xlinks) + sys.getsizeof(self.extensions)
 
     def links(self):
         return self.xlinks + self.extensions
@@ -241,15 +212,8 @@ class Feature(JSONSerializable):
         ]
 
     @property
-    def size(self):
-        return sys.getsizeof(self.el) + \
-               sys.getsizeof(self.uuid) + \
-               sys.getsizeof(self.id) + \
-               sum(f.size for f in self.feature_data) + sys.getsizeof(self)
-
-    @property
-    def stat(self):
-        return [f.stat for f in self.feature_data]
+    def keys(self):
+        return [{key.name: key.text} for key in self.feature_data[0].keys]
 
     def has_broken_xlinks(self):
         return any([data.has_broken_xlinks() for data in self.feature_data])

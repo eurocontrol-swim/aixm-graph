@@ -17,6 +17,8 @@ html, body/*, and all other map parent selectors*/ {
 
 #graph {
     margin: 15px;
+      height: 100%;
+      width: 100%;
 }
 
 .feature-list {

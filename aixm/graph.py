@@ -38,19 +38,25 @@ from aixm.features import AIXMFeature
 
 class Node:
 
-    def __init__(self, id: str, name: str, abbrev: str):
+    def __init__(self, id: str, name: str, abbrev: str, keys: List[str]):
         self.id = id
         self.name = name
         self.abbrev = abbrev
+        self.keys = keys
 
     def __eq__(self, other):
         return self.id == other.id and self.name == other.name and self.abbrev == other.abbrev
+
+    @classmethod
+    def from_feature(cls, feature: AIXMFeature):
+        return cls(id=feature.uuid, name=feature.el.name, abbrev=feature.abbrev, keys=feature.keys)
 
     def to_json(self):
         return {
             'id': self.id,
             'name': self.name,
-            'abbrev': self.abbrev
+            'abbrev': self.abbrev,
+            'keys': self.keys
         }
 
 
@@ -63,6 +69,10 @@ class Edge:
     def __eq__(self, other):
         return (self.source == other.source and self.target == other.target) or \
                (self.source == other.target and self.target == other.source)
+
+    @classmethod
+    def from_features(cls, source: AIXMFeature, target: AIXMFeature):
+        return cls(source=source.uuid, target=target.uuid)
 
     def to_json(self):
         return {
@@ -105,25 +115,17 @@ class Graph:
         }
 
 
-def node_from_feature(feature: AIXMFeature):
-    return Node(id=feature.uuid, name=feature.el.name, abbrev=feature.abbrev)
-
-
-def edge_from_features(source: AIXMFeature, target: AIXMFeature):
-    return Edge(source=source.uuid, target=target.uuid)
-
-
 def get_feature_graph(feature: AIXMFeature) -> Graph:
     graph = Graph()
 
-    graph.add_nodes(node_from_feature(feature))
+    graph.add_nodes(Node.from_feature(feature))
 
     for xlink in (feature.feature_data[0].xlinks + feature.feature_data[0].extensions):
         target = cache.get_aixm_feature_by_uuid(xlink.uuid)
         if target is not None:
-            graph.add_nodes(node_from_feature(target))
+            graph.add_nodes(Node.from_feature(target))
 
-            graph.add_edges(edge_from_features(feature, target))
+            graph.add_edges(Edge.from_features(feature, target))
 
     return graph
 

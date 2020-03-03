@@ -1,10 +1,38 @@
+function getNodePopup(node) {
+    var result = "";
+     result += "<table>" +
+        "<tr style='border-bottom: 1px solid black'>" +
+            "<td><strong>" + node.name + "</strong></td>" +
+            "<td></td>" +
+        "</tr>" +
+        "<tr>" +
+            "<td><strong>UUID</strong></td>" +
+            "<td>" + node.id + "</td>" +
+        "</tr>";
 
+     node.keys.forEach(function(key) {
+        var name = Object.keys(key)[0];
+        var value = Object.values(key)[0];
+        result += "<tr>" +
+            "<td><strong>" + name + "</strong></td>" +
+            "<td>" + value + "</td>" +
+        "</tr>";
+     });
+
+     result += "</table>"
+
+     return result;
+}
+//                <td>` + node.id.slice(0, 8) + `</td>
 
 function processData(data) {
     data.nodes.forEach(function(node) {
-        node.title = node.name + " ("  + node.id.slice(0, 8) + ")";
         node.group = node.name;
         node.label = node.abbrev;
+        if (node.keys.length > 0) {
+            node.label += ": " + (node.keys.map((k) => Object.values(k)[0])).join(",");
+        }
+        node.title = getNodePopup(node);
     });
 
     data.edges.forEach(function(edge) {
@@ -17,7 +45,7 @@ function processData(data) {
 
 var shapeColors = [
     {shape: 'box', color:'#97C2FC'},
-    {shape: 'circle', color:'#FFFF00'},
+//    {shape: 'circle', color:'#FFFF00'},
     {shape: 'diamond', color:'#FB7E81'},
     {shape: 'dot', size: 10, color:'#7BE141'},
     {shape: 'ellipse', color:'#7fdae8'},
@@ -35,7 +63,7 @@ function createGraph(data) {
     Edges = new vis.DataSet(data.edges);
 
     var groups = {},
-        groupNames = Array.from(new Set(data.nodes.map((n) => n.title)));
+        groupNames = Array.from(new Set(data.nodes.map((n) => n.name)));
 
     groupNames.forEach(function(gn, i) {
         groups[gn] = shapeColors[i % shapeColors.length]
@@ -50,11 +78,8 @@ function createGraph(data) {
         },
         groups: groups
     };
-    Network = new vis.Network(
-        container,
-        {nodes: Nodes, edges: Edges},
-        options
-    );
+
+    Network = new vis.Network(container, {nodes: Nodes, edges: Edges}, options);
 
     Network.on("doubleClick", function (params) {
         if (params.nodes.length > 0) {
@@ -93,25 +118,15 @@ function updateGraph(data) {
     data = processData(data);
 
     data.nodes.forEach(function(node) {
-        try {
-            if (!nodeExists(node)) {
+        if (!nodeExists(node)) {
                 Nodes.add(node);
             }
-        }
-        catch(err) {
-            console.log("Node already exists: " + node.id);
-        }
     });
 
 
     data.edges.forEach(function(edge) {
-        try {
-            if (!edgeExists(edge)) {
-                Edges.add(edge);
-            }
-        }
-        catch(err) {
-            console.log("Node already exists: from" + edge.from + ", to " + edge.to);
+        if (!edgeExists(edge)) {
+            Edges.add(edge);
         }
     });
 }
