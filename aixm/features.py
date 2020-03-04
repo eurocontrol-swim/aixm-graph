@@ -148,19 +148,24 @@ class Extension(XMLSerializable, JSONSerializable):
 
 class FeatureData(JSONSerializable):
 
-    def __init__(self, element: etree.Element, key_properties: List[str]):
+    def __init__(self, element: etree.Element, keys: Dict):
         self.el = Element.from_lxml(element)
 
-        self.keys: List[Element] = self._retrieve_keys(element, key_properties)
+        self.keys_concat = keys.get('concat', False)
+        self.key_elements: List[Element] = self._retrieve_keys(element, keys['properties'] or [])
         self.xlinks: List[XLinkElement] = self._retrieve_xlinks(element)
         self.broken_xlinks: List[XLinkElement] = []
         self.extensions: List[Extension] = []
+
+    @property
+    def keys(self):
+        return [{key.name: key.text} for key in self.key_elements]
 
     def links(self):
         return self.xlinks + self.extensions
 
     def props(self):
-        return self.keys + self.links()
+        return self.key_elements + self.links()
 
     def has_broken_xlinks(self):
         return len(self.broken_xlinks) > 0
@@ -189,7 +194,7 @@ class FeatureData(JSONSerializable):
 
     def to_json(self):
         return {
-            'keys': [key.to_json() for key in self.keys],
+            'keys': [key.to_json() for key in self.key_elements],
             'links': [link.to_json()  for link in self.links()],
             'broken_links': [link.to_json()  for link in self.broken_xlinks]
         }
@@ -197,7 +202,7 @@ class FeatureData(JSONSerializable):
 
 class Feature(JSONSerializable):
 
-    def __init__(self, element: etree.Element, keys_properties: List[str], abbrev: str):
+    def __init__(self, element: etree.Element, keys: Dict, abbrev: str):
         self.el = Element.from_lxml(element)
 
         self.uuid: str = element.find('./gml:identifier', element.nsmap).text
@@ -207,13 +212,9 @@ class Feature(JSONSerializable):
         feature_data_elements = element.findall(self.get_feature_data_xpath(), namespaces=element.nsmap)
 
         self.feature_data = [
-            self.get_feature_data_class()(element=feature_data_element, key_properties=keys_properties)
+            self.get_feature_data_class()(element=feature_data_element, keys=keys)
             for feature_data_element in feature_data_elements
         ]
-
-    @property
-    def keys(self):
-        return [{key.name: key.text} for key in self.feature_data[0].keys]
 
     def has_broken_xlinks(self):
         return any([data.has_broken_xlinks() for data in self.feature_data])

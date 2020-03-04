@@ -23,14 +23,14 @@ function getNodePopup(node) {
 
      return result;
 }
-//                <td>` + node.id.slice(0, 8) + `</td>
 
 function processData(data) {
     data.nodes.forEach(function(node) {
         node.group = node.name;
         node.label = node.abbrev;
         if (node.keys.length > 0) {
-            node.label += ": " + (node.keys.map((k) => Object.values(k)[0])).join(",");
+            var sep = node.keys_concat?"":","
+            node.label += ": " + node.keys.map((k) => Object.values(k)[0]).join(sep);
         }
         node.title = getNodePopup(node);
     });
@@ -44,14 +44,14 @@ function processData(data) {
 }
 
 var shapeColors = [
-    {shape: 'box', color:'#97C2FC'},
-//    {shape: 'circle', color:'#FFFF00'},
+    {shape: 'square', color:'#C2FABC'},
+    {shape: 'hexagon', color:'#FFFF00'},
     {shape: 'diamond', color:'#FB7E81'},
-    {shape: 'dot', size: 10, color:'#7BE141'},
-    {shape: 'ellipse', color:'#7fdae8'},
-//    {shape: 'star', color:'#C2FABC'},
     {shape: 'triangle', color:'#FFA807'},
-    {shape: 'triangleDown', color:'#6E6EFD'}
+    {shape: 'triangleDown', color:'#6E6EFD'},
+    {shape: 'ellipse', color:'#7fdae8'},
+    {shape: 'dot', size: 10, color:'#7BE141'},
+    {shape: 'box', color:'#97C2FC'}
 ];
 
 var Nodes, Edges, Network;

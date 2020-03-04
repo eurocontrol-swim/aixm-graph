@@ -2,706 +2,708 @@
 FEATURES:
   AerialRefuelling:
     keys:
-      - designatorPrefix
-      - designatorNumber
-      - designatorSuffix
-      - designatorDirection
+      concat: true
+      properties:
+        - designatorPrefix
+        - designatorNumber
+        - designatorSuffix
+        - designatorDirection
     abbrev: ARF
     colour:
-    label:
   AeronauticalGroundLight:
     keys:
-      - type
-      - name
+      properties:
+        - type
+        - name
     abbrev: AGL
     colour:
-    label:
   AircraftGroundService:
     keys:
-      - type
+      properties:
+        - type
     abbrev: ACG
     colour:
-    label:
   AircraftStand:
     keys:
-      - designator
-      - type
+      properties:
+        - designator
+        - type
     abbrev: AST
     colour:
-    label:
   AirportClearanceService:
     keys:
-      - name
+      properties:
+        - name
     abbrev: ACS
     colour:
-    label:
   AirportHeliport:
     keys:
-      - designator
+      properties:
+        - designator
     abbrev: AHP
     colour:
-    label:
   AirportHeliportCollocation:
     keys:
+      properties:
     abbrev: AHC
     colour:
-    label:
   AirportHotSpot:
     keys:
-      - designator
+      properties:
+        - designator
     abbrev: AHT
     colour:
-    label:
   AirportProtectionAreaMarking:
     keys:
+      properties:
     abbrev: APM
     colour:
-    label:
   AirportSuppliesService:
     keys:
-      - fuelSupply
-      - oilSupply
-      - nitrogenSupply
-      - oxygenSupply
+      properties:
+        - fuelSupply
+        - oilSupply
+        - nitrogenSupply
+        - oxygenSupply
     abbrev: ASV
     colour:
-    label:
   Airspace:
     keys:
-      - designator
-      - type
+      properties:
+        - designator
+        - type
     abbrev: ASE
     colour:
-    label:
   AirspaceBorderCrossing:
     keys:
+      properties:
     abbrev: ABC
     colour:
-    label:
   AirTrafficControlService:
     keys:
-      - location
-      - type
+      properties:
+        - location
+        - type
     abbrev: ATC
     colour:
-    label:
   AirTrafficManagementService:
     keys:
+      properties:
     abbrev: ATM
     colour:
-    label:
   AltimeterSource:
     keys:
+      properties:
     abbrev: ALT
     colour:
-    label:
   AngleIndication:
     keys:
+      properties:
     abbrev: AIN
     colour:
-    label:
   ApproachLightingSystem:
     keys:
+      properties:
     abbrev: APL
     colour:
-    label:
   Apron:
     keys:
-      - name
+      properties:
+        - name
     abbrev: APN
     colour:
-    label:
   ApronElement:
     keys:
-      - type
+      properties:
+        - type
     abbrev: AEL
     colour:
-    label:
   ApronLightSystem:
     keys:
-      - color
+      properties:
+        - color
     abbrev: ALS
     colour:
-    label:
   ApronMarking:
     keys:
+      properties:
     abbrev: AMK
     colour:
-    label:
   ArrestingGear:
     keys:
-      - location
-      - length
-      - width
-      - status
+      properties:
+        - location
+        - length
+        - width
+        - status
     abbrev: AGR
     colour:
-    label:
   ArrivalLeg:
     keys:
-      - length
+      properties:
+        - length
     abbrev: ARL
     colour:
-    label:
   ArrivalFeederLeg:
     keys:
-      - length
+      properties:
+        - length
     abbrev: AFL
     colour:
-    label:
   AuthorityForAirspace:
     keys:
-      - type
+      properties:
+        - type
     abbrev: AFA
     colour:
-    label:
   Azimuth:
     keys:
-      - designator
-      - type
+      properties:
+        - designator
+        - type
     abbrev: AZM
     colour:
-    label:
   ChangeOverPoint:
     keys:
+      properties:
     abbrev: COP
     colour:
-    label:
   CheckpointINS:
     keys:
-      - category
-      - position
+      properties:
+        - category
+        - position
     abbrev: CNS
     colour:
-    label:
   CheckpointVOR:
     keys:
-      - category
-      - position
+      properties:
+        - category
+        - position
     abbrev: CVO
     colour:
-    label:
   CirclingArea:
     keys:
+      properties:
     abbrev: CIA
     colour:
-    label:
   DeicingArea:
     keys:
+      properties:
     abbrev: DAA
     colour:
-    label:
   DeicingAreaMarking:
     keys:
+      properties:
     abbrev: DAM
     colour:
-    label:
   DepartureLeg:
     keys:
+      properties:
     abbrev: DLG
     colour:
-    label:
   DesignatedPoint:
     keys:
-      - designator
+      properties:
+        - designator
     abbrev: DPN
     colour:
-    label:
   DirectionFinder:
     keys:
+      properties:
     abbrev: DFN
     colour:
-    label:
   DistanceIndication:
     keys:
+      properties:
     abbrev: DIN
     colour:
-    label:
   DME:
     keys:
-      - type
-      - designator
+      properties:
+        - type
+        - designator
     abbrev: DME
     colour:
-    label:
   Elevation:
     keys:
+      properties:
     abbrev: ELV
     colour:
-    label:
   FinalLeg:
     keys:
+      properties:
     abbrev: FLG
     colour:
-    label:
   FireFightingService:
     keys:
+      properties:
     abbrev: FFS
     colour:
-    label:
   FlightRestriction:
     keys:
+      properties:
     abbrev: FRS
     colour:
-    label:
   FloatingDockSite:
     keys:
+      properties:
     abbrev: FGD
     colour:
-    label:
   GeoBorder:
     keys:
-      - type
+      properties:
+        - type
     abbrev: GBR
     colour:
-    label:
   Glidepath:
     keys:
-      - designator
+      properties:
+        - designator
     abbrev: GPT
     colour:
-    label:
   GroundTrafficControlService:
     keys:
+      properties:
     abbrev: GTC
     colour:
-    label:
   GuidanceLine:
     keys:
-      - type
-      - designator
+      properties:
+        - type
+        - designator
     abbrev: GLN
     colour:
-    label:
   GuidanceLineLightSystem:
     keys:
-      - colour
+      properties:
+        - colour
     abbrev: GLL
     colour:
-    label:
   GuidanceLineMarking:
     keys:
+      properties:
     abbrev: GLM
     colour:
-    label:
   HoldingAssessment:
     keys:
+      properties:
     abbrev: HAS
     colour:
-    label:
   HoldingPattern:
     keys:
+      properties:
     abbrev: HPT
     colour:
-    label:
   InformationService:
     keys:
+      properties:
     abbrev: ISV
     colour:
-    label:
   InitialLeg:
     keys:
+      properties:
     abbrev: ILG
     colour:
-    label:
   InstrumentApproachProcedure:
     keys:
+      properties:
     abbrev: IAP
     colour:
-    label:
   IntermediateLeg:
     keys:
+      properties:
     abbrev: INL
     colour:
-    label:
   Localizer:
     keys:
-      - designator
+      properties:
+        - designator
     abbrev: LLZ
     colour:
-    label:
   MarkerBeacon:
     keys:
-      - designator
+      properties:
+        - designator
     abbrev: MBC
     colour:
-    label:
   MarkingBuoy:
     keys:
-      - type
-      - designator
+      properties:
+        - type
+        - designator
     abbrev: MKB
     colour:
-    label:
   MissedApproachLeg:
     keys:
+      properties:
     abbrev: MAL
     colour:
-    label:
   Navaid:
     keys:
-      - type
-      - designator
+      properties:
+        - type
+        - designator
     abbrev: NAV
     colour:
-    label:
   NavigationArea:
     keys:
-      - navigationAreaType
-      - sector
+      properties:
+        - navigationAreaType
+        - sector
     abbrev: NAA
     colour:
-    label:
   NavigationAreaRestriction:
     keys:
-      - type
+      properties:
+        - type
     abbrev: NAN
     colour:
-    label:
   NDB:
     keys:
-      - keys
+      properties:
+        - keys
     abbrev: NDB
     colour:
-    label:
   NonMovementArea:
     keys:
+      properties:
     abbrev: NMA
     colour:
-    label:
   ObstacleArea:
     keys:
+      properties:
     abbrev: OAR
     colour:
-    label:
   OrganisationAuthority:
     keys:
-      - name
+      properties:
+        - name
     abbrev: ORG
     colour:
-    label:
   PassengerLoadingBridge:
     keys:
+      properties:
     abbrev: PLB
     colour:
-    label:
   PassengerService:
     keys:
+      properties:
     abbrev: PSV
     colour:
-    label:
   PilotControlledLighting:
     keys:
+      properties:
     abbrev: PCG
     colour:
-    label:
   PrecisionApproachRadar:
     keys:
+      properties:
     abbrev: PAR
     colour:
-    label:
   PrimarySurveillanceRadar:
     keys:
-      - location
+      properties:
+        - location
     abbrev: PSR
     colour:
-    label:
   ProcedureDME:
     keys:
+      properties:
     abbrev: PDM
     colour:
-    label:
   RadioCommunicationChannel:
     keys:
+      properties:
     abbrev: RCC
     colour:
-    label:
   RadioFrequencyArea:
     keys:
-      - type
+      properties:
+        - type
     abbrev: RFA
     colour:
-    label:
   Road:
     keys:
-      - designator
+      properties:
+        - designator
     abbrev: ROA
     colour:
-    label:
   Route:
     keys:
-      - designatorPrefix
-      - designatorNumber
-      - designatorSecondLetter
-      - type
+      concat: true
+      properties:
+        - designatorPrefix
+        - designatorNumber
+        - designatorSecondLetter
+        - type
     abbrev: RTE
     colour:
-    label:
   RouteDME:
     keys:
+      properties:
     abbrev: RDM
     colour:
-    label:
   RouteSegment:
     keys:
+      properties:
     abbrev: RSG
     colour:
-    label:
   RulesProcedures:
     keys:
+      properties:
     abbrev: RUP
     colour:
-    label:
   Runway:
     keys:
-      - designator
-      - type
+      properties:
+        - designator
+        - type
     abbrev: RWY
     colour:
-    label:
   RunwayBlastPad:
     keys:
+      properties:
     abbrev: RBP
     colour:
-    label:
   RunwayCentrelinePoint:
     keys:
-      - designator
+      properties:
+        - designator
     abbrev: RCP
     colour:
-    label:
   RunwayDirection:
     keys:
-      - designator
+      properties:
+        - designator
     abbrev: RDN
     colour:
-    label:
   RunwayDirectionLightSystem:
     keys:
+      properties:
     abbrev: RLS
     colour:
-    label:
   RunwayElement:
     keys:
+      properties:
     abbrev: REL
     colour:
-    label:
   RunwayMarking:
     keys:
+      properties:
     abbrev: RMG
     colour:
-    label:
   RunwayProtectArea:
     keys:
-      - type
+      properties:
+        - type
     abbrev: RPA
     colour:
-    label:
   RunwayProtectAreaLightSystem:
     keys:
+      properties:
     abbrev: RPL
     colour:
-    label:
   RunwayVisualRange:
     keys:
+      properties:
     abbrev: RVR
     colour:
-    label:
   SafeAltitudeArea:
     keys:
+      properties:
     abbrev: SAA
     colour:
-    label:
   SDF:
     keys:
-      - designator
+      properties:
+        - designator
     abbrev: SDF
     colour:
-    label:
   SeaplaneLandingArea:
     keys:
+      properties:
     abbrev: SLA
     colour:
-    label:
   SeaplaneRampSite:
     keys:
+      properties:
     abbrev: SPR
     colour:
-    label:
   SearchRescueService:
     keys:
-      - type
+      properties:
+        - type
     abbrev: SRE
     colour:
-    label:
   SecondarySurveillanceRadar:
     keys:
+      properties:
     abbrev: SSV
     colour:
-    label:
   SignificantPointInAirspace:
     keys:
+      properties:
     abbrev: SPA
     colour:
-    label:
   SpecialDate:
     keys:
+      properties:
     abbrev: SPD
     colour:
-    label:
   SpecialNavigationStation:
     keys:
+      properties:
     abbrev: SNS
     colour:
-    label:
   SpecialNavigationSystem:
     keys:
-      - designator
-      - type
+      properties:
+        - designator
+        - type
     abbrev: SNY
     colour:
-    label:
   StandardInstrumentArrival:
     keys:
-      - designator
+      properties:
+        - designator
     abbrev: SIA
     colour:
-    label:
   StandardInstrumentDeparture:
     keys:
-      - designator
+      properties:
+        - designator
     abbrev: SID
     colour:
-    label:
   StandardLevelColumn:
     keys:
+      properties:
     abbrev: SLC
     colour:
-    label:
   StandardLevelSector:
     keys:
+      properties:
     abbrev: SLS
     colour:
-    label:
   StandardLevelTable:
     keys:
+      properties:
     abbrev: SLB
     colour:
-    label:
   StandMarking:
     keys:
+      properties:
     abbrev: SMK
     colour:
-    label:
   SurveyControlPoint:
     keys:
-      - designator
+      properties:
+        - designator
     abbrev: SCP
     colour:
-    label:
   TACAN:
     keys:
-      - designator
+      properties:
+        - designator
     abbrev: TCN
     colour:
-    label:
   TaxiHoldingPosition:
     keys:
+      properties:
     abbrev: THP
     colour:
-    label:
   TaxiHoldingPositionLightSystem:
     keys:
+      properties:
     abbrev: THL
     colour:
-    label:
   TaxiHoldingPositionMarking:
     keys:
+      properties:
     abbrev: THM
     colour:
-    label:
   Taxiway:
     keys:
-      - designator
-      - type
+      properties:
+        - designator
+        - type
     abbrev: TWY
     colour:
-    label:
   TaxiwayElement:
     keys:
-      - type
+      properties:
+        - type
     abbrev: TWE
     colour:
-    label:
   TaxiwayLightSystem:
     keys:
-      - colour
+      properties:
+        - colour
     abbrev: TWL
     colour:
-    label:
   TaxiwayMarking:
     keys:
+      properties:
     abbrev: TWM
     colour:
-    label:
   TerminalArrivalArea:
     keys:
+      properties:
     abbrev: TAA
     colour:
-    label:
   TouchDownLiftOff:
     keys:
-      - designator
+      properties:
+        - designator
     abbrev: TLA
     colour:
-    label:
   TouchDownLiftOffLightSystem:
     keys:
+      properties:
     abbrev: TLS
     colour:
-    label:
   TouchDownLiftOffMarking:
     keys:
+      properties:
     abbrev: TLM
     colour:
-    label:
   TouchDownLiftOffSafeArea:
     keys:
+      properties:
     abbrev: TSA
     colour:
-    label:
   Unit:
     keys:
-      - designator
-      - type
+      properties:
+        - designator
+        - type
     abbrev: UNI
     colour:
-    label:
   UnplannedHolding:
     keys:
+      properties:
     abbrev: UHG
     colour:
-    label:
   VerticalStructure:
     keys:
+      properties:
     abbrev: VST
     colour:
-    label:
   VisualGlideSlopeIndicator:
     keys:
-      - type
+      properties:
+        - type
     abbrev: VGI
     colour:
-    label:
   VOR:
     keys:
-      - designator
-      - type
+      properties:
+        - designator
+        - type
     abbrev: VOR
     colour:
-    label:
   WorkArea:
     keys:
+      properties:
     abbrev: WAR
     colour:
-    label:

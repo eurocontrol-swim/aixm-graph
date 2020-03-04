@@ -30,7 +30,7 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-from typing import List, Dict, Optional, Union, Any
+from typing import List, Optional, Union, Any
 
 from aixm import cache
 from aixm.features import AIXMFeature
@@ -43,20 +43,25 @@ class Node:
         self.name = name
         self.abbrev = abbrev
         self.keys = keys
+        self.keys_concat = None
 
     def __eq__(self, other):
         return self.id == other.id and self.name == other.name and self.abbrev == other.abbrev
 
     @classmethod
     def from_feature(cls, feature: AIXMFeature):
-        return cls(id=feature.uuid, name=feature.el.name, abbrev=feature.abbrev, keys=feature.keys)
+        obj = cls(id=feature.uuid, name=feature.el.name, abbrev=feature.abbrev, keys=feature.feature_data[0].keys)
+        obj.keys_concat = feature.feature_data[0].keys_concat
+
+        return obj
 
     def to_json(self):
         return {
             'id': self.id,
             'name': self.name,
             'abbrev': self.abbrev,
-            'keys': self.keys
+            'keys': self.keys,
+            'keys_concat': self.keys_concat
         }
 
 
@@ -126,7 +131,8 @@ def get_feature_graph(feature: AIXMFeature) -> Graph:
             graph.add_nodes(Node.from_feature(target))
 
             graph.add_edges(Edge.from_features(feature, target))
-
+        else:
+            print(f'not found {xlink.uuid}')
     return graph
 
 
