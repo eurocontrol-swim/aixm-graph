@@ -33,7 +33,7 @@ __author__ = "EUROCONTROL (SWIM)"
 from typing import List, Optional, Union, Any
 
 from aixm import cache
-from aixm.features import AIXMFeature
+from aixm.features import AIXMFeature, XLinkElement
 
 
 class Node:
@@ -43,15 +43,24 @@ class Node:
         self.name = name
         self.abbrev = abbrev
         self.keys = keys
-        self.keys_concat = None
+        self.keys_concat = False
+        self.is_ghost = False
 
     def __eq__(self, other):
         return self.id == other.id and self.name == other.name and self.abbrev == other.abbrev
 
     @classmethod
     def from_feature(cls, feature: AIXMFeature):
-        obj = cls(id=feature.uuid, name=feature.el.name, abbrev=feature.abbrev, keys=feature.feature_data[0].keys)
-        obj.keys_concat = feature.feature_data[0].keys_concat
+        keys = [key for data in feature.feature_data for key in data.keys]
+        obj = cls(id=feature.uuid, name=feature.el.name, abbrev=feature.abbrev, keys=keys)
+        obj.keys_concat = feature.keys_concat
+
+        return obj
+
+    @classmethod
+    def from_ghost_xlink(cls, xlink: XLinkElement):
+        obj = cls(id=xlink.uuid, name=xlink.name, abbrev=xlink.name, keys=[])
+        obj.is_ghost = True
 
         return obj
 
@@ -61,15 +70,17 @@ class Node:
             'name': self.name,
             'abbrev': self.abbrev,
             'keys': self.keys,
-            'keys_concat': self.keys_concat
+            'keys_concat': self.keys_concat,
+            'is_ghost': self.is_ghost
         }
 
 
 class Edge:
 
-    def __init__(self, source: str, target: str):
+    def __init__(self, source: str, target: str, broken: Optional[bool] = False):
         self.source = source
         self.target = target
+        self.broken = broken
 
     def __eq__(self, other):
         return (self.source == other.source and self.target == other.target) or \
@@ -82,7 +93,8 @@ class Edge:
     def to_json(self):
         return {
             'source': self.source,
-            'target': self.target
+            'target': self.target,
+            'is_broken': self.broken
         }
 
 
@@ -125,14 +137,19 @@ def get_feature_graph(feature: AIXMFeature) -> Graph:
 
     graph.add_nodes(Node.from_feature(feature))
 
-    for xlink in (feature.feature_data[0].xlinks + feature.feature_data[0].extensions):
-        target = cache.get_aixm_feature_by_uuid(xlink.uuid)
-        if target is not None:
-            graph.add_nodes(Node.from_feature(target))
+    for data in feature.feature_data:
+        for xlink in (data.xlinks + data.extensions):
+            target = cache.get_aixm_feature_by_uuid(xlink.uuid)
+            if target is not None:
+                node = Node.from_feature(target)
+                edge = Edge.from_features(feature, target)
+            else:
+                node = Node.from_ghost_xlink(xlink)
+                edge = Edge(source=feature.uuid, target=xlink.uuid, broken=True)
 
-            graph.add_edges(Edge.from_features(feature, target))
-        else:
-            print(f'not found {xlink.uuid}')
+            graph.add_nodes(node)
+            graph.add_edges(edge)
+
     return graph
 
 

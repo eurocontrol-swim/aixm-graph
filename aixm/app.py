@@ -43,8 +43,7 @@ from pkg_resources import resource_filename
 from aixm.parser import process_aixm
 from aixm.utils import load_config, get_samples_filepath
 
-# TODO: display broken links
-# TODO: filter features pon their keys
+# TODO: filter features on their keys
 # TODO: upload AIXM file view
 # TODO: download skeleton file view
 # TODO: apply pagination in case of big graph

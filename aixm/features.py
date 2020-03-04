@@ -106,7 +106,7 @@ class XLinkElement(Element):
         obj.uuid = get_attrib_value(element.attrib,
                                     name='href',
                                     ns=element.nsmap["xlink"],
-                                    value_prefixes=['urn:uuid:', 'urn:uuid.'])
+                                    value_prefixes=['urn:uuid:', 'urn:uuid.', 'uuid.'])
 
         return obj
 
@@ -148,11 +148,10 @@ class Extension(XMLSerializable, JSONSerializable):
 
 class FeatureData(JSONSerializable):
 
-    def __init__(self, element: etree.Element, keys: Dict):
+    def __init__(self, element: etree.Element, keys: List):
         self.el = Element.from_lxml(element)
 
-        self.keys_concat = keys.get('concat', False)
-        self.key_elements: List[Element] = self._retrieve_keys(element, keys['properties'] or [])
+        self.key_elements: List[Element] = self._retrieve_keys(element, keys)
         self.xlinks: List[XLinkElement] = self._retrieve_xlinks(element)
         self.broken_xlinks: List[XLinkElement] = []
         self.extensions: List[Extension] = []
@@ -205,6 +204,7 @@ class Feature(JSONSerializable):
     def __init__(self, element: etree.Element, keys: Dict, abbrev: str):
         self.el = Element.from_lxml(element)
 
+        self.keys_concat = keys.get('concat', False)
         self.uuid: str = element.find('./gml:identifier', element.nsmap).text
         self.id: str = get_attrib_value(element.attrib, name='id', ns=element.nsmap["gml"], value_prefixes=['uuid.'])
         self.abbrev = abbrev
@@ -212,7 +212,7 @@ class Feature(JSONSerializable):
         feature_data_elements = element.findall(self.get_feature_data_xpath(), namespaces=element.nsmap)
 
         self.feature_data = [
-            self.get_feature_data_class()(element=feature_data_element, keys=keys)
+            self.get_feature_data_class()(element=feature_data_element, keys=keys['properties'] or [])
             for feature_data_element in feature_data_elements
         ]
 

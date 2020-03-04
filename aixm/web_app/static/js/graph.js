@@ -7,7 +7,7 @@ function getNodePopup(node) {
         "</tr>" +
         "<tr>" +
             "<td><strong>UUID</strong></td>" +
-            "<td>: " + node.id + "</td>" +
+            "<td>" + node.id + "</td>" +
         "</tr>";
 
      node.keys.forEach(function(key) {
@@ -15,7 +15,7 @@ function getNodePopup(node) {
         var value = Object.values(key)[0];
         result += "<tr>" +
             "<td><strong>" + name + "</strong></td>" +
-            "<td>: " + value + "</td>" +
+            "<td>" + value + "</td>" +
         "</tr>";
      });
 
@@ -26,7 +26,7 @@ function getNodePopup(node) {
 
 function processData(data) {
     data.nodes.forEach(function(node) {
-        node.group = node.name;
+        node.group = node.is_ghost?"GhostGroup":node.name;
         node.label = node.abbrev;
         if (node.keys.length > 0) {
             var sep = node.keys_concat?"":","
@@ -38,6 +38,9 @@ function processData(data) {
     data.edges.forEach(function(edge) {
         edge.from = edge.source;
         edge.to = edge.target;
+        if (edge.is_broken) {
+            edge.dashes = true;
+        }
     });
 
     return data;
@@ -87,7 +90,7 @@ var colors = [
 
 var shapes = [
     'circle',
-    'star',
+//    'star',
     'square',
     'hexagon',
     'diamond',
@@ -97,6 +100,8 @@ var shapes = [
     'dot',
     'box'
 ]
+
+ghostGroup = {shape: 'star', color: '#DCDCDC'}
 
 function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -120,6 +125,7 @@ function createGraph(data) {
     groupNames.forEach(function(gn, i) {
         groups[gn] = getRandomGroupColorShape();
     });
+    groups['GhostGroup'] = ghostGroup
 
     var container = document.getElementById('graph');
 

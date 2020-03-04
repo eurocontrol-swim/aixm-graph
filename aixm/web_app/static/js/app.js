@@ -44,6 +44,7 @@ $(document).ready(function(){
         dataType : "json",
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify({filepath: "/media/alex/Data/dev/work/eurocontrol/aixm/samples/EA_AIP_DS_FULL_20170701.xml"}),
+//        data: JSON.stringify({filepath: "/media/alex/Data/dev/work/eurocontrol/aixm/samples/BD_2019-01-03_26fe8f56-0c48-4047-ada0-4e1bd91ed4cf.xml"}),
         success : function(result) {
             result.stats.forEach(function(data) {
                 featuresList.add(data);
