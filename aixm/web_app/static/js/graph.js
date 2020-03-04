@@ -7,7 +7,7 @@ function getNodePopup(node) {
         "</tr>" +
         "<tr>" +
             "<td><strong>UUID</strong></td>" +
-            "<td>" + node.id + "</td>" +
+            "<td>: " + node.id + "</td>" +
         "</tr>";
 
      node.keys.forEach(function(key) {
@@ -15,7 +15,7 @@ function getNodePopup(node) {
         var value = Object.values(key)[0];
         result += "<tr>" +
             "<td><strong>" + name + "</strong></td>" +
-            "<td>" + value + "</td>" +
+            "<td>: " + value + "</td>" +
         "</tr>";
      });
 
@@ -43,18 +43,70 @@ function processData(data) {
     return data;
 }
 
-var shapeColors = [
-    {shape: 'square', color:'#C2FABC'},
-    {shape: 'hexagon', color:'#FFFF00'},
-    {shape: 'diamond', color:'#FB7E81'},
-    {shape: 'triangle', color:'#FFA807'},
-    {shape: 'triangleDown', color:'#6E6EFD'},
-    {shape: 'ellipse', color:'#7fdae8'},
-    {shape: 'dot', size: 10, color:'#7BE141'},
-    {shape: 'box', color:'#97C2FC'}
-];
+var colors = [
+	"#5d8aa8",
+	"#f0f8ff",
+	"#e32636",
+	"#efdecd",
+	"#e52b50",
+	"#ffbf00",
+	"#ff033e",
+	"#9966cc",
+	"#a4c639",
+	"#f2f3f4",
+	"#cd9575",
+	"#915c83",
+	"#faebd7",
+	"#008000",
+	"#8db600",
+	"#fbceb1",
+	"#00ffff",
+	"#7fffd4",
+	"#4b5320",
+	"#e9d66b",
+	"#b2beb5",
+	"#87a96b",
+	"#ff9966",
+	"#a52a2a",
+	"#fdee00",
+	"#6e7f80",
+	"#ff2052",
+	"#007fff",
+	"#f0ffff",
+	"#89cff0",
+	"#a1caf1",
+	"#f4c2c2",
+	"#21abcd",
+	"#fae7b5",
+	"#ffe135",
+	"#848482",
+	"#98777b",
+	"#bcd4e6",
+	"#9f8170"
+]
 
-var Nodes, Edges, Network;
+var shapes = [
+    'circle',
+    'star',
+    'square',
+    'hexagon',
+    'diamond',
+    'triangle',
+    'triangleDown',
+    'ellipse',
+    'dot',
+    'box'
+]
+
+function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+var Nodes, Edges, Network, shapeColorsIndex;
+
+function getRandomGroupColorShape() {
+    return {color: colors[randomInt(0, colors.length - 1)], shape: shapes[randomInt(0, shapes.length - 1)]}
+}
 
 function createGraph(data) {
     data = processData(data);
@@ -66,7 +118,7 @@ function createGraph(data) {
         groupNames = Array.from(new Set(data.nodes.map((n) => n.name)));
 
     groupNames.forEach(function(gn, i) {
-        groups[gn] = shapeColors[i % shapeColors.length]
+        groups[gn] = getRandomGroupColorShape();
     });
 
     var container = document.getElementById('graph');
@@ -118,11 +170,13 @@ function updateGraph(data) {
     data = processData(data);
 
     data.nodes.forEach(function(node) {
+        if (Network.groups.groupsArray.indexOf(node.name) < 0) {
+            Network.groups.add(node.name, getRandomGroupColorShape());
+        }
         if (!nodeExists(node)) {
-                Nodes.add(node);
-            }
+            Nodes.add(node);
+        }
     });
-
 
     data.edges.forEach(function(edge) {
         if (!edgeExists(edge)) {
