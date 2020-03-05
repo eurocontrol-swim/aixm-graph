@@ -77,23 +77,21 @@ class Node:
 
 class Edge:
 
-    def __init__(self, source: str, target: str, broken: Optional[bool] = False):
+    def __init__(self, source: str, target: str, name: str, broken: Optional[bool] = False):
         self.source = source
         self.target = target
+        self.name = name
         self.broken = broken
 
     def __eq__(self, other):
-        return (self.source == other.source and self.target == other.target) or \
-               (self.source == other.target and self.target == other.source)
-
-    @classmethod
-    def from_features(cls, source: AIXMFeature, target: AIXMFeature):
-        return cls(source=source.uuid, target=target.uuid)
+        return (self.source == other.source and self.target == other.target and self.name == other.name) or \
+               (self.source == other.target and self.target == other.source and self.name == other.name)
 
     def to_json(self):
         return {
             'source': self.source,
             'target': self.target,
+            'name': self.name,
             'is_broken': self.broken
         }
 
@@ -115,15 +113,15 @@ class Graph:
         if not isinstance(items, list):
             items = [items]
 
-        for node in items:
-            if node not in item_list:
-                item_list.append(node)
+        for item in items:
+            if item not in item_list:
+                item_list.append(item)
 
     def add_nodes(self, nodes: Union[List[Node], Node]):
-        self._add_items_to_list(self.nodes, nodes)
+        self._add_items_to_list(item_list=self.nodes, items=nodes)
 
     def add_edges(self, edges: Union[List[Edge], Edge]):
-        self._add_items_to_list(self.edges, edges)
+        self._add_items_to_list(item_list=self.edges, items=edges)
 
     def to_json(self):
         return {
@@ -142,10 +140,10 @@ def get_feature_graph(feature: AIXMFeature) -> Graph:
             target = cache.get_aixm_feature_by_uuid(xlink.uuid)
             if target is not None:
                 node = Node.from_feature(target)
-                edge = Edge.from_features(feature, target)
+                edge = Edge(source=feature.uuid, target=target.uuid, name=data.name)
             else:
                 node = Node.from_ghost_xlink(xlink)
-                edge = Edge(source=feature.uuid, target=xlink.uuid, broken=True)
+                edge = Edge(source=feature.uuid, target=xlink.uuid, name=data.name, broken=True)
 
             graph.add_nodes(node)
             graph.add_edges(edge)

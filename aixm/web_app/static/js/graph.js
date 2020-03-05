@@ -38,6 +38,7 @@ function processData(data) {
     data.edges.forEach(function(edge) {
         edge.from = edge.source;
         edge.to = edge.target;
+        edge.label = edge.name;
         if (edge.is_broken) {
             edge.dashes = true;
         }
@@ -89,7 +90,7 @@ var colors = [
 ]
 
 var shapes = [
-    'circle',
+//    'circle',
 //    'star',
     'square',
     'hexagon',

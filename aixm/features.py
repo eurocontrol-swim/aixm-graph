@@ -44,18 +44,11 @@ class XMLSerializable(ABC):
     prefix = None
 
     @abstractmethod
-    def to_lxml(self, namap: Dict[str, str]):
+    def to_lxml(self, nsmap: Dict[str, str]):
         pass
 
 
-class JSONSerializable(ABC):
-
-    @abstractmethod
-    def to_json(self):
-        pass
-
-
-class Element(XMLSerializable, JSONSerializable):
+class Element(XMLSerializable):
 
     def __init__(self,
                  name: str,
@@ -87,11 +80,11 @@ class Element(XMLSerializable, JSONSerializable):
 
         return el
 
-    def to_json(self):
-        return {
-            'name': self.name,
-            'value': self.text
-        }
+
+class Link:
+
+    def __init__(self, uuid: str, name: str):
+        pass
 
 
 class XLinkElement(Element):
@@ -110,23 +103,13 @@ class XLinkElement(Element):
 
         return obj
 
-    def to_json(self):
-        return {
-            'name': self.name,
-            'uuid': self.uuid
-        }
 
-
-class Extension(XMLSerializable, JSONSerializable):
+class Extension(XMLSerializable):
     prefix = 'mxia'
 
     def __init__(self, name: str, uuid: str):
         self.name = name
         self.uuid = uuid
-
-    @property
-    def feature_name(self):
-        return self.name[3:]
 
     def to_lxml(self, nsmap: Dict[str, str]):
         ns = nsmap.get(self.prefix)
@@ -139,14 +122,8 @@ class Extension(XMLSerializable, JSONSerializable):
 
         return el
 
-    def to_json(self):
-        return {
-            'name': self.feature_name,
-            'uuid': self.uuid
-        }
 
-
-class FeatureData(JSONSerializable):
+class FeatureData:
 
     def __init__(self, element: etree.Element, keys: List):
         self.el = Element.from_lxml(element)
@@ -191,15 +168,8 @@ class FeatureData(JSONSerializable):
 
         return root
 
-    def to_json(self):
-        return {
-            'keys': [key.to_json() for key in self.key_elements],
-            'links': [link.to_json()  for link in self.links()],
-            'broken_links': [link.to_json()  for link in self.broken_xlinks]
-        }
 
-
-class Feature(JSONSerializable):
+class Feature:
 
     def __init__(self, element: etree.Element, keys: Dict, abbrev: str):
         self.el = Element.from_lxml(element)
@@ -228,11 +198,22 @@ class Feature(JSONSerializable):
     def __hash__(self):
         return hash(self.uuid)
 
-    def to_json(self):
-        return [data.to_json() for data in self.feature_data]
-
 
 class AIXMFeatureData(FeatureData):
+
+    def __init__(self, element: etree.Element, keys: List):
+        self.sequence_number = element.find('./aixm:sequenceNumber', namespaces=element.nsmap).text
+        try:
+            self.correction_number = element.find('./aixm:correctionNumber', namespaces=element.nsmap).text
+        except AttributeError:
+            self.correction_number = ""
+
+        super().__init__(element, keys)
+
+    @property
+    def name(self):
+        return ",".join([self.sequence_number, self.correction_number]) if self.correction_number \
+            else self.sequence_number
 
     def process_xlink_element(self, xlink: etree.Element, root: Optional[etree.Element] = None) -> etree.Element:
 
