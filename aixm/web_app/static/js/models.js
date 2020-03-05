@@ -3,14 +3,51 @@
 var featuresList = new Vue({
     el: '#features-list',
     data: {
-        features: []
+        features: [],
+        selectedFeature: null
     },
     methods: {
         add: function(feature_data){
             this.features.push(feature_data)
+        },
+        setSelectedFeature(feature) {
+            this.selectedFeature = feature;
+            if (!filterFeatures.active) {
+                filterFeatures.active = true;
+            }
         }
     }
 })
+
+
+var filterFeatures = new Vue({
+    el: '#filterFeatures',
+    data: {
+        key: null,
+        active: false
+    },
+    methods: {
+        filter: function() {
+            $.ajax({
+                type: "GET",
+                url: "/graph/" + featuresList.selectedFeature.name + "?key=" + this.key,
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                success : function(result) {
+                    createGraph(result.graph)
+                }
+            });
+        },
+        preventSubmit: function() {
+
+        }
+    },
+    computed: {
+        selectedFeature: function() {
+            return featuresList.selectedFeature.name;
+        }
+    }
+});
 
 
 Vue.component('feature-item', {
@@ -37,3 +74,4 @@ Vue.component('feature-item', {
     }
   }
 });
+

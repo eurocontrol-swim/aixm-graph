@@ -151,10 +151,8 @@ def get_feature_graph(feature: AIXMFeature) -> Graph:
     return graph
 
 
-def get_graph(feature_name: Optional[str] = None) -> Graph:
+def get_features_graph(features: List[AIXMFeature]):
     graph = Graph()
-
-    features = cache.get_features() if feature_name is None else cache.get_aixm_features_by_name(feature_name)
 
     for feature in features:
         graph += get_feature_graph(feature)

@@ -51,9 +51,10 @@
                           <div class="row">
                               <div class="col">
                                 <div id="features-list" class="list-group feature-list " role="tablist">
-                                    <feature-item v-for="feature in features"
+                                    <feature-item  v-for="feature in features"
                                                        v-bind:feature="feature"
-                                                       v-bind:key="feature.name">
+                                                       v-bind:key="feature.name"
+                                                       v-on:click.native="setSelectedFeature(feature)">
                                     </feature-item>
                                 </div>
                               </div>
@@ -67,9 +68,15 @@
                 <div class="row">
                     <div class="col">
 
-                      <form class="form-inline">
-                        <input class="form-control mr-sm-2" type="search" placeholder="Filter features..." aria-label="Search">
-                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Filter</button>
+                      <form class="form-inline" id="filterFeatures" v-on:submit.prevent>
+                        <input v-if="active" class="form-control mr-sm-2"  placeholder="Filter features..." aria-label="Search" v-model="key" v-on:keyup="filter">
+                        <input v-else="active" class="form-control mr-sm-2"  placeholder="Filter features..." aria-label="Search" v-model="key" disabled>
+<!--                        <button v-if="active" class="btn btn-outline-success my-2 my-sm-0" type="submit">Filter</button>-->
+<!--                        <button v-else="active" class="btn btn-outline-success my-2 my-sm-0" type="submit" disabled>Filter</button>-->
+                          <div v-if="active">
+                              <span v-if="key == null || key ==''">Showing all <strong>{{ selectedFeature }}</strong></span>
+                                <span v-else="key == null || key ==''">Showing <strong>{{ selectedFeature }}</strong> features with <strong>{{ key }}</strong> among their keys</strong> features</span>
+                          </div>
                       </form>
 <!--                        <input class="form-control mr-sm-2" type="search" placeholder="Filter features..." aria-label="Search" readonly>-->
 <!--                      <form action="" method="post" enctype="multipart/form-data" id="js-upload-form">-->

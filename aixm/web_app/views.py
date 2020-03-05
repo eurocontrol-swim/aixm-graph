@@ -31,16 +31,13 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 __author__ = "EUROCONTROL (SWIM)"
 
 import json
-from collections import defaultdict
-from functools import partial
 
 from flask import Blueprint, send_from_directory, request, current_app as app
 
 from aixm import cache
-from aixm.graph import get_graph, get_feature_graph
+from aixm.graph import get_feature_graph, get_features_graph
 from aixm.parser import process_aixm
 from aixm.stats import get_stats
-from aixm.utils import get_samples_filepath
 
 aixm_blueprint = Blueprint('geofencing_viewer',
                            __name__,
@@ -104,7 +101,11 @@ def load_aixm():
 
 @aixm_blueprint.route('/graph/<feature_name>', methods=['GET'])
 def get_graph_for_feature_name(feature_name: str):
-    graph = get_graph(feature_name)
+    filter_key = request.args.get('key')
+
+    features = cache.filter_features(name=feature_name, key=filter_key)
+
+    graph = get_features_graph(features)
 
     return json.dumps({
         'graph': graph.to_json()

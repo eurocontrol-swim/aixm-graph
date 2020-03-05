@@ -30,7 +30,7 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-from typing import Dict
+from typing import Dict, Optional
 
 from aixm.features import AIXMFeature
 
@@ -58,8 +58,13 @@ def get_features():
     return (feature for _, feature in AIXM_FEATURES.items())
 
 
-def get_aixm_features_by_name(name: str):
-    return (feature for feature in get_features() if feature.el.name == name)
+def filter_features(name: str, key: Optional[str] = None):
+    features = (feature for feature in get_features() if feature.el.name == name)
+
+    if key:
+        features = (feature for feature in features if feature.filter_by_key(key))
+
+    return features
 
 
 def save_aixm_feature(feature: AIXMFeature):

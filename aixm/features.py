@@ -186,6 +186,11 @@ class Feature:
             for feature_data_element in feature_data_elements
         ]
 
+    def filter_by_key(self, key: str):
+        feature_keys = (key_text.lower() for data in self.feature_data for key in data.keys for _, key_text in key.items())
+
+        return any(key in feature_key for feature_key in feature_keys)
+
     def has_broken_xlinks(self):
         return any([data.has_broken_xlinks() for data in self.feature_data])
 
