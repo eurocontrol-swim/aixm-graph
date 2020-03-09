@@ -15,17 +15,10 @@
     <body>
         <nav class="navbar navbar-dark bg-dark">
             <a class="navbar-brand">AIXM Data Validation</a>
-          <form class="form-inline">
-            <label class="btn btn-primary">
-                Load AIXM document <input id="load-aixm-button" type="file" hidden>
-            </label>
-<!--              <div class="custom-file">-->
-<!--                  <input type="file" class="btn" id="customFile">-->
-<!--                  <label class="custom-file-label" for="customFile">Load AIXM document</label>-->
-<!--                </div>-->
-<!--            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">-->
-<!--            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>-->
-          </form>
+            <div class="form-inline my-2 my-lg-0">
+              <input class="btn btn-secondary" id="aixm-upload" type="file">
+              <button class="btn btn-primary my-2 my-sm-0" onclick="uploadAIXMFile()" id="aixm-upload-button">Upload AIXM</i></button>
+            </div>
         </nav>
 
         <div class="container-fluid">
@@ -44,7 +37,7 @@
                           <div class="row">
                               <div class="col">
                                   <div class="list-group">
-                                      <li class="list-group-item"><strong>Data set: EA_AIP_DS_FULL_20170701.xml</strong></li>
+                                      <li class="list-group-item" id="data-set" data-filename=""><strong>Data Set:</strong></li> <button type="button" class="btn btn-primary" onclick="validate()">Validate</button>
                                   </div>
                               </div>
                           </div>
@@ -69,32 +62,18 @@
                     <div class="col">
 
                       <form class="form-inline" id="filterFeatures" v-on:submit.prevent>
-                        <input v-if="active" class="form-control mr-sm-2"  placeholder="Filter features..." aria-label="Search" v-model="key" v-on:keyup="filter">
-                        <input v-else="active" class="form-control mr-sm-2"  placeholder="Filter features..." aria-label="Search" v-model="key" disabled>
-<!--                        <button v-if="active" class="btn btn-outline-success my-2 my-sm-0" type="submit">Filter</button>-->
-<!--                        <button v-else="active" class="btn btn-outline-success my-2 my-sm-0" type="submit" disabled>Filter</button>-->
+                        <input v-if="active" class="form-control mr-sm-2"  placeholder="Filter features..." v-model="key" ref="filter" v-on:keyup="filter">
+                        <input v-else="active" class="form-control mr-sm-2"  placeholder="Filter features..." v-model="key" hidden>
                           <div v-if="active">
                               <span v-if="key == null || key ==''">Showing all <strong>{{ selectedFeature }}</strong></span>
                                 <span v-else="key == null || key ==''">Showing <strong>{{ selectedFeature }}</strong> features with <strong>{{ key }}</strong> among their keys</strong> features</span>
                           </div>
                       </form>
-<!--                        <input class="form-control mr-sm-2" type="search" placeholder="Filter features..." aria-label="Search" readonly>-->
-<!--                      <form action="" method="post" enctype="multipart/form-data" id="js-upload-form">-->
-<!--                        <div class="form-inline">-->
-<!--                          <div class="form-group">-->
-<!--                            <input type="file" name="files" id="js-upload-files" >-->
-<!--                          </div>-->
-<!--                          <button type="submit" class="btn btn-sm btn-primary" id="js-upload-submit">Load AIXM document</button>-->
-<!--                        </div>-->
-<!--                      </form>-->
-<!--                      <div class="upload-drop-zone" id="drop-zone">-->
-<!--                        Just drag and drop files here-->
-<!--                      </div>-->
                     </div>
                 </div>
-                <div class="row" id="graph">
-<!--                    <div class="col" id="graph">-->
-<!--                    </div>-->
+                <div class="row" >
+                    <div class="col" id="graph">
+                    </div>
                 </div>
             </div>
           </div>
@@ -106,5 +85,8 @@
         <script src="/js/graph.js" type="text/javascript"></script>
         <script src="/js/app.js" type="text/javascript"></script>
         <script src="/js/models.js" type="text/javascript"></script>
+        <script src="/js/jquery.iframe-transport.js" type="text/javascript"></script>
+        <script src="/js/jquery.ui.widget.js" type="text/javascript"></script>
+        <script src="/js/jquery.fileupload.js" type="text/javascript"></script>
     </body>
 </html>

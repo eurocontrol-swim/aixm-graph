@@ -31,13 +31,20 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 __author__ = "EUROCONTROL (SWIM)"
 
 import json
+import logging
+import os
+from typing import Dict
 
 from flask import Blueprint, send_from_directory, request, current_app as app
+from werkzeug.utils import secure_filename
 
 from aixm import cache
 from aixm.graph import get_feature_graph, get_features_graph
 from aixm.parser import process_aixm
 from aixm.stats import get_stats
+
+
+_logger = logging.getLogger(__name__)
 
 aixm_blueprint = Blueprint('geofencing_viewer',
                            __name__,
@@ -83,7 +90,8 @@ def favicon():
 def load_aixm():
     data = request.get_json()
 
-    process_aixm(filepath=data['filepath'], features_config=app.config['FEATURES'])
+    filepath = os.path.join('/tmp', data['filename'])
+    process_aixm(filepath=filepath, features_config=app.config['FEATURES'])
 
     stats = get_stats()
 
@@ -121,3 +129,42 @@ def get_graph_for_feature_uuid(uuid: str):
     return json.dumps({
         'graph': graph.to_json()
     })
+
+
+@aixm_blueprint.route('/upload', methods=['POST'])
+def upload_aixm():
+    try:
+        file = validate_file_form(request.files)
+    except ValueError as e:
+        print(str(e))
+        return {
+            'status': 'NOK',
+            'error': str(e)
+        }, 400
+
+    filename = secure_filename(file.filename)
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+    return {
+        'status': 'OK',
+        'filename': filename
+    }, 200
+
+
+def validate_file_form(file_form: Dict):
+    if 'file' not in file_form:
+        raise ValueError('No file part')
+
+    file = file_form['file']
+    if file.filename == '':
+        raise ValueError('No selected file')
+
+    if not allowed_file(file.filename):
+        raise ValueError('File is not allowed')
+
+    return file
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'xml'
+

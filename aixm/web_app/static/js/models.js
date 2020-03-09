@@ -12,9 +12,9 @@ var featuresList = new Vue({
         },
         setSelectedFeature(feature) {
             this.selectedFeature = feature;
-            if (!filterFeatures.active) {
-                filterFeatures.active = true;
-            }
+
+            filterFeatures.activate();
+            filterFeatures.focus();
         }
     }
 })
@@ -38,8 +38,13 @@ var filterFeatures = new Vue({
                 }
             });
         },
-        preventSubmit: function() {
-
+        focus: function() {
+            this.$refs.filter.focus();
+        },
+        activate: function() {
+            if (!this.active) {
+                this.active = true;
+            }
         }
     },
     computed: {

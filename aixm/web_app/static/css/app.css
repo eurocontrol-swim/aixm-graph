@@ -28,6 +28,9 @@ html, body/*, and all other map parent selectors*/ {
     overflow-scrolling: touch;
 }
 
+#aixm-upload {
+    margin-right: 15px;
+}
 /* layout.css Style */
 .upload-drop-zone {
   height: 200px;

@@ -27,10 +27,8 @@ http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
-
-__author__ = "EUROCONTROL (SWIM)"
-
 import sys
+import logging.config
 
 from flask import Flask
 
@@ -43,16 +41,24 @@ from pkg_resources import resource_filename
 from aixm.parser import process_aixm
 from aixm.utils import load_config, get_samples_filepath
 
+__author__ = "EUROCONTROL (SWIM)"
+
+
 # TODO: upload AIXM file view
 # TODO: download skeleton file view
 # TODO: apply pagination in case of big graph
+
+def handle(response):
+    return response
+
 
 app = Flask(__name__)
 app.register_blueprint(aixm_blueprint)
 
 app_config = load_config(filename=resource_filename(__name__, 'config.yml'))
 app.config.update(app_config)
-
+app.after_request(handle)
+logging.config.dictConfig(app.config['LOGGING'])
 
 if __name__ == '__main__':
     # filepath, ns_message = get_samples_filepath('BD_2019-01-03_26fe8f56-0c48-4047-ada0-4e1bd91ed4cf.xml'), \
