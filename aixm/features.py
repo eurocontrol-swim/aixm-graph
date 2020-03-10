@@ -162,14 +162,17 @@ class FeatureData:
         self.extensions.append(extension)
 
     def to_lxml(self, nsmap: Dict[str, str]) -> etree.Element:
+        time_slice_el = etree.Element(f"{{{nsmap[self.el.prefix]}}}TimeSlice", nsmap=nsmap)
         root = self.el.to_lxml(nsmap)
         for prop in self.props():
             root.append(prop.to_lxml(nsmap))
 
-        return root
+        time_slice_el.append(root)
+
+        return time_slice_el
 
 
-class Feature:
+class Feature(XMLSerializable):
 
     def __init__(self, element: etree.Element, keys: Dict, abbrev: str):
         self.el = Element.from_lxml(element)
@@ -199,6 +202,9 @@ class Feature:
 
     def get_feature_data_class(self):
         return FeatureData
+
+    def to_lxml(self, nsmap: Dict[str, str]):
+        pass
 
     def __hash__(self):
         return hash(self.uuid)
@@ -249,3 +255,10 @@ class AIXMFeature(Feature):
 
     def get_feature_data_class(self):
         return AIXMFeatureData
+
+    def to_lxml(self, nsmap: Dict[str, str]):
+        root = etree.Element(f"{{{nsmap[self.el.prefix]}}}{self.el.name}", nsmap=nsmap)
+        for data in self.feature_data:
+            root.append(data.to_lxml(nsmap))
+
+        return root

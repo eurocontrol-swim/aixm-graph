@@ -35,12 +35,13 @@ import logging
 import os
 from typing import Dict
 
-from flask import Blueprint, send_from_directory, request, current_app as app
+from flask import Blueprint, send_from_directory, request, current_app as app, send_file
+from lxml import etree
 from werkzeug.utils import secure_filename
 
 from aixm import cache
 from aixm.graph import get_feature_graph, get_features_graph
-from aixm.parser import process_aixm
+from aixm.parser import process_aixm, generate_aixm_skeleton
 from aixm.stats import get_stats
 
 
@@ -86,11 +87,12 @@ def favicon():
 ########
 
 
-@aixm_blueprint.route('/load_aixm', methods=['POST'])
-def load_aixm():
+@aixm_blueprint.route('/validate', methods=['POST'])
+def validate():
     data = request.get_json()
 
     filepath = os.path.join('/tmp', data['filename'])
+    cache.save_aixm_filepath(filepath)
     process_aixm(filepath=filepath, features_config=app.config['FEATURES'])
 
     stats = get_stats()
@@ -168,3 +170,9 @@ def validate_file_form(file_form: Dict):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'xml'
 
+
+@aixm_blueprint.route('/download-aixm', methods=['GET'])
+def download():
+    skeleton_filepath = generate_aixm_skeleton(filepath=cache.get_aixm_filepath(), features=cache.get_features())
+
+    return send_file(skeleton_filepath, as_attachment=True)

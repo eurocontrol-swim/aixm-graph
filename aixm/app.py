@@ -43,9 +43,6 @@ from aixm.utils import load_config, get_samples_filepath
 
 __author__ = "EUROCONTROL (SWIM)"
 
-
-# TODO: upload AIXM file view
-# TODO: download skeleton file view
 # TODO: apply pagination in case of big graph
 
 def handle(response):

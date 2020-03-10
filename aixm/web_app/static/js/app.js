@@ -2,7 +2,7 @@
 function validate() {
     $.ajax({
         type: "POST",
-        url: "/load_aixm",
+        url: "/validate",
         dataType : "json",
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify({filename: $("#data-set").attr('data-filename')}),
@@ -34,4 +34,17 @@ function uploadAIXMFile() {
         },
     });
     $("#aixm-upload-button").html('Uploading... <i class="fas fa-spinner fa-spin trash">');
+}
+
+function download() {
+
+    $.ajax({
+        url: '/download-aixm',
+        type: 'GET',
+        contentType: false,
+        processData: false,
+        success: function(response){
+            console.table(response);
+        },
+    });
 }

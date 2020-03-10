@@ -31,6 +31,7 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 __author__ = "EUROCONTROL (SWIM)"
 
 import logging
+import os
 from typing import Dict, Tuple, List
 
 from lxml import etree
@@ -54,7 +55,10 @@ def get_message_namespace(filepath):
 
 def feature_generator(context, config):
     for event, elem in context:
-        if event == 'end':
+        if event == 'start-ns':
+            ns_code, ns_link = elem
+            cache.update_nsmap(ns_code, ns_link)
+        elif event == 'end':
             feature_element = elem[0]
             feature_name = get_tag_without_ns(feature_element)
             feature = AIXMFeature(element=feature_element,
@@ -87,8 +91,9 @@ def assign_associations(features_dict: Dict[str, AIXMFeature]) -> Dict[str, AIXM
 
 def process_aixm(filepath, features_config):
     message_ns = get_message_namespace(filepath)
+    cache.save_message_ns(message_ns)
 
-    context = etree.iterparse(filepath, events=('end',), tag=f'{{{message_ns}}}hasMember', remove_comments=True)
+    context = etree.iterparse(filepath, events=('end', 'start-ns'), tag=f'{{{message_ns}}}hasMember', remove_comments=True)
 
     for feature in feature_generator(context, features_config):
         cache.save_aixm_feature(feature)
@@ -96,3 +101,28 @@ def process_aixm(filepath, features_config):
     del context
 
     assign_associations(cache.get_aixm_features_dict())
+
+
+def get_skeleton_filepath(filepath: str):
+    filename, ext = os.path.splitext(filepath)
+
+    return f"{filename}_skeleton{ext}"
+
+
+def generate_aixm_skeleton(filepath: str, features: List[AIXMFeature]):
+    skeleton_filepath = get_skeleton_filepath(filepath)
+
+    nsmap = cache.get_nsmap()
+    message_ns = cache.get_message_ns()
+    root = etree.Element(f"{{{message_ns}}}AIXMBasicMessage", nsmap=nsmap)
+    for feature in features:
+        member_el = etree.Element(f'{{{message_ns}}}hasMember', nsmap=nsmap)
+        feature_el = feature.to_lxml(nsmap)
+
+        member_el.append(feature_el)
+        root.append(member_el)
+
+    with open(skeleton_filepath, 'w') as f:
+        f.write(etree.tostring(root, xml_declaration=True, pretty_print=True).decode('utf-8'))
+
+    return skeleton_filepath

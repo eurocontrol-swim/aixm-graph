@@ -34,6 +34,9 @@ from typing import Dict, Optional
 
 from aixm.features import AIXMFeature
 
+MESSAGE_NS: str = ""
+AIXM_NSMAP: Dict[str, str] = {}
+AIXM_FILEPATH: str = ""
 AIXM_FEATURES: Dict[str, AIXMFeature] = {}
 
 
@@ -71,6 +74,33 @@ def save_aixm_feature(feature: AIXMFeature):
     AIXM_FEATURES[feature.uuid] = feature
 
 
+def save_aixm_filepath(filename: str):
+    global AIXM_FILEPATH
+    AIXM_FILEPATH = filename
+
+
+def get_nsmap():
+    return AIXM_NSMAP
+
+
+def update_nsmap(ns_code, ns_link):
+    global AIXM_NSMAP
+    AIXM_NSMAP[ns_code] = ns_link
+
+
+def get_aixm_filepath():
+    return AIXM_FILEPATH
+
+
 def reset_aixm_features():
     global AIXM_FEATURES
     AIXM_FEATURES = {}
+
+
+def save_message_ns(message_ns: str):
+    global MESSAGE_NS
+    MESSAGE_NS = message_ns
+
+
+def get_message_ns():
+    return MESSAGE_NS
