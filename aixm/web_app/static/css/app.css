@@ -3,50 +3,83 @@ html, body/*, and all other map parent selectors*/ {
   width: 100%;
 }
 
-.node {}
-
-.link {
-    stroke: #999;
-    stroke-opacity: .6;
-    stroke-width: 1px;
-}
-
-.features-area, .graph-area {
-    padding-top: 15px;
-}
 
 #graph {
-    margin: 15px;
-      height: 100%;
-      width: 100%;
+   border: 1px solid lightgray;
+   height: 100%;
+   width: 100%;
 }
 
-.feature-list {
-    margin-top: 15px;
-    max-height: 800px;
-    overflow:scroll;
-    overflow-scrolling: touch;
+.sidenav {
+    width: 380px;
 }
 
-#aixm-upload {
-    margin-right: 15px;
+main{
+  padding-left: 380px;
 }
-/* layout.css Style */
-.upload-drop-zone {
-  height: 200px;
-  border-width: 2px;
-  margin-bottom: 20px;
+main {
+  height: 87%;
 }
 
-/* skin.css Style*/
-.upload-drop-zone {
-  color: #ccc;
-  border-style: dashed;
-  border-color: #ccc;
-  line-height: 200px;
-  text-align: center
+.graph-area {
+    height: 100%;
 }
-.upload-drop-zone.drop {
-  color: #222;
-  border-color: #222;
+
+.graph.col {
+    padding-left: 0px;
+}
+
+.sidenav li>a {
+    font-size: 12px;
+}
+
+nav .brand-logo {
+    font-size: 1.5em;
+    padding-left: 15px;
+}
+
+.row {
+    margin-bottom: 0px;
+}
+
+.topnav.col {
+    padding: 0px;
+}
+
+.sidenav {
+    top: 64px;
+}
+
+#filter-icon {
+    width: 0px;
+    padding: 0px;
+}
+
+#report-icon {
+    color: #ee6e73;
+}
+
+#ok-icon {
+    color: #26a69a;
+}
+
+#progress-bar-divider {
+    height: 4px;
+}
+
+.sidenav .divider {
+    margin: 0px;
+}
+
+.progress {
+    margin: 0px;
+}
+
+#progress-text {
+    color: white;
+    background-color: cadetblue;
+}
+
+table#node-tooltip > td {
+    padding: 0px;
 }

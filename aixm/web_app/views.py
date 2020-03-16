@@ -33,6 +33,7 @@ __author__ = "EUROCONTROL (SWIM)"
 import json
 import logging
 import os
+from itertools import tee
 from typing import Dict
 
 from flask import Blueprint, send_from_directory, request, current_app as app, send_file
@@ -60,6 +61,11 @@ aixm_blueprint = Blueprint('geofencing_viewer',
 @aixm_blueprint.route("/")
 def index():
     return send_from_directory('web_app/templates/', "index.html")
+
+
+@aixm_blueprint.route("/index")
+def index1():
+    return send_from_directory('web_app/templates/', "index1.html")
 
 
 @aixm_blueprint.route('/js/<path:path>')
@@ -97,15 +103,18 @@ def validate():
 
     stats = get_stats()
 
+    features_details = [
+        {
+            'name': key,
+            'total_count': value['total_count'],
+            'has_broken_xlinks': value['has_broken_xlinks']
+        }
+        for key, value in stats.items() if value['total_count'] > 0
+    ]
+
     return json.dumps({
-        "stats": [
-            {
-                'name': key,
-                'count': value['count'],
-                'has_broken_xlinks': value['has_broken_xlinks']
-            }
-            for key, value in stats.items() if value['count'] > 0
-        ]
+        "features_details": features_details,
+        "total_count": sum(s['total_count'] for s in features_details)
     })
 
 
@@ -113,11 +122,15 @@ def validate():
 def get_graph_for_feature_name(feature_name: str):
     filter_key = request.args.get('key')
 
-    features = cache.filter_features(name=feature_name, key=filter_key)
+    # the features generator will be used twice
+    features, features_ = tee(cache.filter_features(name=feature_name, key=filter_key), 2)
 
     graph = get_features_graph(features)
 
     return json.dumps({
+        'offset': None,
+        'limit': None,
+        'total_count': sum(1 for _ in features_),
         'graph': graph.to_json()
     })
 

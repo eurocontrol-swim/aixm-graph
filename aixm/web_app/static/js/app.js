@@ -14,7 +14,8 @@ function validate() {
     });
 }
 
-function uploadAIXMFile() {
+
+function uploadAndValidateAIXMFile() {
     var formData = new FormData(),
         fileInputElement = $("#aixm-upload")[0];
 
@@ -28,12 +29,13 @@ function uploadAIXMFile() {
         processData: false,
         success: function(response){
             console.table(response);
-            $("#aixm-upload-button").html('Upload AIXM');
-            $("#data-set").html('<strong>Data Set: '+ response.filename +'</strong>')
-            $("#data-set").attr('data-filename', response.filename);
+
+//            $("#aixm-upload-button").html('Upload AIXM');
+//            $("#data-set").html('<strong>Data Set: '+ response.filename +'</strong>')
+//            $("#data-set").attr('data-filename', response.filename);
         },
     });
-    $("#aixm-upload-button").html('Uploading... <i class="fas fa-spinner fa-spin trash">');
+//    $("#aixm-upload-button").html('Uploading... <i class="fas fa-spinner fa-spin trash">');
 }
 
 function download() {
@@ -48,3 +50,7 @@ function download() {
         },
     });
 }
+
+$(document).ready(function(){
+    sidenav.init();
+});

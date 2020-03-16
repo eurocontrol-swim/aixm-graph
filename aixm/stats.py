@@ -44,7 +44,7 @@ def get_stats():
     for feature_name in feature_names:
         features_callback = partial(cache.filter_features, feature_name)
 
-        stat[feature_name]['count'] = sum(1 for _ in features_callback())
+        stat[feature_name]['total_count'] = sum(1 for _ in features_callback())
         stat[feature_name]['has_broken_xlinks'] = any((f.has_broken_xlinks() for f in features_callback()))
 
     return stat

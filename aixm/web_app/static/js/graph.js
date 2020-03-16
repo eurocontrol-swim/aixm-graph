@@ -1,21 +1,21 @@
 function getNodePopup(node) {
     var result = "";
-     result += "<table>" +
-        "<tr style='border-bottom: 1px solid black'>" +
-            "<td><strong>" + node.name + "</strong></td>" +
-            "<td></td>" +
+     result += "<table id='node-tooltip'>" +
+        "<tr style='border-bottom: 1px solid black;'>" +
+            "<td style='padding: 0px;'><strong>" + node.name + "</strong></td>" +
+            "<td style='padding: 0px;'></td>" +
         "</tr>" +
         "<tr>" +
-            "<td><strong>UUID</strong></td>" +
-            "<td>" + node.id + "</td>" +
+            "<td style='padding: 0px;'><strong>UUID</strong></td>" +
+            "<td style='padding: 0px;'>" + node.id + "</td>" +
         "</tr>";
 
      node.keys.forEach(function(key) {
         var name = Object.keys(key)[0];
         var value = Object.values(key)[0];
         result += "<tr>" +
-            "<td><strong>" + name + "</strong></td>" +
-            "<td>" + value + "</td>" +
+            "<td style='padding: 0px;'><strong>" + name + "</strong></td>" +
+            "<td style='padding: 0px;'>" + value + "</td>" +
         "</tr>";
      });
 
@@ -132,8 +132,7 @@ function createGraph(data) {
 
     var options = {
         interaction: {
-            hover: true,
-            navigationButtons: true
+            hover: true
         },
         groups: groups
     };
