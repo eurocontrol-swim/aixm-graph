@@ -1,93 +1,146 @@
+
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-	 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
-	    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
-		<link rel="stylesheet" href="/css/app.css">
-        <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<html>
+  <head>
+    <!--Import Google Icon Font-->
+    <link href="/css/material_icons.css" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link rel="stylesheet" href="/css/materialize.min.css">
+    <link rel="stylesheet" href="/css/app.css">
+<!--    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>-->
 
-    </head>
-    <body>
-        <nav class="navbar navbar-dark bg-dark">
-            <a class="navbar-brand">AIXM Data Validation</a>
-            <div class="form-inline my-2 my-lg-0">
-              <input class="btn btn-secondary" id="aixm-upload" type="file">
-              <button class="btn btn-primary my-2 my-sm-0" onclick="uploadAIXMFile()" id="aixm-upload-button">Upload AIXM</i></button>
+    <script src="/js/vue.js"></script>
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AIXM Data Validation</title>
+  </head>
+
+  <body>
+<!--      Header, top navbar-->
+    <header>
+      <nav class="nav  blue lighten-1">
+        <div class="nav-wrapper">
+          <a href="#" class="brand-logo">AIXM Data Validation </a>
+        </div>
+      </nav>
+
+
+        <!-- Page Layout here -->
+      <div class="row" id="side-nav">
+
+    <!--      Upload AIXM Modal-->
+        <div id="modal1" class="modal ">
+          <div class="modal-content">
+            <div class="row">
+              <div class="col s12">
+                <h5>Upload AIXM</h5>
+              </div>
             </div>
-        </nav>
-
-        <div class="container-fluid">
-          <div class="row content">
-            <div class="col-3 features-area">
-
-                <div class="row">
-
-                  <div class="col">
-
-                      <div class="container">
-                          <div class="row">
-                              <div class="col">
-                              </div>
-                          </div>
-                          <div class="row">
-                              <div class="col">
-                                  <div class="list-group">
-                                      <li class="list-group-item" id="data-set" data-filename=""><strong>Data Set:</strong></li>
-                                      <div class="btn-group" role="group" aria-label="Basic example">
-                                          <button type="button" class="btn btn-secondary" onclick="validate()">Validate</button>
-                                          <button type="button" class="btn btn-secondary" onclick="download()">Download</button>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="row">
-                              <div class="col">
-                                <div id="features-list" class="list-group feature-list " role="tablist">
-                                    <feature-item  v-for="feature in features"
-                                                       v-bind:feature="feature"
-                                                       v-bind:key="feature.name"
-                                                       v-on:click.native="setSelectedFeature(feature)">
-                                    </feature-item>
-                                </div>
-                              </div>
-                          </div>
-                      </div>
+            <div class="row">
+              <div class="col s12">
+                <form action="#">
+                  <div class="file-field input-field">
+                    <div class="btn">
+                      <span>File</span>
+                      <input type="file" ref="fileInput" >
+                    </div>
+                    <div class="file-path-wrapper">
+                      <input class="file-path validate" type="text">
                     </div>
                   </div>
-                </div>
-
-            <div class="col-9 graph-area">
-                <div class="row">
-                    <div class="col">
-
-                      <form class="form-inline" id="filterFeatures" v-on:submit.prevent>
-                        <input v-if="active" class="form-control mr-sm-2"  placeholder="Filter features..." v-model="key" ref="filter" v-on:keyup="filter">
-                        <input v-else="active" class="form-control mr-sm-2"  placeholder="Filter features..." v-model="key" hidden>
-                          <div v-if="active">
-                              <span v-if="key == null || key ==''">Showing all <strong>{{ selectedFeature }}</strong></span>
-                                <span v-else="key == null || key ==''">Showing <strong>{{ selectedFeature }}</strong> features with <strong>{{ key }}</strong> among their keys</strong> features</span>
-                          </div>
-                      </form>
-                    </div>
-                </div>
-                <div class="row" >
-                    <div class="col" id="graph">
-                    </div>
-                </div>
+                </form>
+              </div>
             </div>
+          </div>
+          <div class="modal-footer">
+            <a class="modal-close waves-effect waves-green btn" v-on:click="uploadAndValidate()" type="submit">Upload & validate</a>
           </div>
         </div>
 
-		<script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-        <script src="/js/graph.js" type="text/javascript"></script>
-        <script src="/js/app.js" type="text/javascript"></script>
-        <script src="/js/models.js" type="text/javascript"></script>
-    </body>
+<!--        Sidenav -->
+        <ul id="slide-out" class="sidenav sidenav-fixed" ref="sidenavList">
+          <li>
+            <a class="modal-trigger" href="#modal1" >
+              <i class="material-icons">cloud_upload</i>
+              Upload AIXM
+            </a>
+          </li>
+            <div class="divider" id="progress-bar-divider"></div>
+          <li class="hide" ref="progress">
+          </li>
+          <li ref="progressBar" class="hide">
+            <div class="progress"><div class="indeterminate"></div></div>
+          </li>
+          <li class="no-padding">
+            <ul class="collapsible collapsible-accordion">
+              <li>
+                <a class="collapsible-header" title="Data set: EA_AIP_DS_FULL_20170701.xml">Data set: {{ filename }}<i class="material-icons">arrow_drop_down</i></a>
+                <div class="collapsible-body">
+                  <ul>
+                  <li>
+                    <a href="/download" target="_blank" ref="skeleton">
+                      <i class="material-icons">cloud_off</i>
+                      Skeleton not available
+                    </a>
+                  </li>
+
+                  <li><div class="divider"></div></li>
+                  </ul>
+                </div>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a class="subheader" href="#!" ref="featuresTitle">No features yet...</a>
+          </li>
+          <feature-item  v-for="feature in features"
+            v-bind:feature="feature"
+            v-bind:key="feature.name"
+            v-on:click.native="selectFeature(feature)">
+          </feature-item>
+        </ul>
+      </div>
+    </header>
+
+    <main class="hide">
+      <div class="row valign-wrapper">
+        <div class="col s3">
+          <input id="input_text" type="text" data-length="10" placeholder="" ref="filter" v-model="filterKey" v-on:keyup="filter">
+        </div>
+        <div class="col s7">
+          <p ref="description"></p>
+        </div>
+        <div class="col s1">
+          <p class="right" ref="pagination"></p>
+        </div>
+        <div class="col s1">
+          <div>
+            <a class="waves-effect waves-light btn btn-small red lighten-2" ref="paginationPrev" v-on:click="prevPage" disabled>
+              <i class="material-icons">chevron_left</i>
+            </a>
+            <a class="waves-effect waves-light btn btn-small red lighten-2" ref="paginationNext" v-on:click="nextPage" disabled>
+              <i class="material-icons">chevron_right</i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+          <!--          Graph area-->
+      <div class="row graph-area">
+        <div class="col s12" id="graph" ref="graph">
+        </div>
+      </div>
+
+    </main>
+
+    <!--JavaScript at end of body for optimized loading-->
+    <script src="/js/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+    <script src="/js/materialize.min.js"></script>
+    <script type="text/javascript" src="/js/vis-network.min.js"></script>
+    <script src="/js/graph.js" type="text/javascript"></script>
+    <script src="/js/app.js" type="text/javascript"></script>
+    <script src="/js/models.js" type="text/javascript"></script>
+
+  </body>
 </html>

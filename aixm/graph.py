@@ -45,6 +45,8 @@ class Node:
         self.keys = keys
         self.keys_concat = False
         self.is_ghost = False
+        self.color = None
+        self.shape = None
 
     def __eq__(self, other):
         return self.id == other.id and self.name == other.name and self.abbrev == other.abbrev
@@ -151,10 +153,14 @@ def get_feature_graph(feature: AIXMFeature) -> Graph:
     return graph
 
 
-def get_features_graph(features: List[AIXMFeature]):
+def get_features_graph(features: List[AIXMFeature], offset: int = 0, limit: Optional[int] = None):
     graph = Graph()
 
-    for feature in features:
+    for i, feature in enumerate(features):
+        if i < offset:
+            continue
+        if limit is not None and i > limit:
+            break
         graph += get_feature_graph(feature)
 
     return graph

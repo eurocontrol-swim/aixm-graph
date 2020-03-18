@@ -1,21 +1,21 @@
 function getNodePopup(node) {
     var result = "";
-     result += "<table>" +
-        "<tr style='border-bottom: 1px solid black'>" +
-            "<td><strong>" + node.name + "</strong></td>" +
-            "<td></td>" +
+     result += "<table id='node-tooltip'>" +
+        "<tr style='border-bottom: 1px solid black;'>" +
+            "<td style='padding: 0px;'><strong>" + node.name + "</strong></td>" +
+            "<td style='padding: 0px;'></td>" +
         "</tr>" +
         "<tr>" +
-            "<td><strong>UUID</strong></td>" +
-            "<td>" + node.id + "</td>" +
+            "<td style='padding: 0px;'><strong>UUID</strong></td>" +
+            "<td style='padding: 0px;'>" + node.id + "</td>" +
         "</tr>";
 
      node.keys.forEach(function(key) {
         var name = Object.keys(key)[0];
         var value = Object.values(key)[0];
         result += "<tr>" +
-            "<td><strong>" + name + "</strong></td>" +
-            "<td>" + value + "</td>" +
+            "<td style='padding: 0px;'><strong>" + name + "</strong></td>" +
+            "<td style='padding: 0px;'>" + value + "</td>" +
         "</tr>";
      });
 
@@ -26,13 +26,21 @@ function getNodePopup(node) {
 
 function processData(data) {
     data.nodes.forEach(function(node) {
-        node.group = node.is_ghost?"GhostGroup":node.name;
+//        node.group = node.is_ghost?"GhostGroup":node.name;
         node.label = node.abbrev;
         if (node.keys.length > 0) {
             var sep = node.keys_concat?"":","
             node.label += ": " + node.keys.map((k) => Object.values(k)[0]).join(sep);
         }
         node.title = getNodePopup(node);
+        if (node.is_ghost) {
+            node.color = "#DCDCDC";
+            node.shape = "star";
+        }
+        else {
+            node.color = config[node.name].color;
+            node.shape = config[node.name].shape;
+        }
     });
 
     data.edges.forEach(function(edge) {
@@ -48,50 +56,25 @@ function processData(data) {
 }
 
 var colors = [
-	"#5d8aa8",
 	"#f0f8ff",
-	"#e32636",
 	"#efdecd",
-	"#e52b50",
 	"#ffbf00",
-	"#ff033e",
-	"#9966cc",
 	"#a4c639",
-	"#f2f3f4",
 	"#cd9575",
-	"#915c83",
 	"#faebd7",
-	"#008000",
 	"#8db600",
 	"#fbceb1",
-	"#00ffff",
 	"#7fffd4",
-	"#4b5320",
 	"#e9d66b",
-	"#b2beb5",
-	"#87a96b",
 	"#ff9966",
-	"#a52a2a",
-	"#fdee00",
-	"#6e7f80",
-	"#ff2052",
-	"#007fff",
-	"#f0ffff",
 	"#89cff0",
-	"#a1caf1",
 	"#f4c2c2",
-	"#21abcd",
 	"#fae7b5",
-	"#ffe135",
-	"#848482",
-	"#98777b",
 	"#bcd4e6",
-	"#9f8170"
+	"#f0ffff"
 ]
 
 var shapes = [
-//    'circle',
-//    'star',
     'square',
     'hexagon',
     'diamond',
@@ -120,29 +103,29 @@ function createGraph(data) {
     Nodes = new vis.DataSet(data.nodes);
     Edges = new vis.DataSet(data.edges);
 
-    var groups = {},
-        groupNames = Array.from(new Set(data.nodes.map((n) => n.name)));
-
-    groupNames.forEach(function(gn, i) {
-        groups[gn] = getRandomGroupColorShape();
-    });
-    groups['GhostGroup'] = ghostGroup
+//    var groups = {},
+//        groupNames = Array.from(new Set(data.nodes.map((n) => n.name)));
+//
+//    groupNames.forEach(function(gn, i) {
+//        groups[gn] = getRandomGroupColorShape();
+//    });
+//    groups['GhostGroup'] = ghostGroup
 
     var container = document.getElementById('graph');
 
     var options = {
         interaction: {
-            hover: true,
-            navigationButtons: true
+            hover: true
         },
-        groups: groups
+//        groups: groups
     };
 
     Network = new vis.Network(container, {nodes: Nodes, edges: Edges}, options);
 
     Network.on("doubleClick", function (params) {
         if (params.nodes.length > 0) {
-            var nodeId = params.nodes[0]
+            var nodeId = params.nodes[0];
+            var nodeName = Nodes.get(nodeId).name;
 
             $.ajax({
                 type: "GET",
@@ -151,6 +134,11 @@ function createGraph(data) {
                 contentType: "application/json; charset=utf-8",
                 success : function(result) {
                     createGraph(result.graph)
+                    main.disableFilter();
+                    main.disablePagination('next');
+                    main.disablePagination('prev');
+                    main.setPaginationText("");
+                    main.setDescription("<strong>" + nodeName + "</strong>" + " (" + nodeId + ")");
                 }
             });
         }
@@ -177,9 +165,9 @@ function updateGraph(data) {
     data = processData(data);
 
     data.nodes.forEach(function(node) {
-        if (Network.groups.groupsArray.indexOf(node.name) < 0) {
-            Network.groups.add(node.name, getRandomGroupColorShape());
-        }
+//        if (Network.groups.groupsArray.indexOf(node.name) < 0) {
+//            Network.groups.add(node.name, getRandomGroupColorShape());
+//        }
         if (!nodeExists(node)) {
             Nodes.add(node);
         }

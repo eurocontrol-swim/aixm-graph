@@ -61,7 +61,7 @@ def get_features():
     return (feature for _, feature in AIXM_FEATURES.items())
 
 
-def filter_features(name: str, key: Optional[str] = None):
+def filter_features(name: str, offset: int = 0, limit: Optional[int] = None, key: Optional[str] = None):
     features = (feature for feature in get_features() if feature.el.name == name)
 
     if key:

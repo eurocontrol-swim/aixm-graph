@@ -33,6 +33,7 @@ __author__ = "EUROCONTROL (SWIM)"
 import json
 import logging
 import os
+from itertools import tee
 from typing import Dict
 
 from flask import Blueprint, send_from_directory, request, current_app as app, send_file
@@ -86,6 +87,11 @@ def favicon():
 # API
 ########
 
+@aixm_blueprint.route('/load-config', methods=['GET'])
+def load_config():
+    return app.config['FEATURES']
+
+
 
 @aixm_blueprint.route('/validate', methods=['POST'])
 def validate():
@@ -97,28 +103,40 @@ def validate():
 
     stats = get_stats()
 
+    features_details = [
+        {
+            'name': key,
+            'total_count': value['total_count'],
+            'has_broken_xlinks': value['has_broken_xlinks']
+        }
+        for key, value in stats.items() if value['total_count'] > 0
+    ]
+
     return json.dumps({
-        "stats": [
-            {
-                'name': key,
-                'count': value['count'],
-                'has_broken_xlinks': value['has_broken_xlinks']
-            }
-            for key, value in stats.items() if value['count'] > 0
-        ]
+        "features_details": features_details,
+        "total_count": sum(s['total_count'] for s in features_details)
     })
 
 
 @aixm_blueprint.route('/graph/<feature_name>', methods=['GET'])
 def get_graph_for_feature_name(feature_name: str):
+    offset = int(request.args.get('offset', "0"))
     filter_key = request.args.get('key')
 
-    features = cache.filter_features(name=feature_name, key=filter_key)
+    limit = app.config['PAGE_LIMIT']
+    # the features generator will be used twice
+    features, features_ = tee(cache.filter_features(name=feature_name,
+                                                    key=filter_key,
+                                                    offset=offset,
+                                                    limit=(limit + offset) - 1))
 
-    graph = get_features_graph(features)
+    graph = get_features_graph(features=features, offset=offset, limit=(limit + offset) - 1)
 
     return json.dumps({
-        'graph': graph.to_json()
+        'offset': offset,
+        'limit': limit,
+        'total_count': sum(1 for _ in features_),
+        'graph': graph.to_json(),
     })
 
 
@@ -138,7 +156,6 @@ def upload_aixm():
     try:
         file = validate_file_form(request.files)
     except ValueError as e:
-        print(str(e))
         return {
             'status': 'NOK',
             'error': str(e)
@@ -171,7 +188,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'xml'
 
 
-@aixm_blueprint.route('/download-aixm', methods=['GET'])
+@aixm_blueprint.route('/download', methods=['GET'])
 def download():
     skeleton_filepath = generate_aixm_skeleton(filepath=cache.get_aixm_filepath(), features=cache.get_features())
 
