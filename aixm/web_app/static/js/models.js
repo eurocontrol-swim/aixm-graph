@@ -73,17 +73,6 @@ var sidenav = new Vue({
 
             this.showProgress('Validating features...');
         },
-        download: function() {
-            $.ajax({
-                url: '/download-aixm',
-                type: 'GET',
-                contentType: false,
-                processData: false,
-                success: function(response){
-                    console.table(response);
-                },
-            });
-        },
         selectFeature: function(feature) {
             main.createGraphForFeature(feature);
         },
@@ -101,7 +90,6 @@ var sidenav = new Vue({
             this.$refs.skeleton.innerHTML = `
               <i class="material-icons" ref="skeleton">cloud_downloadff</i>
               Download skeleton`;
-
         },
         disableSkeleton: function() {
             this.$refs.skeleton.innerHTML = `
@@ -118,7 +106,8 @@ var main = new Vue({
         filterKey: null,
         selectedFeature: null,
         nextOffset: null,
-        prevOffset: null
+        prevOffset: null,
+        filterNullified: true
     },
     methods: {
         show: function() {
@@ -145,8 +134,14 @@ var main = new Vue({
             });
 
         },
-        filter: function(offset) {
-            this.getGraph(this.filterKey, 0);
+        filter: function(event) {
+            if (event.key == 'Backspace' || (event.keyCode >= 65 && event.keyCode <= 90) || (event.keyCode >= 48 && event.keyCode <= 57)) {
+                if (event.key == 'Backspace' && this.filterNullified) {
+                    return;
+                }
+                this.getGraph(this.filterKey, 0);
+                this.filterNullified = !this.filterKey;
+            }
         },
         getGraph: function(key, offset) {
             offset = (!offset) ? 0 : offset;
@@ -171,6 +166,7 @@ var main = new Vue({
             this.$refs.filter.setAttribute('placeholder', 'Filter ' + featureName + ' by key');
         },
         disableFilter: function() {
+            this.filterKey = null;
             this.$refs.filter.setAttribute('disabled', '');
             this.$refs.filter.setAttribute('placeholder', '');
         },
@@ -204,7 +200,7 @@ var main = new Vue({
             this.setPaginationText(text);
         },
         updateDescription: function() {
-            var text = this.selectedFeature.name + " features";
+            var text = "<strong>" + this.selectedFeature.name + "</strong> features";
 
             if (this.filterKey != null) {
                 text += " with matching key <strong>" + this.filterKey + "</strong>"

@@ -155,7 +155,7 @@ function createGraph(data) {
                     main.disablePagination('next');
                     main.disablePagination('prev');
                     main.setPaginationText("");
-                    main.setDescription(nodeName + " (" + nodeId + ")");
+                    main.setDescription("<strong>" + nodeName + "</strong>" + " (" + nodeId + ")");
                 }
             });
         }
