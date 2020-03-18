@@ -63,11 +63,6 @@ def index():
     return send_from_directory('web_app/templates/', "index.html")
 
 
-@aixm_blueprint.route("/index")
-def index1():
-    return send_from_directory('web_app/templates/', "index1.html")
-
-
 @aixm_blueprint.route('/js/<path:path>')
 def send_js(path):
     return send_from_directory('web_app/static/js', path)
