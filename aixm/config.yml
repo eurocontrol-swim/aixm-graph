@@ -29,6 +29,8 @@ PAGE_LIMIT: 5
 
 FEATURES:
   AerialRefuelling:
+    abbrev: ARF
+    color: '#f0f8ff'
     keys:
       concat: true
       properties:
@@ -36,428 +38,501 @@ FEATURES:
         - designatorNumber
         - designatorSuffix
         - designatorDirection
-    abbrev: ARF
-    colour:
+    shape: square
   AeronauticalGroundLight:
-    keys:
-      properties:
-        - type
-        - name
     abbrev: AGL
-    colour:
-  AircraftGroundService:
+    color: '#efdecd'
     keys:
       properties:
         - type
+        - name
+    shape: square
+  AirTrafficControlService:
+    abbrev: ATC
+    color: '#f4c2c2'
+    keys:
+      properties:
+        - location
+        - type
+    shape: square
+  AirTrafficManagementService:
+    abbrev: ATM
+    color: '#fae7b5'
+    keys:
+      properties: null
+    shape: square
+  AircraftGroundService:
     abbrev: ACG
-    colour:
+    color: '#ffbf00'
+    keys:
+      properties:
+        - type
+    shape: square
   AircraftStand:
+    abbrev: AST
+    color: '#a4c639'
     keys:
       properties:
         - designator
         - type
-    abbrev: AST
-    colour:
+    shape: square
   AirportClearanceService:
+    abbrev: ACS
+    color: '#cd9575'
     keys:
       properties:
         - name
-    abbrev: ACS
-    colour:
+    shape: square
   AirportHeliport:
-    keys:
-      properties:
-        - designator
     abbrev: AHP
-    colour:
-  AirportHeliportCollocation:
-    keys:
-      properties:
-    abbrev: AHC
-    colour:
-  AirportHotSpot:
+    color: '#faebd7'
     keys:
       properties:
         - designator
+    shape: square
+  AirportHeliportCollocation:
+    abbrev: AHC
+    color: '#8db600'
+    keys:
+      properties: null
+    shape: square
+  AirportHotSpot:
     abbrev: AHT
-    colour:
-  AirportProtectionAreaMarking:
+    color: '#fbceb1'
     keys:
       properties:
+        - designator
+    shape: square
+  AirportProtectionAreaMarking:
     abbrev: APM
-    colour:
+    color: '#7fffd4'
+    keys:
+      properties: null
+    shape: square
   AirportSuppliesService:
+    abbrev: ASV
+    color: '#e9d66b'
     keys:
       properties:
         - fuelSupply
         - oilSupply
         - nitrogenSupply
         - oxygenSupply
-    abbrev: ASV
-    colour:
+    shape: square
   Airspace:
+    abbrev: ASE
+    color: '#ff9966'
     keys:
       properties:
         - designator
         - type
-    abbrev: ASE
-    colour:
+    shape: square
   AirspaceBorderCrossing:
-    keys:
-      properties:
     abbrev: ABC
-    colour:
-  AirTrafficControlService:
+    color: '#89cff0'
     keys:
-      properties:
-        - location
-        - type
-    abbrev: ATC
-    colour:
-  AirTrafficManagementService:
-    keys:
-      properties:
-    abbrev: ATM
-    colour:
+      properties: null
+    shape: square
   AltimeterSource:
-    keys:
-      properties:
     abbrev: ALT
-    colour:
+    color: '#bcd4e6'
+    keys:
+      properties: null
+    shape: square
   AngleIndication:
-    keys:
-      properties:
     abbrev: AIN
-    colour:
-  ApproachLightingSystem:
+    color: '#f0ffff'
     keys:
-      properties:
+      properties: null
+    shape: square
+  ApproachLightingSystem:
     abbrev: APL
-    colour:
+    color: '#f0f8ff'
+    keys:
+      properties: null
+    shape: hexagon
   Apron:
+    abbrev: APN
+    color: '#efdecd'
     keys:
       properties:
         - name
-    abbrev: APN
-    colour:
+    shape: hexagon
   ApronElement:
+    abbrev: AEL
+    color: '#ffbf00'
     keys:
       properties:
         - type
-    abbrev: AEL
-    colour:
+    shape: hexagon
   ApronLightSystem:
+    abbrev: ALS
+    color: '#a4c639'
     keys:
       properties:
         - color
-    abbrev: ALS
-    colour:
+    shape: hexagon
   ApronMarking:
-    keys:
-      properties:
     abbrev: AMK
-    colour:
+    color: '#cd9575'
+    keys:
+      properties: null
+    shape: hexagon
   ArrestingGear:
+    abbrev: AGR
+    color: '#faebd7'
     keys:
       properties:
         - location
         - length
         - width
         - status
-    abbrev: AGR
-    colour:
-  ArrivalLeg:
-    keys:
-      properties:
-        - length
-    abbrev: ARL
-    colour:
+    shape: hexagon
   ArrivalFeederLeg:
+    abbrev: AFL
+    color: '#fbceb1'
     keys:
       properties:
         - length
-    abbrev: AFL
-    colour:
+    shape: hexagon
+  ArrivalLeg:
+    abbrev: ARL
+    color: '#8db600'
+    keys:
+      properties:
+        - length
+    shape: hexagon
   AuthorityForAirspace:
-    keys:
-      properties:
-        - type
     abbrev: AFA
-    colour:
+    color: '#7fffd4'
+    keys:
+      properties:
+        - type
+    shape: hexagon
   Azimuth:
-    keys:
-      properties:
-        - designator
-        - type
     abbrev: AZM
-    colour:
+    color: '#e9d66b'
+    keys:
+      properties:
+        - designator
+        - type
+    shape: hexagon
   ChangeOverPoint:
-    keys:
-      properties:
     abbrev: COP
-    colour:
+    color: '#ff9966'
+    keys:
+      properties: null
+    shape: hexagon
   CheckpointINS:
-    keys:
-      properties:
-        - category
-        - position
     abbrev: CNS
-    colour:
-  CheckpointVOR:
+    color: '#89cff0'
     keys:
       properties:
         - category
         - position
+    shape: hexagon
+  CheckpointVOR:
     abbrev: CVO
-    colour:
+    color: '#f4c2c2'
+    keys:
+      properties:
+        - category
+        - position
+    shape: hexagon
   CirclingArea:
-    keys:
-      properties:
     abbrev: CIA
-    colour:
-  DeicingArea:
+    color: '#fae7b5'
     keys:
-      properties:
-    abbrev: DAA
-    colour:
-  DeicingAreaMarking:
-    keys:
-      properties:
-    abbrev: DAM
-    colour:
-  DepartureLeg:
-    keys:
-      properties:
-    abbrev: DLG
-    colour:
-  DesignatedPoint:
-    keys:
-      properties:
-        - designator
-    abbrev: DPN
-    colour:
-  DirectionFinder:
-    keys:
-      properties:
-    abbrev: DFN
-    colour:
-  DistanceIndication:
-    keys:
-      properties:
-    abbrev: DIN
-    colour:
+      properties: null
+    shape: hexagon
   DME:
-    keys:
-      properties:
-        - type
-        - designator
     abbrev: DME
-    colour:
+    color: '#cd9575'
+    keys:
+      properties:
+        - type
+        - designator
+    shape: diamond
+  DeicingArea:
+    abbrev: DAA
+    color: '#bcd4e6'
+    keys:
+      properties: null
+    shape: hexagon
+  DeicingAreaMarking:
+    abbrev: DAM
+    color: '#f0ffff'
+    keys:
+      properties: null
+    shape: hexagon
+  DepartureLeg:
+    abbrev: DLG
+    color: '#f0f8ff'
+    keys:
+      properties: null
+    shape: diamond
+  DesignatedPoint:
+    abbrev: DPN
+    color: '#efdecd'
+    keys:
+      properties:
+        - designator
+    shape: diamond
+  DirectionFinder:
+    abbrev: DFN
+    color: '#ffbf00'
+    keys:
+      properties: null
+    shape: diamond
+  DistanceIndication:
+    abbrev: DIN
+    color: '#a4c639'
+    keys:
+      properties: null
+    shape: diamond
   Elevation:
-    keys:
-      properties:
     abbrev: ELV
-    colour:
+    color: '#faebd7'
+    keys:
+      properties: null
+    shape: diamond
   FinalLeg:
-    keys:
-      properties:
     abbrev: FLG
-    colour:
+    color: '#8db600'
+    keys:
+      properties: null
+    shape: diamond
   FireFightingService:
-    keys:
-      properties:
     abbrev: FFS
-    colour:
+    color: '#fbceb1'
+    keys:
+      properties: null
+    shape: diamond
   FlightRestriction:
-    keys:
-      properties:
     abbrev: FRS
-    colour:
+    color: '#7fffd4'
+    keys:
+      properties: null
+    shape: diamond
   FloatingDockSite:
-    keys:
-      properties:
     abbrev: FGD
-    colour:
+    color: '#e9d66b'
+    keys:
+      properties: null
+    shape: diamond
   GeoBorder:
-    keys:
-      properties:
-        - type
     abbrev: GBR
-    colour:
+    color: '#ff9966'
+    keys:
+      properties:
+        - type
+    shape: diamond
   Glidepath:
-    keys:
-      properties:
-        - designator
     abbrev: GPT
-    colour:
+    color: '#89cff0'
+    keys:
+      properties:
+        - designator
+    shape: diamond
   GroundTrafficControlService:
-    keys:
-      properties:
     abbrev: GTC
-    colour:
+    color: '#f4c2c2'
+    keys:
+      properties: null
+    shape: diamond
   GuidanceLine:
-    keys:
-      properties:
-        - type
-        - designator
     abbrev: GLN
-    colour:
+    color: '#fae7b5'
+    keys:
+      properties:
+        - type
+        - designator
+    shape: diamond
   GuidanceLineLightSystem:
-    keys:
-      properties:
-        - colour
     abbrev: GLL
-    colour:
+    color: '#bcd4e6'
+    keys:
+      properties:
+    shape: diamond
   GuidanceLineMarking:
-    keys:
-      properties:
     abbrev: GLM
-    colour:
+    color: '#f0ffff'
+    keys:
+      properties: null
+    shape: diamond
   HoldingAssessment:
-    keys:
-      properties:
     abbrev: HAS
-    colour:
+    color: '#f0f8ff'
+    keys:
+      properties: null
+    shape: triangle
   HoldingPattern:
-    keys:
-      properties:
     abbrev: HPT
-    colour:
+    color: '#efdecd'
+    keys:
+      properties: null
+    shape: triangle
   InformationService:
-    keys:
-      properties:
     abbrev: ISV
-    colour:
+    color: '#ffbf00'
+    keys:
+      properties: null
+    shape: triangle
   InitialLeg:
-    keys:
-      properties:
     abbrev: ILG
-    colour:
+    color: '#a4c639'
+    keys:
+      properties: null
+    shape: triangle
   InstrumentApproachProcedure:
-    keys:
-      properties:
     abbrev: IAP
-    colour:
+    color: '#cd9575'
+    keys:
+      properties: null
+    shape: triangle
   IntermediateLeg:
-    keys:
-      properties:
     abbrev: INL
-    colour:
+    color: '#faebd7'
+    keys:
+      properties: null
+    shape: triangle
   Localizer:
-    keys:
-      properties:
-        - designator
     abbrev: LLZ
-    colour:
+    color: '#8db600'
+    keys:
+      properties:
+        - designator
+    shape: triangle
   MarkerBeacon:
-    keys:
-      properties:
-        - designator
     abbrev: MBC
-    colour:
+    color: '#fbceb1'
+    keys:
+      properties:
+        - designator
+    shape: triangle
   MarkingBuoy:
-    keys:
-      properties:
-        - type
-        - designator
     abbrev: MKB
-    colour:
-  MissedApproachLeg:
-    keys:
-      properties:
-    abbrev: MAL
-    colour:
-  Navaid:
+    color: '#7fffd4'
     keys:
       properties:
         - type
         - designator
+    shape: triangle
+  MissedApproachLeg:
+    abbrev: MAL
+    color: '#e9d66b'
+    keys:
+      properties: null
+    shape: triangle
+  NDB:
+    abbrev: NDB
+    color: '#fae7b5'
+    keys:
+      properties:
+        - keys
+    shape: triangle
+  Navaid:
     abbrev: NAV
-    colour:
+    color: '#ff9966'
+    keys:
+      properties:
+        - type
+        - designator
+    shape: triangle
   NavigationArea:
+    abbrev: NAA
+    color: '#89cff0'
     keys:
       properties:
         - navigationAreaType
         - sector
-    abbrev: NAA
-    colour:
+    shape: triangle
   NavigationAreaRestriction:
+    abbrev: NAN
+    color: '#f4c2c2'
     keys:
       properties:
         - type
-    abbrev: NAN
-    colour:
-  NDB:
-    keys:
-      properties:
-        - keys
-    abbrev: NDB
-    colour:
+    shape: triangle
   NonMovementArea:
-    keys:
-      properties:
     abbrev: NMA
-    colour:
-  ObstacleArea:
+    color: '#bcd4e6'
     keys:
-      properties:
+      properties: null
+    shape: triangle
+  ObstacleArea:
     abbrev: OAR
-    colour:
+    color: '#f0ffff'
+    keys:
+      properties: null
+    shape: triangle
   OrganisationAuthority:
+    abbrev: ORG
+    color: '#f0f8ff'
     keys:
       properties:
         - name
-    abbrev: ORG
-    colour:
+    shape: triangleDown
   PassengerLoadingBridge:
-    keys:
-      properties:
     abbrev: PLB
-    colour:
+    color: '#efdecd'
+    keys:
+      properties: null
+    shape: triangleDown
   PassengerService:
-    keys:
-      properties:
     abbrev: PSV
-    colour:
+    color: '#ffbf00'
+    keys:
+      properties: null
+    shape: triangleDown
   PilotControlledLighting:
-    keys:
-      properties:
     abbrev: PCG
-    colour:
-  PrecisionApproachRadar:
+    color: '#a4c639'
     keys:
-      properties:
+      properties: null
+    shape: triangleDown
+  PrecisionApproachRadar:
     abbrev: PAR
-    colour:
+    color: '#cd9575'
+    keys:
+      properties: null
+    shape: triangleDown
   PrimarySurveillanceRadar:
+    abbrev: PSR
+    color: '#faebd7'
     keys:
       properties:
         - location
-    abbrev: PSR
-    colour:
+    shape: triangleDown
   ProcedureDME:
-    keys:
-      properties:
     abbrev: PDM
-    colour:
-  RadioCommunicationChannel:
+    color: '#8db600'
     keys:
-      properties:
+      properties: null
+    shape: triangleDown
+  RadioCommunicationChannel:
     abbrev: RCC
-    colour:
+    color: '#fbceb1'
+    keys:
+      properties: null
+    shape: triangleDown
   RadioFrequencyArea:
+    abbrev: RFA
+    color: '#7fffd4'
     keys:
       properties:
         - type
-    abbrev: RFA
-    colour:
+    shape: triangleDown
   Road:
+    abbrev: ROA
+    color: '#e9d66b'
     keys:
       properties:
         - designator
-    abbrev: ROA
-    colour:
+    shape: triangleDown
   Route:
+    abbrev: RTE
+    color: '#ff9966'
     keys:
       concat: true
       properties:
@@ -465,273 +540,320 @@ FEATURES:
         - designatorNumber
         - designatorSecondLetter
         - type
-    abbrev: RTE
-    colour:
+    shape: triangleDown
   RouteDME:
-    keys:
-      properties:
     abbrev: RDM
-    colour:
+    color: '#89cff0'
+    keys:
+      properties: null
+    shape: triangleDown
   RouteSegment:
-    keys:
-      properties:
     abbrev: RSG
-    colour:
+    color: '#f4c2c2'
+    keys:
+      properties: null
+    shape: triangleDown
   RulesProcedures:
-    keys:
-      properties:
     abbrev: RUP
-    colour:
+    color: '#fae7b5'
+    keys:
+      properties: null
+    shape: triangleDown
   Runway:
-    keys:
-      properties:
-        - designator
-        - type
     abbrev: RWY
-    colour:
+    color: '#bcd4e6'
+    keys:
+      properties:
+        - designator
+        - type
+    shape: triangleDown
   RunwayBlastPad:
-    keys:
-      properties:
     abbrev: RBP
-    colour:
+    color: '#f0ffff'
+    keys:
+      properties: null
+    shape: triangleDown
   RunwayCentrelinePoint:
-    keys:
-      properties:
-        - designator
     abbrev: RCP
-    colour:
+    color: '#f0f8ff'
+    keys:
+      properties:
+        - designator
+    shape: ellipse
   RunwayDirection:
-    keys:
-      properties:
-        - designator
     abbrev: RDN
-    colour:
+    color: '#efdecd'
+    keys:
+      properties:
+        - designator
+    shape: ellipse
   RunwayDirectionLightSystem:
-    keys:
-      properties:
     abbrev: RLS
-    colour:
+    color: '#ffbf00'
+    keys:
+      properties: null
+    shape: ellipse
   RunwayElement:
-    keys:
-      properties:
     abbrev: REL
-    colour:
+    color: '#a4c639'
+    keys:
+      properties: null
+    shape: ellipse
   RunwayMarking:
-    keys:
-      properties:
     abbrev: RMG
-    colour:
+    color: '#cd9575'
+    keys:
+      properties: null
+    shape: ellipse
   RunwayProtectArea:
-    keys:
-      properties:
-        - type
     abbrev: RPA
-    colour:
+    color: '#faebd7'
+    keys:
+      properties:
+        - type
+    shape: ellipse
   RunwayProtectAreaLightSystem:
-    keys:
-      properties:
     abbrev: RPL
-    colour:
+    color: '#8db600'
+    keys:
+      properties: null
+    shape: ellipse
   RunwayVisualRange:
-    keys:
-      properties:
     abbrev: RVR
-    colour:
-  SafeAltitudeArea:
+    color: '#fbceb1'
     keys:
-      properties:
-    abbrev: SAA
-    colour:
+      properties: null
+    shape: ellipse
   SDF:
-    keys:
-      properties:
-        - designator
     abbrev: SDF
-    colour:
+    color: '#e9d66b'
+    keys:
+      properties:
+        - designator
+    shape: ellipse
+  SafeAltitudeArea:
+    abbrev: SAA
+    color: '#7fffd4'
+    keys:
+      properties: null
+    shape: ellipse
   SeaplaneLandingArea:
-    keys:
-      properties:
     abbrev: SLA
-    colour:
+    color: '#ff9966'
+    keys:
+      properties: null
+    shape: ellipse
   SeaplaneRampSite:
-    keys:
-      properties:
     abbrev: SPR
-    colour:
+    color: '#89cff0'
+    keys:
+      properties: null
+    shape: ellipse
   SearchRescueService:
-    keys:
-      properties:
-        - type
     abbrev: SRE
-    colour:
+    color: '#f4c2c2'
+    keys:
+      properties:
+        - type
+    shape: ellipse
   SecondarySurveillanceRadar:
-    keys:
-      properties:
     abbrev: SSV
-    colour:
+    color: '#fae7b5'
+    keys:
+      properties: null
+    shape: ellipse
   SignificantPointInAirspace:
-    keys:
-      properties:
     abbrev: SPA
-    colour:
+    color: '#bcd4e6'
+    keys:
+      properties: null
+    shape: ellipse
   SpecialDate:
-    keys:
-      properties:
     abbrev: SPD
-    colour:
+    color: '#f0ffff'
+    keys:
+      properties: null
+    shape: ellipse
   SpecialNavigationStation:
-    keys:
-      properties:
     abbrev: SNS
-    colour:
+    color: '#f0f8ff'
+    keys:
+      properties: null
+    shape: dot
   SpecialNavigationSystem:
-    keys:
-      properties:
-        - designator
-        - type
     abbrev: SNY
-    colour:
-  StandardInstrumentArrival:
+    color: '#efdecd'
     keys:
       properties:
         - designator
-    abbrev: SIA
-    colour:
-  StandardInstrumentDeparture:
-    keys:
-      properties:
-        - designator
-    abbrev: SID
-    colour:
-  StandardLevelColumn:
-    keys:
-      properties:
-    abbrev: SLC
-    colour:
-  StandardLevelSector:
-    keys:
-      properties:
-    abbrev: SLS
-    colour:
-  StandardLevelTable:
-    keys:
-      properties:
-    abbrev: SLB
-    colour:
+        - type
+    shape: dot
   StandMarking:
-    keys:
-      properties:
     abbrev: SMK
-    colour:
+    color: '#fbceb1'
+    keys:
+      properties: null
+    shape: dot
+  StandardInstrumentArrival:
+    abbrev: SIA
+    color: '#ffbf00'
+    keys:
+      properties:
+        - designator
+    shape: dot
+  StandardInstrumentDeparture:
+    abbrev: SID
+    color: '#a4c639'
+    keys:
+      properties:
+        - designator
+    shape: dot
+  StandardLevelColumn:
+    abbrev: SLC
+    color: '#cd9575'
+    keys:
+      properties: null
+    shape: dot
+  StandardLevelSector:
+    abbrev: SLS
+    color: '#faebd7'
+    keys:
+      properties: null
+    shape: dot
+  StandardLevelTable:
+    abbrev: SLB
+    color: '#8db600'
+    keys:
+      properties: null
+    shape: dot
   SurveyControlPoint:
-    keys:
-      properties:
-        - designator
     abbrev: SCP
-    colour:
+    color: '#7fffd4'
+    keys:
+      properties:
+        - designator
+    shape: dot
   TACAN:
-    keys:
-      properties:
-        - designator
     abbrev: TCN
-    colour:
+    color: '#e9d66b'
+    keys:
+      properties:
+        - designator
+    shape: dot
   TaxiHoldingPosition:
-    keys:
-      properties:
     abbrev: THP
-    colour:
+    color: '#ff9966'
+    keys:
+      properties: null
+    shape: dot
   TaxiHoldingPositionLightSystem:
-    keys:
-      properties:
     abbrev: THL
-    colour:
+    color: '#89cff0'
+    keys:
+      properties: null
+    shape: dot
   TaxiHoldingPositionMarking:
-    keys:
-      properties:
     abbrev: THM
-    colour:
+    color: '#f4c2c2'
+    keys:
+      properties: null
+    shape: dot
   Taxiway:
-    keys:
-      properties:
-        - designator
-        - type
     abbrev: TWY
-    colour:
+    color: '#fae7b5'
+    keys:
+      properties:
+        - designator
+        - type
+    shape: dot
   TaxiwayElement:
-    keys:
-      properties:
-        - type
     abbrev: TWE
-    colour:
+    color: '#bcd4e6'
+    keys:
+      properties:
+        - type
+    shape: dot
   TaxiwayLightSystem:
-    keys:
-      properties:
-        - colour
     abbrev: TWL
-    colour:
+    color: '#f0ffff'
+    keys:
+      properties:
+    shape: dot
   TaxiwayMarking:
-    keys:
-      properties:
     abbrev: TWM
-    colour:
+    color: '#f0f8ff'
+    keys:
+      properties: null
+    shape: box
   TerminalArrivalArea:
-    keys:
-      properties:
     abbrev: TAA
-    colour:
+    color: '#efdecd'
+    keys:
+      properties: null
+    shape: box
   TouchDownLiftOff:
-    keys:
-      properties:
-        - designator
     abbrev: TLA
-    colour:
+    color: '#ffbf00'
+    keys:
+      properties:
+        - designator
+    shape: box
   TouchDownLiftOffLightSystem:
-    keys:
-      properties:
     abbrev: TLS
-    colour:
+    color: '#a4c639'
+    keys:
+      properties: null
+    shape: box
   TouchDownLiftOffMarking:
-    keys:
-      properties:
     abbrev: TLM
-    colour:
+    color: '#cd9575'
+    keys:
+      properties: null
+    shape: box
   TouchDownLiftOffSafeArea:
-    keys:
-      properties:
     abbrev: TSA
-    colour:
+    color: '#faebd7'
+    keys:
+      properties: null
+    shape: box
   Unit:
-    keys:
-      properties:
-        - designator
-        - type
     abbrev: UNI
-    colour:
-  UnplannedHolding:
-    keys:
-      properties:
-    abbrev: UHG
-    colour:
-  VerticalStructure:
-    keys:
-      properties:
-    abbrev: VST
-    colour:
-  VisualGlideSlopeIndicator:
-    keys:
-      properties:
-        - type
-    abbrev: VGI
-    colour:
-  VOR:
+    color: '#8db600'
     keys:
       properties:
         - designator
         - type
+    shape: box
+  UnplannedHolding:
+    abbrev: UHG
+    color: '#fbceb1'
+    keys:
+      properties: null
+    shape: box
+  VOR:
     abbrev: VOR
-    colour:
-  WorkArea:
+    color: '#ff9966'
     keys:
       properties:
+        - designator
+        - type
+    shape: box
+  VerticalStructure:
+    abbrev: VST
+    color: '#7fffd4'
+    keys:
+      properties: null
+    shape: box
+  VisualGlideSlopeIndicator:
+    abbrev: VGI
+    color: '#e9d66b'
+    keys:
+      properties:
+        - type
+    shape: box
+  WorkArea:
     abbrev: WAR
-    colour:
+    color: '#89cff0'
+    keys:
+      properties: null
+    shape: box

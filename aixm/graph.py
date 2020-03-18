@@ -45,6 +45,8 @@ class Node:
         self.keys = keys
         self.keys_concat = False
         self.is_ghost = False
+        self.color = None
+        self.shape = None
 
     def __eq__(self, other):
         return self.id == other.id and self.name == other.name and self.abbrev == other.abbrev

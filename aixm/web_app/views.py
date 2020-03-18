@@ -87,6 +87,11 @@ def favicon():
 # API
 ########
 
+@aixm_blueprint.route('/load-config', methods=['GET'])
+def load_config():
+    return app.config['FEATURES']
+
+
 
 @aixm_blueprint.route('/validate', methods=['POST'])
 def validate():
@@ -131,7 +136,7 @@ def get_graph_for_feature_name(feature_name: str):
         'offset': offset,
         'limit': limit,
         'total_count': sum(1 for _ in features_),
-        'graph': graph.to_json()
+        'graph': graph.to_json(),
     })
 
 
