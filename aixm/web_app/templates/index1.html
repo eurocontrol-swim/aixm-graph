@@ -106,15 +106,22 @@
     <main class="hide">
       <div class="row valign-wrapper">
         <div class="col s3">
-          <input id="input_text" type="text" data-length="10" placeholder="Filter AirportHeliport by key" ref="filter" v-model="filterKey" v-on:keyup="filter">
+          <input id="input_text" type="text" data-length="10" placeholder="" ref="filter" v-model="filterKey" v-on:keyup="filter">
         </div>
-        <div class="col s8">
+        <div class="col s7">
           <p ref="description"></p>
         </div>
         <div class="col s1">
-          <div class="hide" ref="pagination">
-            <a class="waves-effect waves-light btn btn-small red lighten-2" ref="paginationPrev"><i class="material-icons">chevron_left</i></a>
-            <a class="waves-effect waves-light btn btn-small red lighten-2" ref="paginationNext"><i class="material-icons">chevron_right</i></a>
+          <p ref="pagination">1-5 of 50</p>
+        </div>
+        <div class="col s1">
+          <div>
+            <a class="waves-effect waves-light btn btn-small red lighten-2" ref="paginationPrev" v-on:click="prevPage" disabled>
+              <i class="material-icons">chevron_left</i>
+            </a>
+            <a class="waves-effect waves-light btn btn-small red lighten-2" ref="paginationNext" v-on:click="nextPage" disabled>
+              <i class="material-icons">chevron_right</i>
+            </a>
           </div>
         </div>
       </div>

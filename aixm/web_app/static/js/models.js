@@ -1,60 +1,4 @@
 
-
-var featuresList = new Vue({
-    el: '#features-list',
-    data: {
-        features: [],
-        selectedFeature: null
-    },
-    methods: {
-        add: function(feature_data){
-            this.features.push(feature_data)
-        },
-        setSelectedFeature(feature) {
-            this.selectedFeature = feature;
-
-            filterFeatures.activate();
-            filterFeatures.focus();
-        }
-    }
-})
-
-
-var filterFeatures = new Vue({
-    el: '#filterFeatures',
-    data: {
-        key: null,
-        active: false
-    },
-    methods: {
-        filter: function() {
-            $.ajax({
-                type: "GET",
-                url: "/graph/" + featuresList.selectedFeature.name + "?key=" + this.key,
-                dataType : "json",
-                contentType: "application/json; charset=utf-8",
-                success : function(result) {
-                    createGraph(result.graph)
-                }
-            });
-        },
-        focus: function() {
-            this.$refs.filter.focus();
-        },
-        activate: function() {
-            if (!this.active) {
-                this.active = true;
-            }
-        }
-    },
-    computed: {
-        selectedFeature: function() {
-            return featuresList.selectedFeature.name;
-        }
-    }
-});
-
-
 Vue.component('feature-item', {
   props: ['feature'],
   template:
@@ -172,7 +116,9 @@ var main = new Vue({
     el: 'main',
     data: {
         filterKey: null,
-        selectedFeature: null
+        selectedFeature: null,
+        nextOffset: null,
+        prevOffset: null
     },
     methods: {
         show: function() {
@@ -187,49 +133,103 @@ var main = new Vue({
             this.show();
             $.ajax({
                 type: "GET",
-                url: "/graph/" + feature.name,
+                url: "/graph/" + feature.name + "?offset=0",
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
                 success : function(result) {
                     createGraph(result.graph)
                     that.focusFilter(feature.name);
-                    that.updateDescription(result.offset, result.limit, result.total_count)
+                    that.updateDescription()
+                    that.updatePagination(result.offset, result.limit, result.total_count)
                 }
             });
 
         },
-        filter: function() {
+        filter: function(offset) {
+            this.getGraph(this.filterKey, 0);
+        },
+        getGraph: function(key, offset) {
+            offset = (!offset) ? 0 : offset;
+            var keyQuery = (!key)?"":"key=" + key;
+
             var that = this;
             $.ajax({
                 type: "GET",
-                url: "/graph/" + this.selectedFeature.name + "?key=" + this.filterKey,
+                url: "/graph/" + this.selectedFeature.name + "?" + keyQuery + "&offset=" + offset,
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
                 success : function(result) {
                     createGraph(result.graph)
-                    that.updateDescription(result.offset, result.limit, result.total_count)
+                    that.updateDescription()
+                    that.updatePagination(result.offset, result.limit, result.total_count)
                 }
             });
         },
         focusFilter: function(featureName) {
+            this.$refs.filter.removeAttribute('disabled');
             this.$refs.filter.focus();
             this.$refs.filter.setAttribute('placeholder', 'Filter ' + featureName + ' by key');
-            this.$refs.description.innerHTML = "Displaying all " + featureName + " features";
         },
-        updateDescription: function(offset, limit, totalCount) {
-            if (offset == null) {
-                paging = " <strong>" + totalCount + "</strong> of <strong>" + totalCount + "</strong> "
+        disableFilter: function() {
+            this.$refs.filter.setAttribute('disabled', '');
+            this.$refs.filter.setAttribute('placeholder', '');
+        },
+        updatePagination(offset, limit, total) {
+            if (total <= limit) {
+                text = total + " of " + total;
+                this.disablePagination('prev')
+                this.disablePagination('next')
             }
             else {
-                paging =  " <strong>" + offset + "-" + limit + "</strong> of <strong>" + totalCount + "</strong> "
-            }
+                from = offset + 1;
+                to = ((offset + limit) <= total ) ? offset + limit : total;
+                text = from + "-" + to + " of " + total;
 
-            var html = "Displaying " + paging + this.selectedFeature.name + " features";
+                if (from > 1) {
+                    this.prevOffset = offset - limit;
+                    this.enablePagination('prev')
+                }
+                else {
+                    this.disablePagination('prev')
+                }
+
+                if (to < total) {
+                    this.nextOffset = offset + limit;
+                    this.enablePagination('next')
+                }
+                else {
+                    this.disablePagination('next')
+                }
+            }
+            this.setPaginationText(text);
+        },
+        updateDescription: function() {
+            var text = this.selectedFeature.name + " features";
 
             if (this.filterKey != null) {
-                html += " with matching key <strong>" + this.filterKey + "</strong>"
+                text += " with matching key <strong>" + this.filterKey + "</strong>"
             }
-            this.$refs.description.innerHTML = html;
+            this.setDescription(text);
+        },
+        setPaginationText: function(text) {
+            this.$refs.pagination.innerHTML = text;
+        },
+        setDescription: function(text) {
+            this.$refs.description.innerHTML = text;
+        },
+        nextPage: function() {
+            this.getGraph(this.filterKey, this.nextOffset)
+        },
+        prevPage: function() {
+            this.getGraph(this.filterKey, this.prevOffset)
+        },
+        enablePagination: function(direction) {
+            paginationButton = (direction == "next") ? this.$refs.paginationNext : this.$refs.paginationPrev
+            paginationButton.removeAttribute('disabled');
+        },
+        disablePagination: function(direction) {
+            paginationButton = (direction == "next") ? this.$refs.paginationNext : this.$refs.paginationPrev
+            paginationButton.setAttribute('disabled', '');
         }
     }
 });

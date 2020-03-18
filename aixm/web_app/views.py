@@ -120,16 +120,21 @@ def validate():
 
 @aixm_blueprint.route('/graph/<feature_name>', methods=['GET'])
 def get_graph_for_feature_name(feature_name: str):
+    offset = int(request.args.get('offset', "0"))
     filter_key = request.args.get('key')
 
+    limit = app.config['PAGE_LIMIT']
     # the features generator will be used twice
-    features, features_ = tee(cache.filter_features(name=feature_name, key=filter_key), 2)
+    features, features_ = tee(cache.filter_features(name=feature_name,
+                                                    key=filter_key,
+                                                    offset=offset,
+                                                    limit=(limit + offset) - 1))
 
-    graph = get_features_graph(features)
+    graph = get_features_graph(features=features, offset=offset, limit=(limit + offset) - 1)
 
     return json.dumps({
-        'offset': None,
-        'limit': None,
+        'offset': offset,
+        'limit': limit,
         'total_count': sum(1 for _ in features_),
         'graph': graph.to_json()
     })
@@ -151,7 +156,6 @@ def upload_aixm():
     try:
         file = validate_file_form(request.files)
     except ValueError as e:
-        print(str(e))
         return {
             'status': 'NOK',
             'error': str(e)

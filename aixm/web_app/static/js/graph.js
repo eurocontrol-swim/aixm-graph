@@ -141,7 +141,8 @@ function createGraph(data) {
 
     Network.on("doubleClick", function (params) {
         if (params.nodes.length > 0) {
-            var nodeId = params.nodes[0]
+            var nodeId = params.nodes[0];
+            var nodeName = Nodes.get(nodeId).name;
 
             $.ajax({
                 type: "GET",
@@ -150,6 +151,11 @@ function createGraph(data) {
                 contentType: "application/json; charset=utf-8",
                 success : function(result) {
                     createGraph(result.graph)
+                    main.disableFilter();
+                    main.disablePagination('next');
+                    main.disablePagination('prev');
+                    main.setPaginationText("");
+                    main.setDescription(nodeName + " (" + nodeId + ")");
                 }
             });
         }

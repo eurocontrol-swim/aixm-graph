@@ -25,6 +25,7 @@ LOGGING:
       level: DEBUG
 
 UPLOAD_FOLDER: /tmp
+PAGE_LIMIT: 5
 
 FEATURES:
   AerialRefuelling:
