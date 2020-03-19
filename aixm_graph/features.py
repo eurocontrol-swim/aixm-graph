@@ -37,7 +37,7 @@ from typing import Optional, Dict, List
 from lxml import etree
 from lxml.etree import QName
 
-from aixm.utils import get_attrib_value, get_tag_without_ns, make_attrib
+from aixm_graph.utils import get_attrib_value, get_tag_without_ns, make_attrib
 
 
 class XMLSerializable(ABC):

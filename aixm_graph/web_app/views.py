@@ -39,15 +39,15 @@ from typing import Dict
 from flask import Blueprint, send_from_directory, request, current_app as app, send_file
 from werkzeug.utils import secure_filename
 
-from aixm import cache
-from aixm.graph import get_feature_graph, get_features_graph
-from aixm.parser import process_aixm, generate_aixm_skeleton
-from aixm.stats import get_stats
+from aixm_graph import cache
+from aixm_graph.graph import get_feature_graph, get_features_graph
+from aixm_graph.parser import process_aixm, generate_aixm_skeleton
+from aixm_graph.stats import get_stats
 
 
 _logger = logging.getLogger(__name__)
 
-aixm_blueprint = Blueprint('aixm',
+aixm_blueprint = Blueprint('aixm_graph',
                            __name__,
                            template_folder='templates',
                            static_folder='static')

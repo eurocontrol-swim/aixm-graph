@@ -32,13 +32,13 @@ from setuptools import setup, find_packages
 __author__ = "EUROCONTROL (SWIM)"
 
 setup(
-    name='aixm',
+    name='aixm-graph',
     version='0.0.1',
-    description='AIXM Data Visualization',
+    description='AIXM Graph',
     author='EUROCONTROL (SWIM)',
     author_email='',
     packages=find_packages(exclude=['tests']),
-    # url='https://github.com/eurocontrol-swim/aixm',
+    url='https://github.com/eurocontrol-swim/aixm-graph',
     install_requires=[
     ],
     tests_require=[

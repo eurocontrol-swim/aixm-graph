@@ -32,8 +32,8 @@ __author__ = "EUROCONTROL (SWIM)"
 
 from typing import List, Optional, Union, Any
 
-from aixm import cache
-from aixm.features import AIXMFeature, XLinkElement
+from aixm_graph import cache
+from aixm_graph.features import AIXMFeature, XLinkElement
 
 
 class Node:

@@ -27,80 +27,42 @@ http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
+import sys
+import logging.config
+
+from flask import Flask
+
+from aixm_graph.web_app.views import aixm_blueprint
+
+sys.path.insert(0, '/media/alex/Data/dev/work/eurocontrol/aixm_graph/')
+
+from pkg_resources import resource_filename
+
+from aixm_graph.parser import process_aixm
+from aixm_graph.utils import load_config, get_samples_filepath
 
 __author__ = "EUROCONTROL (SWIM)"
 
-from typing import Dict, Optional
+# TODO: apply pagination in case of big graph
 
-from aixm.features import AIXMFeature
-
-MESSAGE_NS: str = ""
-AIXM_NSMAP: Dict[str, str] = {}
-AIXM_FILEPATH: str = ""
-AIXM_FEATURES: Dict[str, AIXMFeature] = {}
+def handle(response):
+    return response
 
 
-def get_aixm_feature(uuid: str):
-    feature = AIXM_FEATURES.get(uuid)
+app = Flask(__name__)
+app.register_blueprint(aixm_blueprint)
 
-    if feature is None:
-        raise ValueError("Feature not found")
+app_config = load_config(filename=resource_filename(__name__, 'config.yml'))
+app.config.update(app_config)
+app.after_request(handle)
+logging.config.dictConfig(app.config['LOGGING'])
 
-    return feature
+if __name__ == '__main__':
+    # filepath, ns_message = get_samples_filepath('BD_2019-01-03_26fe8f56-0c48-4047-ada0-4e1bd91ed4cf.xml'), \
+    #                        "http://www.aixm.aero/schema/5.1/message"
+    filepath, ns_message = get_samples_filepath('EA_AIP_DS_FULL_20170701.xml'), \
+                           "http://www.aixm.aero/schema/5.1.1/message"
 
+    # feature_elements = process_aixm(filepath=filepath, element_tag=f'{{{ns_message}}}hasMember', config=app.config)
 
-def get_aixm_features_dict():
-    return AIXM_FEATURES
-
-
-def get_aixm_feature_by_uuid(uuid: str):
-    return AIXM_FEATURES.get(uuid)
-
-
-def get_features():
-    return (feature for _, feature in AIXM_FEATURES.items())
-
-
-def filter_features(name: str, offset: int = 0, limit: Optional[int] = None, key: Optional[str] = None):
-    features = (feature for feature in get_features() if feature.el.name == name)
-
-    if key:
-        features = (feature for feature in features if feature.filter_by_key(key))
-
-    return features
-
-
-def save_aixm_feature(feature: AIXMFeature):
-    AIXM_FEATURES[feature.uuid] = feature
-
-
-def save_aixm_filepath(filename: str):
-    global AIXM_FILEPATH
-    AIXM_FILEPATH = filename
-
-
-def get_nsmap():
-    return AIXM_NSMAP
-
-
-def update_nsmap(ns_code, ns_link):
-    global AIXM_NSMAP
-    AIXM_NSMAP[ns_code] = ns_link
-
-
-def get_aixm_filepath():
-    return AIXM_FILEPATH
-
-
-def reset_aixm_features():
-    global AIXM_FEATURES
-    AIXM_FEATURES = {}
-
-
-def save_message_ns(message_ns: str):
-    global MESSAGE_NS
-    MESSAGE_NS = message_ns
-
-
-def get_message_ns():
-    return MESSAGE_NS
+    app.run(host="0.0.0.0", port=3000)

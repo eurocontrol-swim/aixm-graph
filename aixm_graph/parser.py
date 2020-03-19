@@ -36,9 +36,9 @@ from typing import Dict, Tuple, List
 
 from lxml import etree
 
-from aixm.features import AIXMFeature, Extension, XLinkElement
-from aixm.utils import get_tag_without_ns, timeit
-from aixm import cache
+from aixm_graph.features import AIXMFeature, Extension, XLinkElement
+from aixm_graph.utils import get_tag_without_ns, timeit
+from aixm_graph import cache
 
 _logger = logging.getLogger(__name__)
 

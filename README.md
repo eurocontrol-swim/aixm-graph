@@ -1,1 +1,3 @@
-# aixm-data-validation
+# AIXM Graph
+Visualizing AIXM feature associations
+

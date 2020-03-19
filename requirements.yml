@@ -1,4 +1,4 @@
-name: aixm
+name: aixm_graph
 dependencies:
 - python
 - pytest

@@ -34,7 +34,7 @@ from flask import current_app as app
 
 __author__ = "EUROCONTROL (SWIM)"
 
-from aixm import cache
+from aixm_graph import cache
 
 
 def get_stats():
