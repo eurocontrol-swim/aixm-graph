@@ -42,9 +42,14 @@ var sidenav = new Vue({
                 processData: false,
                 success: function(response){
                     self.hideProgress();
-                    self.filename = response.filename;
-                    self.validate()
+                    self.filename = response.data.filename;
+                    self.process();
                 },
+                error: function(response) {
+                    self.hideProgress();
+                    console.log(response.responseJSON.error);
+                    showError('File upload failed')
+                }
             });
             this.filename = "";
             this.$refs.featuresTitle.innerHTML = "No features yet";
@@ -53,21 +58,26 @@ var sidenav = new Vue({
             this.disableSkeleton()
             main.hide();
         },
-        validate: function() {
+        process: function() {
             var self = this;
             $.ajax({
                 type: "POST",
-                url: "/validate",
+                url: "/process",
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({filename: self.filename}),
-                success : function(response) {
+                success: function(response) {
                     self.hideProgress();
-                    self.$refs.featuresTitle.innerHTML = "Features (" + response.total_count + ")";
+                    self.$refs.featuresTitle.innerHTML = "Features (" + response.data.total_count + ")";
                     self.enableSkeleton()
-                    response.features_details.forEach(function(data) {
+                    response.data.features_details.forEach(function(data) {
                         self.features.push(data);
                     });
+                },
+                error: function(response) {
+                    showError('File process failed!')
+                    console.log(response.responseJSON.error);
+                    self.hideProgress();
                 }
             });
 
@@ -125,11 +135,15 @@ var main = new Vue({
                 url: "/graph/" + feature.name + "?offset=0",
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
-                success : function(result) {
-                    createGraph(result.graph)
+                success : function(response) {
+                    createGraph(response.data.graph)
                     that.focusFilter(feature.name);
                     that.updateDescription()
-                    that.updatePagination(result.offset, result.limit, result.total_count)
+                    that.updatePagination(response.data.offset, response.data.limit, response.data.total_count)
+                },
+                error: function() {
+                    console.log(response.responseJSON.error);
+                    showError('Failed to get the graph for ' + feature.name);
                 }
             });
 
@@ -153,10 +167,14 @@ var main = new Vue({
                 url: "/graph/" + this.selectedFeature.name + "?" + keyQuery + "&offset=" + offset,
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
-                success : function(result) {
-                    createGraph(result.graph)
+                success : function(response) {
+                    createGraph(response.data.graph)
                     that.updateDescription()
-                    that.updatePagination(result.offset, result.limit, result.total_count)
+                    that.updatePagination(response.data.offset, response.data.limit, response.data.total_count)
+                },
+                error: function(response) {
+                    console.log(response.responseJSON.error);
+                    showError('Failed to get the graph for ' + feature.name);
                 }
             });
         },

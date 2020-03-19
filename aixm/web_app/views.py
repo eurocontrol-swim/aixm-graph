@@ -30,14 +30,13 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-import json
 import logging
 import os
+from functools import wraps
 from itertools import tee
 from typing import Dict
 
 from flask import Blueprint, send_from_directory, request, current_app as app, send_file
-from lxml import etree
 from werkzeug.utils import secure_filename
 
 from aixm import cache
@@ -48,7 +47,7 @@ from aixm.stats import get_stats
 
 _logger = logging.getLogger(__name__)
 
-aixm_blueprint = Blueprint('geofencing_viewer',
+aixm_blueprint = Blueprint('aixm',
                            __name__,
                            template_folder='templates',
                            static_folder='static')
@@ -87,14 +86,30 @@ def favicon():
 # API
 ########
 
+def handle_response(f):
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        status_code = 200
+        result = {}
+        try:
+            result['data'] = f(*args, **kwargs)
+        except Exception as e:
+            result['error'] = str(e)
+            status_code = 400
+
+        return result, status_code
+    return decorator
+
+
 @aixm_blueprint.route('/load-config', methods=['GET'])
+@handle_response
 def load_config():
     return app.config['FEATURES']
 
 
-
-@aixm_blueprint.route('/validate', methods=['POST'])
-def validate():
+@aixm_blueprint.route('/process', methods=['POST'])
+@handle_response
+def process():
     data = request.get_json()
 
     filepath = os.path.join('/tmp', data['filename'])
@@ -112,13 +127,14 @@ def validate():
         for key, value in stats.items() if value['total_count'] > 0
     ]
 
-    return json.dumps({
+    return {
         "features_details": features_details,
         "total_count": sum(s['total_count'] for s in features_details)
-    })
+    }
 
 
 @aixm_blueprint.route('/graph/<feature_name>', methods=['GET'])
+@handle_response
 def get_graph_for_feature_name(feature_name: str):
     offset = int(request.args.get('offset', "0"))
     filter_key = request.args.get('key')
@@ -132,42 +148,37 @@ def get_graph_for_feature_name(feature_name: str):
 
     graph = get_features_graph(features=features, offset=offset, limit=(limit + offset) - 1)
 
-    return json.dumps({
+    return {
         'offset': offset,
         'limit': limit,
         'total_count': sum(1 for _ in features_),
         'graph': graph.to_json(),
-    })
+    }
 
 
 @aixm_blueprint.route('/feature/<uuid>/graph', methods=['GET'])
+@handle_response
 def get_graph_for_feature_uuid(uuid: str):
     feature = cache.get_aixm_feature_by_uuid(uuid)
 
     graph = get_feature_graph(feature)
 
-    return json.dumps({
+    return {
         'graph': graph.to_json()
-    })
+    }
 
 
 @aixm_blueprint.route('/upload', methods=['POST'])
+@handle_response
 def upload_aixm():
-    try:
-        file = validate_file_form(request.files)
-    except ValueError as e:
-        return {
-            'status': 'NOK',
-            'error': str(e)
-        }, 400
+    file = validate_file_form(request.files)
 
     filename = secure_filename(file.filename)
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
     return {
-        'status': 'OK',
         'filename': filename
-    }, 200
+    }
 
 
 def validate_file_form(file_form: Dict):
@@ -189,6 +200,7 @@ def allowed_file(filename):
 
 
 @aixm_blueprint.route('/download', methods=['GET'])
+@handle_response
 def download():
     skeleton_filepath = generate_aixm_skeleton(filepath=cache.get_aixm_filepath(), features=cache.get_features())
 

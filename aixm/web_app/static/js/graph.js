@@ -26,7 +26,6 @@ function getNodePopup(node) {
 
 function processData(data) {
     data.nodes.forEach(function(node) {
-//        node.group = node.is_ghost?"GhostGroup":node.name;
         node.label = node.abbrev;
         if (node.keys.length > 0) {
             var sep = node.keys_concat?"":","
@@ -55,47 +54,8 @@ function processData(data) {
     return data;
 }
 
-var colors = [
-	"#f0f8ff",
-	"#efdecd",
-	"#ffbf00",
-	"#a4c639",
-	"#cd9575",
-	"#faebd7",
-	"#8db600",
-	"#fbceb1",
-	"#7fffd4",
-	"#e9d66b",
-	"#ff9966",
-	"#89cff0",
-	"#f4c2c2",
-	"#fae7b5",
-	"#bcd4e6",
-	"#f0ffff"
-]
-
-var shapes = [
-    'square',
-    'hexagon',
-    'diamond',
-    'triangle',
-    'triangleDown',
-    'ellipse',
-    'dot',
-    'box'
-]
-
-ghostGroup = {shape: 'star', color: '#DCDCDC'}
-
-function randomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
 
 var Nodes, Edges, Network, shapeColorsIndex;
-
-function getRandomGroupColorShape() {
-    return {color: colors[randomInt(0, colors.length - 1)], shape: shapes[randomInt(0, shapes.length - 1)]}
-}
 
 function createGraph(data) {
     data = processData(data);
@@ -103,21 +63,11 @@ function createGraph(data) {
     Nodes = new vis.DataSet(data.nodes);
     Edges = new vis.DataSet(data.edges);
 
-//    var groups = {},
-//        groupNames = Array.from(new Set(data.nodes.map((n) => n.name)));
-//
-//    groupNames.forEach(function(gn, i) {
-//        groups[gn] = getRandomGroupColorShape();
-//    });
-//    groups['GhostGroup'] = ghostGroup
-
     var container = document.getElementById('graph');
-
     var options = {
         interaction: {
             hover: true
-        },
-//        groups: groups
+        }
     };
 
     Network = new vis.Network(container, {nodes: Nodes, edges: Edges}, options);
@@ -132,13 +82,17 @@ function createGraph(data) {
                 url: "/feature/" + nodeId + "/graph",
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
-                success : function(result) {
-                    createGraph(result.graph)
+                success : function(response) {
+                    createGraph(response.data.graph)
                     main.disableFilter();
                     main.disablePagination('next');
                     main.disablePagination('prev');
                     main.setPaginationText("");
                     main.setDescription("<strong>" + nodeName + "</strong>" + " (" + nodeId + ")");
+                },
+                error: function(response) {
+                    console.log(response.responseJSON.error);
+                    showError('Failed to get the graph for feature ' + nodeName + ' ' + nodeId);
                 }
             });
         }
@@ -153,8 +107,12 @@ function createGraph(data) {
                 url: "/feature/" + nodeId + "/graph",
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
-                success : function(result) {
-                    updateGraph(result.graph)
+                success : function(response) {
+                    updateGraph(response.data.graph)
+                },
+                error: function(response) {
+                    console.log(response.responseJSON.error);
+                    showError('Failed to expand the graph.');
                 }
             });
         }
@@ -165,9 +123,6 @@ function updateGraph(data) {
     data = processData(data);
 
     data.nodes.forEach(function(node) {
-//        if (Network.groups.groupsArray.indexOf(node.name) < 0) {
-//            Network.groups.add(node.name, getRandomGroupColorShape());
-//        }
         if (!nodeExists(node)) {
             Nodes.add(node);
         }

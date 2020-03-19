@@ -38,7 +38,7 @@ setup(
     author='EUROCONTROL (SWIM)',
     author_email='',
     packages=find_packages(exclude=['tests']),
-    # url='https://github.com/eurocontrol-swim/geofencing-service',
+    # url='https://github.com/eurocontrol-swim/aixm',
     install_requires=[
     ],
     tests_require=[
