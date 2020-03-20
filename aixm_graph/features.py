@@ -243,7 +243,7 @@ class AIXMFeatureData(FeatureData):
     def process_associated_xlink(xlink: etree.Element) -> etree.Element:
         tags = [xlink.getparent().getparent().tag]
 
-        tags.extend([el.text for el in xlink.getparent() if el != xlink and len(el) == 0])
+        tags.extend([el.text or "" for el in xlink.getparent() if el != xlink and len(el) == 0])
 
         return etree.Element("_".join(tags), attrib=xlink.attrib, nsmap=xlink.nsmap)
 
