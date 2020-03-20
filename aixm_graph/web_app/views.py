@@ -94,6 +94,7 @@ def handle_response(f):
         try:
             result['data'] = f(*args, **kwargs)
         except Exception as e:
+            _logger.exception(str(e))
             result['error'] = str(e)
             status_code = 400
 
