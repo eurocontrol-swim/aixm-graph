@@ -33,7 +33,7 @@ function processData(data) {
         }
         node.title = getNodePopup(node);
         if (node.is_ghost) {
-            node.color = "#DCDCDC";
+            node.color = "#FF0000";
             node.shape = "star";
         }
         else {
