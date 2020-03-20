@@ -44,6 +44,7 @@ class Node:
         self.abbrev = abbrev
         self.keys = keys
         self.keys_concat = False
+        self.links_count = 0
         self.is_ghost = False
         self.color = None
         self.shape = None
@@ -56,6 +57,7 @@ class Node:
         keys = [key for data in feature.feature_data for key in data.keys]
         obj = cls(id=feature.uuid, name=feature.el.name, abbrev=feature.abbrev, keys=keys)
         obj.keys_concat = feature.keys_concat
+        obj.links_count = feature.links_count()
 
         return obj
 
@@ -73,7 +75,8 @@ class Node:
             'abbrev': self.abbrev,
             'keys': self.keys,
             'keys_concat': self.keys_concat,
-            'is_ghost': self.is_ghost
+            'is_ghost': self.is_ghost,
+            'links_count': self.links_count
         }
 
 

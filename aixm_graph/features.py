@@ -194,6 +194,9 @@ class Feature(XMLSerializable):
 
         return any(key.lower() in feature_key for feature_key in feature_keys)
 
+    def links_count(self):
+        return sum([len(data.links()) for data in self.feature_data])
+
     def has_broken_xlinks(self):
         return any([data.has_broken_xlinks() for data in self.feature_data])
 

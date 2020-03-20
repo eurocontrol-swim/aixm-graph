@@ -26,7 +26,10 @@ function getNodePopup(node) {
 
 function processData(data) {
     data.nodes.forEach(function(node) {
-        node.label = node.abbrev;
+        var currentLinks = data.edges.filter((e) => e.source == node.id || e.target == node.id)
+
+        node.label = node.links_count > currentLinks.length ? "[+] " + node.abbrev : node.abbrev;
+
         if (node.keys.length > 0) {
             var sep = node.keys_concat?"":","
             node.label += ": " + node.keys.map((k) => Object.values(k)[0]).join(sep);
