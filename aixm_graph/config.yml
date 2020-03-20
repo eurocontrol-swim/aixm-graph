@@ -20,8 +20,7 @@ LOGGING:
     handlers: [console]
 
   loggers:
-
-    aixm:
+    aixm_graph:
       level: DEBUG
 
 UPLOAD_FOLDER: /tmp

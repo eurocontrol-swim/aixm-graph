@@ -199,8 +199,8 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'xml'
 
 
+# @handle_response
 @aixm_blueprint.route('/download', methods=['GET'])
-@handle_response
 def download():
     skeleton_filepath = generate_aixm_skeleton(filepath=cache.get_aixm_filepath(), features=cache.get_features())
 

@@ -8,6 +8,7 @@ dependencies:
   - click=7.1.1=py_0
   - coverage=5.0=py37h7b6447c_0
   - flask=1.1.1=py_0
+  - gunicorn=20.0.4=py37_0
   - icu=58.2=h9c2bf20_1
   - importlib_metadata=1.5.0=py37_0
   - itsdangerous=1.1.0=py_0
