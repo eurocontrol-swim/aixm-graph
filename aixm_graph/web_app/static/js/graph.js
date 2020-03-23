@@ -3,11 +3,11 @@ function getNodePopup(node) {
      result += "<table id='node-tooltip' data-node-id=" + node.id + ">" +
         "<tr style='border-bottom: 1px solid black;'>" +
             "<td style='padding: 0px;'><strong>" + node.name + "</strong></td>" +
-            "<td style='padding: 0px;'></td>" +
+            "<td style='padding: 0px 10px;'></td>" +
         "</tr>" +
         "<tr>" +
             "<td style='padding: 0px;'><strong>UUID</strong></td>" +
-            "<td style='padding: 0px;'>" + node.id + "</td>" +
+            "<td style='padding: 0px 10px;'>" + node.id + "</td>" +
         "</tr>";
 
      node.keys.forEach(function(key) {
@@ -15,9 +15,14 @@ function getNodePopup(node) {
         var value = Object.values(key)[0];
         result += "<tr>" +
             "<td style='padding: 0px;'><strong>" + name + "</strong></td>" +
-            "<td style='padding: 0px;'>" + value + "</td>" +
+            "<td style='padding: 0px 10px;'>" + value + "</td>" +
         "</tr>";
      });
+
+     result += "<tr>" +
+         "<td style='padding: 0px;'><strong>Num of links</strong></td>" +
+         "<td style='padding: 0px 10px'>" + node.linksNum + "</td>" +
+     "</tr>";
 
      result += "</table>"
 
@@ -29,6 +34,7 @@ function processData(data) {
         var currentLinks = data.edges.filter((e) => e.source == node.id || e.target == node.id)
 
         node.label = node.links_count > currentLinks.length ? "[+] " + node.abbrev : node.abbrev;
+        node.linksNum = node.links_count;
 
         if (node.keys.length > 0) {
             var sep = node.keys_concat?"":","
@@ -146,6 +152,15 @@ function updateGraph(data) {
             Edges.add(edge);
         }
     });
+
+    // update labels of existing nodes
+    Network.body.nodeIndices.forEach(function(index) {
+        node = Network.body.nodes[index];
+        if ( node.options.links_count == node.edges.length && node.options.label.startsWith("[+] ")) {
+            node.options.label = node.options.label.slice(4);
+        }
+    });
+
 }
 
 
@@ -165,5 +180,3 @@ function edgeExists(edge) {
     }
     return false;
 }
-
-
