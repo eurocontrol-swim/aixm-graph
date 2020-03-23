@@ -260,7 +260,9 @@ class AIXMFeature(Feature):
         return AIXMFeatureData
 
     def to_lxml(self, nsmap: Dict[str, str]):
-        root = etree.Element(f"{{{nsmap[self.el.prefix]}}}{self.el.name}", nsmap=nsmap)
+        root = etree.Element(f"{{{nsmap[self.el.prefix]}}}{self.el.name}",
+                             attrib=make_attrib(name='id', value=f"urn:uuid:{self.uuid}", ns=nsmap['gml']),
+                             nsmap=nsmap)
         for data in self.feature_data:
             root.append(data.to_lxml(nsmap))
 
