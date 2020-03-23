@@ -1,6 +1,6 @@
 function getNodePopup(node) {
     var result = "";
-     result += "<table id='node-tooltip'>" +
+     result += "<table id='node-tooltip' data-node-id=" + node.id + ">" +
         "<tr style='border-bottom: 1px solid black;'>" +
             "<td style='padding: 0px;'><strong>" + node.name + "</strong></td>" +
             "<td style='padding: 0px;'></td>" +
@@ -103,7 +103,7 @@ function createGraph(data) {
 
     Network.on("click", function (params) {
         if (params.nodes.length > 0) {
-            var nodeId = params.nodes[0]
+            var nodeId = params.nodes[0];
 
             $.ajax({
                 type: "GET",
@@ -118,6 +118,16 @@ function createGraph(data) {
                     showError('Failed to expand the graph.');
                 }
             });
+        }
+    });
+
+    $(document).keydown(function(e){
+        if(e.which === 67 && e.ctrlKey){
+            var tooltip = $("#node-tooltip")[0];
+            if (tooltip) {
+                var nodeId = tooltip.getAttribute('data-node-id');
+                copyToClipboard(nodeId);
+            }
         }
     });
 }
