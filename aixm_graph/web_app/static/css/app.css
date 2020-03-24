@@ -85,5 +85,5 @@ table#node-tooltip > td {
 }
 
 #dropdown-aixm-files {
-    position: relative;
+    min-width: 400px;
 }
