@@ -20,6 +20,7 @@ var Sidenav = new Vue({
         filename: null,
         fileId: null,
         features: [],
+        displayFeatures: [],
         selectedFeature: null
     },
     methods: {
@@ -29,10 +30,18 @@ var Sidenav = new Vue({
             $('.modal').modal();
             $('.tooltipped').tooltip();
         },
+        addFeature: function(data) {
+            this.features.push(data);
+            this.displayFeatures.push(data);
+        },
+        resetFeatures: function() {
+            this.features = [];
+            this.displayFeatures = [];
+        },
         prepareLoad: function() {
             this.filename = "";
-            this.$refs.featuresTitle.innerHTML = "No features yet";
-            this.features = [];
+            this.$refs.featuresTitle.innerHTML = 'No features yet <i class="material-icons">arrow_drop_down</i>';
+            this.resetFeatures();
             this.disableSkeleton();
         },
         fileLoaded: function(filename, fileId) {
@@ -51,10 +60,10 @@ var Sidenav = new Vue({
                 data: {},
                 success: function(response) {
                     self.hideProgress();
-                    self.$refs.featuresTitle.innerHTML = "Features (" + response.data.total_count + ")";
+                    self.$refs.featuresTitle.innerHTML = 'Features (' + response.data.total_count + ') <i class="material-icons">arrow_drop_down</i>';
                     self.enableSkeleton()
                     response.data.features_details.forEach(function(data) {
-                        self.features.push(data);
+                        self.addFeature(data);
                     });
                 },
                 error: function(response) {
@@ -105,7 +114,15 @@ var Sidenav = new Vue({
               <i class="material-icons" ref="skeleton">cloud_off</i>
               Skeleton not available`;
             this.$refs.skeleton.setAttribute('href', "")
-        }
+        },
+        filterBrokenLinks: function() {
+            if (this.$refs.featuresCheckbox.checked) {
+                this.displayFeatures = this.features.filter((f) => f.has_broken_xlinks);
+            }
+            else {
+                this.displayFeatures = this.features;
+            }
+         }
     }
 });
 

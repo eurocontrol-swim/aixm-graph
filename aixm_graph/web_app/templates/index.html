@@ -99,10 +99,32 @@
               </li>
             </ul>
           </li>
-          <li>
-            <a class="subheader" href="#!" ref="featuresTitle">No features yet...</a>
+          <li class="no-padding">
+            <ul class="collapsible collapsible-accordion">
+              <li>
+                <a class="collapsible-header" ref="featuresTitle">No features yet...<i class="material-icons">arrow_drop_down</i></a>
+                <div class="collapsible-body">
+                  <ul>
+                    <li>
+                      <a href="#">
+                        <div class="switch">
+                          <label>
+                            All
+                            <input type="checkbox" ref="featuresCheckbox" @change="filterBrokenLinks()">
+                            <span class="lever"></span>
+                            Only with broken links
+                          </label>
+                        </div>
+                      </a>
+                    </li>
+                    <li><div class="divider"></div>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+            </ul>
           </li>
-          <feature-item  v-for="feature in features"
+          <feature-item  v-for="feature in displayFeatures"
             v-bind:feature="feature"
             v-bind:key="feature.name"
             v-on:click.native="getGraphForFeature(feature)">
