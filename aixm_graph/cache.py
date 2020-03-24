@@ -30,18 +30,65 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
+import uuid
 from typing import Dict, Optional
 
 from aixm_graph.features import AIXMFeature
 
-MESSAGE_NS: str = ""
-AIXM_NSMAP: Dict[str, str] = {}
-AIXM_FILEPATH: str = ""
-AIXM_FEATURES: Dict[str, AIXMFeature] = {}
+DATABASE = {
+    'features_config': {},
+    'files': {}
+}
 
 
-def get_aixm_feature(uuid: str):
-    feature = AIXM_FEATURES.get(uuid)
+def save_features_config(config: Dict):
+    DATABASE['features_config'] = config
+
+
+def get_features_config():
+    return DATABASE['features_config']
+
+
+def save_file(filepath: str) -> str:
+    _id = uuid.uuid4().hex[:6]
+    file = {
+        'path': filepath,
+        'message_ns': "",
+        'nsmap': {},
+        'features': {},
+        'stats': {}
+    }
+    DATABASE['files'][_id] = file
+
+    return _id
+
+
+def get_file(file_id: str):
+    return DATABASE['files'][file_id]
+
+
+def get_file_nsmap(file_id: str):
+    return DATABASE['files'][file_id]['nsmap']
+
+
+def update_file_nsmap(file_id: str, ns_code: str, ns_link: str):
+    DATABASE['files'][file_id]['nsmap'][ns_code] = ns_link
+
+
+def save_file_message_ns(file_id: str, message_ns: str):
+    DATABASE['files'][file_id]['message_ns'] = message_ns
+
+
+def get_file_message_ns(file_id: str):
+    return DATABASE['files'][file_id]['message_ns']
+
+
+def save_file_feature(file_id: str,  feature: AIXMFeature):
+    DATABASE['files'][file_id]['features'][feature.uuid] = feature
+
+
+def get_file_feature(file_id: str, uuid: str):
+    feature = DATABASE['files'][file_id]['features'].get(uuid)
 
     if feature is None:
         raise ValueError("Feature not found")
@@ -49,20 +96,16 @@ def get_aixm_feature(uuid: str):
     return feature
 
 
-def get_aixm_features_dict():
-    return AIXM_FEATURES
+def get_file_features_dict(file_id: str):
+    return DATABASE['files'][file_id]['features']
 
 
-def get_aixm_feature_by_uuid(uuid: str):
-    return AIXM_FEATURES.get(uuid)
+def get_file_features_gen(file_id: str):
+    return (feature for _, feature in DATABASE['files'][file_id]['features'].items())
 
 
-def get_features():
-    return (feature for _, feature in AIXM_FEATURES.items())
-
-
-def filter_features(name: str, offset: int = 0, limit: Optional[int] = None, key: Optional[str] = None):
-    features = (feature for feature in get_features() if feature.el.name == name)
+def filter_file_features(file_id: str, name: str, key: Optional[str] = None):
+    features = (feature for feature in get_file_features_gen(file_id) if feature.el.name == name)
 
     if key:
         features = (feature for feature in features if feature.filter_by_key(key))
@@ -70,37 +113,5 @@ def filter_features(name: str, offset: int = 0, limit: Optional[int] = None, key
     return features
 
 
-def save_aixm_feature(feature: AIXMFeature):
-    AIXM_FEATURES[feature.uuid] = feature
-
-
-def save_aixm_filepath(filename: str):
-    global AIXM_FILEPATH
-    AIXM_FILEPATH = filename
-
-
-def get_nsmap():
-    return AIXM_NSMAP
-
-
-def update_nsmap(ns_code, ns_link):
-    global AIXM_NSMAP
-    AIXM_NSMAP[ns_code] = ns_link
-
-
-def get_aixm_filepath():
-    return AIXM_FILEPATH
-
-
-def reset_aixm_features():
-    global AIXM_FEATURES
-    AIXM_FEATURES = {}
-
-
-def save_message_ns(message_ns: str):
-    global MESSAGE_NS
-    MESSAGE_NS = message_ns
-
-
-def get_message_ns():
-    return MESSAGE_NS
+def save_file_stats(file_id, stats: Dict):
+    DATABASE['files'][file_id]['stats'] = stats

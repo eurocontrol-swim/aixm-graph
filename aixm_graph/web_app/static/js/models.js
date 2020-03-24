@@ -14,11 +14,13 @@ Vue.component('feature-item', {
 });
 
 
-var sidenav = new Vue({
+var Sidenav = new Vue({
     el: '#side-nav',
     data: {
         filename: null,
+        fileId: null,
         features: [],
+        selectedFeature: null
     },
     methods: {
         init: function() {
@@ -27,45 +29,26 @@ var sidenav = new Vue({
             $('.modal').modal();
             $('.tooltipped').tooltip();
         },
-        uploadAndValidate: function() {
-            var self = this;
-            var formData = new FormData(),
-                fileInputElement = $("#aixm-upload")[0];
-
-            formData.append("file", this.$refs.fileInput.files[0]);
-
-            $.ajax({
-                url: '/upload',
-                type: 'POST',
-                data: formData,
-                contentType: false,
-                processData: false,
-                success: function(response){
-                    self.hideProgress();
-                    self.filename = response.data.filename;
-                    self.process();
-                },
-                error: function(response) {
-                    self.hideProgress();
-                    console.log(response.responseJSON.error);
-                    showError('File upload failed')
-                }
-            });
+        prepareLoad: function() {
             this.filename = "";
             this.$refs.featuresTitle.innerHTML = "No features yet";
-            this.features = []
-            this.showProgress('Uploading...');
-            this.disableSkeleton()
-            main.hide();
+            this.features = [];
+            this.disableSkeleton();
         },
-        process: function() {
+        fileLoaded: function(filename, fileId) {
+            this.hideProgress();
+            this.filename = filename;
+            this.fileId = fileId;
+            this.process(fileId);
+        },
+        process: function(fileId) {
             var self = this;
             $.ajax({
-                type: "POST",
-                url: "/process",
+                type: "PUT",
+                url: "/files/" + fileId + "/process",
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({filename: self.filename}),
+                data: {},
                 success: function(response) {
                     self.hideProgress();
                     self.$refs.featuresTitle.innerHTML = "Features (" + response.data.total_count + ")";
@@ -81,10 +64,24 @@ var sidenav = new Vue({
                 }
             });
 
-            this.showProgress('Validating features...');
+            this.showProgress('Processing file...');
         },
-        selectFeature: function(feature) {
-            main.createGraphForFeature(feature);
+        getGraphForFeature: function(feature) {
+            var that = this;
+            $.ajax({
+                type: "GET",
+                url: "/files/" + this.fileId + "/features/graph?name=" + feature.name + "&offset=0",
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                success : function(response) {
+                    that.selectedFeature = feature;
+                    Main.drawGraph(response.data.graph, response.data.offset, response.data.limit, response.data.total_count);
+                },
+                error: function() {
+                    console.log(response.responseJSON.error);
+                    showError('Failed to get the graph for ' + feature.name);
+                }
+            });
         },
         showProgress: function(text) {
             this.$refs.progress.innerHTML = '<a class="center-align" id="progress-text">' + text + '</a>';
@@ -97,24 +94,26 @@ var sidenav = new Vue({
             this.$refs.progressBar.setAttribute('class', 'hide');
         },
         enableSkeleton: function() {
+            var downloadLink = "/files/" + this.fileId + "/download";
             this.$refs.skeleton.innerHTML = `
               <i class="material-icons" ref="skeleton">cloud_downloadff</i>
               Download skeleton`;
+            this.$refs.skeleton.setAttribute('href', downloadLink)
         },
         disableSkeleton: function() {
             this.$refs.skeleton.innerHTML = `
               <i class="material-icons" ref="skeleton">cloud_off</i>
               Skeleton not available`;
+            this.$refs.skeleton.setAttribute('href', "")
         }
     }
 });
 
 
-var main = new Vue({
+var Main = new Vue({
     el: 'main',
     data: {
         filterKey: null,
-        selectedFeature: null,
         nextOffset: null,
         prevOffset: null,
         filterNullified: true
@@ -126,27 +125,12 @@ var main = new Vue({
         hide: function() {
             this.$el.setAttribute('class', 'hide');
         },
-        createGraphForFeature: function(feature) {
-            this.selectedFeature = feature;
-            var that = this;
+        drawGraph: function(graph, offset, limit, total_count) {
             this.show();
-            $.ajax({
-                type: "GET",
-                url: "/graph/" + feature.name + "?offset=0",
-                dataType : "json",
-                contentType: "application/json; charset=utf-8",
-                success : function(response) {
-                    createGraph(response.data.graph)
-                    that.focusFilter(feature.name);
-                    that.updateDescription()
-                    that.updatePagination(response.data.offset, response.data.limit, response.data.total_count)
-                },
-                error: function() {
-                    console.log(response.responseJSON.error);
-                    showError('Failed to get the graph for ' + feature.name);
-                }
-            });
-
+            createGraph(graph)
+            this.focusFilter(Sidenav.selectedFeature.name);
+            this.updateDescription()
+            this.updatePagination(offset, limit, total_count)
         },
         filter: function(event) {
             if (event.key == 'Backspace' || (event.keyCode >= 65 && event.keyCode <= 90) || (event.keyCode >= 48 && event.keyCode <= 57)) {
@@ -164,7 +148,7 @@ var main = new Vue({
             var that = this;
             $.ajax({
                 type: "GET",
-                url: "/graph/" + this.selectedFeature.name + "?" + keyQuery + "&offset=" + offset,
+                url: "/files/" + Sidenav.fileId + "/features/graph?name=" + Sidenav.selectedFeature.name + "&" + keyQuery + "&offset=" + offset,
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
                 success : function(response) {
@@ -174,7 +158,7 @@ var main = new Vue({
                 },
                 error: function(response) {
                     console.log(response.responseJSON.error);
-                    showError('Failed to get the graph for ' + feature.name);
+                    showError('Failed to get the graph for ' + Sidenav.selectedFeature.name);
                 }
             });
         },
@@ -218,7 +202,7 @@ var main = new Vue({
             this.setPaginationText(text);
         },
         updateDescription: function() {
-            var text = "<strong>" + this.selectedFeature.name + "</strong> features";
+            var text = "<strong>" + Sidenav.selectedFeature.name + "</strong> features";
 
             if (this.filterKey != null) {
                 text += " with matching key <strong>" + this.filterKey + "</strong>"
@@ -247,3 +231,59 @@ var main = new Vue({
         }
     }
 });
+
+
+Vue.component('file-item-dropdown', {
+  props: ['file'],
+  template:
+  `
+    <li>
+        <a href="#">
+            {{ file.filename }}
+        </a>
+    </li>
+  `
+});
+
+
+var Nav = new Vue({
+    el: '#nav',
+    data: {
+        files: []
+    },
+    methods: {
+        uploadFile: function() {
+            var self = this;
+            var formData = new FormData(),
+                fileInputElement = $("#aixm-upload")[0];
+
+            formData.append("file", this.$refs.fileInput.files[0]);
+
+            $.ajax({
+                url: '/upload',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response){
+                    self.files.push(response.data)
+                    Sidenav.fileLoaded(response.data.filename, response.data.file_id);
+                },
+                error: function(response) {
+                    self.hideProgress();
+                    console.log(response.responseJSON.error);
+                    showError('File upload failed')
+                }
+            });
+            Sidenav.showProgress('Uploading...');
+            Sidenav.prepareLoad();
+            Main.hide();
+        },
+        loadFile: function(file) {
+            Sidenav.prepareLoad();
+            Main.hide();
+            Sidenav.fileLoaded(file.filename, file.file_id);
+        }
+    }
+});
+

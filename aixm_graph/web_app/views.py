@@ -40,9 +40,9 @@ from flask import Blueprint, send_from_directory, request, current_app as app, s
 from werkzeug.utils import secure_filename
 
 from aixm_graph import cache
-from aixm_graph.graph import get_feature_graph, get_features_graph
+from aixm_graph.graph import get_file_feature_graph, get_file_features_graph
 from aixm_graph.parser import process_aixm, generate_aixm_skeleton
-from aixm_graph.stats import get_stats
+from aixm_graph.stats import get_file_stats
 
 
 _logger = logging.getLogger(__name__)
@@ -105,19 +105,21 @@ def handle_response(f):
 @aixm_blueprint.route('/load-config', methods=['GET'])
 @handle_response
 def load_config():
-    return app.config['FEATURES']
+    return cache.get_features_config()
 
 
-@aixm_blueprint.route('/process', methods=['POST'])
+@aixm_blueprint.route('/files/<file_id>/process', methods=['PUT'])
 @handle_response
-def process():
-    data = request.get_json()
+def process_file(file_id: str):
+    file = cache.get_file(file_id)
 
-    filepath = os.path.join('/tmp', data['filename'])
-    cache.save_aixm_filepath(filepath)
-    process_aixm(filepath=filepath, features_config=app.config['FEATURES'])
+    if not file['features']:
+        process_aixm(file_id=file_id, features_config=cache.get_features_config())
 
-    stats = get_stats()
+    stats = file['stats']
+    if not stats:
+        stats = get_file_stats(file_id)
+        cache.save_file_stats(file_id, stats)
 
     features_details = [
         {
@@ -134,20 +136,21 @@ def process():
     }
 
 
-@aixm_blueprint.route('/graph/<feature_name>', methods=['GET'])
+@aixm_blueprint.route('/files/<file_id>/features/graph', methods=['GET'])
 @handle_response
-def get_graph_for_feature_name(feature_name: str):
+def get_graph_for_feature_name(file_id: str):
+    name = request.args.get('name')
+    if not name:
+        raise ValueError("Feature name not specified")
+
     offset = int(request.args.get('offset', "0"))
     filter_key = request.args.get('key')
 
     limit = app.config['PAGE_LIMIT']
     # the features generator will be used twice
-    features, features_ = tee(cache.filter_features(name=feature_name,
-                                                    key=filter_key,
-                                                    offset=offset,
-                                                    limit=(limit + offset) - 1))
+    features, features_ = tee(cache.filter_file_features(file_id=file_id, name=name, key=filter_key))
 
-    graph = get_features_graph(features=features, offset=offset, limit=(limit + offset) - 1)
+    graph = get_file_features_graph(file_id, features=features, offset=offset, limit=(limit + offset) - 1)
 
     return {
         'offset': offset,
@@ -157,12 +160,10 @@ def get_graph_for_feature_name(feature_name: str):
     }
 
 
-@aixm_blueprint.route('/feature/<uuid>/graph', methods=['GET'])
+@aixm_blueprint.route('/files/<file_id>/features/<uuid>/graph', methods=['GET'])
 @handle_response
-def get_graph_for_feature_uuid(uuid: str):
-    feature = cache.get_aixm_feature_by_uuid(uuid)
-
-    graph = get_feature_graph(feature)
+def get_graph_for_feature_uuid(file_id: str, uuid: str):
+    graph = get_file_feature_graph(file_id=file_id, feature_id=uuid)
 
     return {
         'graph': graph.to_json()
@@ -175,11 +176,22 @@ def upload_aixm():
     file = validate_file_form(request.files)
 
     filename = secure_filename(file.filename)
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(filepath)
+
+    file_id = cache.save_file(filepath)
 
     return {
-        'filename': filename
+        'filename': filename,
+        'file_id': file_id
     }
+
+
+@aixm_blueprint.route('/files/<file_id>/download', methods=['GET'])
+def download(file_id: str):
+    skeleton_filepath = generate_aixm_skeleton(file_id=file_id, features=cache.get_file_features_gen(file_id))
+
+    return send_file(skeleton_filepath, as_attachment=True)
 
 
 def validate_file_form(file_form: Dict):
@@ -198,11 +210,3 @@ def validate_file_form(file_form: Dict):
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'xml'
-
-
-# @handle_response
-@aixm_blueprint.route('/download', methods=['GET'])
-def download():
-    skeleton_filepath = generate_aixm_skeleton(filepath=cache.get_aixm_filepath(), features=cache.get_features())
-
-    return send_file(skeleton_filepath, as_attachment=True)

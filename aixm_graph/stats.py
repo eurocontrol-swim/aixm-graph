@@ -37,12 +37,13 @@ __author__ = "EUROCONTROL (SWIM)"
 from aixm_graph import cache
 
 
-def get_stats():
-    feature_names = app.config['FEATURES'].keys()
+def get_file_stats(file_id: str):
+    features_config = cache.get_features_config()
+    feature_names = features_config.keys()
     stat = defaultdict(dict)
 
     for feature_name in feature_names:
-        features_callback = partial(cache.filter_features, feature_name)
+        features_callback = partial(cache.filter_file_features, file_id, feature_name)
 
         stat[feature_name]['total_count'] = sum(1 for _ in features_callback())
         stat[feature_name]['has_broken_xlinks'] = any((f.has_broken_xlinks() for f in features_callback()))

@@ -53,11 +53,11 @@ def get_message_namespace(filepath):
                     return ns
 
 
-def feature_generator(context, config):
+def feature_generator(file_id, context, config):
     for event, elem in context:
         if event == 'start-ns':
             ns_code, ns_link = elem
-            cache.update_nsmap(ns_code, ns_link)
+            cache.update_file_nsmap(file_id, ns_code, ns_link)
         elif event == 'end':
             feature_element = elem[0]
             feature_name = get_tag_without_ns(feature_element)
@@ -89,18 +89,20 @@ def assign_associations(features_dict: Dict[str, AIXMFeature]) -> Dict[str, AIXM
     return features_dict
 
 
-def process_aixm(filepath, features_config):
+def process_aixm(file_id: str, features_config: Dict):
+    filepath = cache.get_file(file_id)['path']
+
     message_ns = get_message_namespace(filepath)
-    cache.save_message_ns(message_ns)
+    cache.save_file_message_ns(file_id, message_ns)
 
     context = etree.iterparse(filepath, events=('end', 'start-ns'), tag=f'{{{message_ns}}}hasMember', remove_comments=True)
 
-    for feature in feature_generator(context, features_config):
-        cache.save_aixm_feature(feature)
+    for feature in feature_generator(file_id, context, features_config):
+        cache.save_file_feature(file_id, feature)
 
     del context
 
-    assign_associations(cache.get_aixm_features_dict())
+    assign_associations(cache.get_file_features_dict (file_id))
 
 
 def get_skeleton_filepath(filepath: str):
@@ -109,11 +111,13 @@ def get_skeleton_filepath(filepath: str):
     return f"{filename}_skeleton{ext}"
 
 
-def generate_aixm_skeleton(filepath: str, features: List[AIXMFeature]):
-    skeleton_filepath = get_skeleton_filepath(filepath)
+def generate_aixm_skeleton(file_id: str, features: List[AIXMFeature]):
+    file = cache.get_file(file_id)
+    skeleton_filepath = get_skeleton_filepath(file["path"])
 
-    nsmap = cache.get_nsmap()
-    message_ns = cache.get_message_ns()
+    nsmap = file["nsmap"]
+    message_ns = file["message_ns"]
+
     root = etree.Element(f"{{{message_ns}}}AIXMBasicMessage", nsmap=nsmap)
     for feature in features:
         member_el = etree.Element(f'{{{message_ns}}}hasMember', nsmap=nsmap)

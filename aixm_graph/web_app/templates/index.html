@@ -19,14 +19,7 @@
   <body>
 <!--      Header, top navbar-->
     <header>
-      <nav class="nav  blue lighten-1">
-        <div class="nav-wrapper">
-          <a href="#" class="brand-logo">AIXM Graph </a>
-        </div>
-      </nav>
-
-        <!-- Page Layout here -->
-      <div class="row" id="side-nav">
+      <div id="nav">
 
     <!--      Upload AIXM Modal-->
         <div id="modal1" class="modal ">
@@ -53,19 +46,36 @@
             </div>
           </div>
           <div class="modal-footer">
-            <a class="modal-close waves-effect waves-green btn" v-on:click="uploadAndValidate()" type="submit">Upload & process</a>
+            <a class="modal-close waves-effect waves-green btn" v-on:click="uploadFile()" type="submit">Upload & process</a>
           </div>
         </div>
 
+        <ul id="dropdown-aixm-files" class="dropdown-content">
+
+          <file-item-dropdown  v-for="file in files"
+            v-bind:file="file"
+            v-bind:key="file.filename"
+            v-on:click.native="loadFile(file)">
+          </file-item-dropdown>
+
+        </ul>
+        <nav class="nav  blue lighten-1">
+          <div class="nav-wrapper">
+            <a href="#" class="brand-logo">AIXM Graph </a>
+            <ul class="right hide-on-med-and-down">
+              <li><a class="dropdown-trigger" href="#!" data-target="dropdown-aixm-files">AIXM Files<i class="material-icons right">arrow_drop_down</i></a></li>
+              <li><a class="btn red lighten-2 modal-trigger" href="#modal1" title="Upload AIXM file"><i class="material-icons left">cloud_upload</i>Upload</a></li>
+
+            </ul>
+          </div>
+        </nav>
+
+      </div>
+        <!-- Page Layout here -->
+      <div class="row" id="side-nav">
+
 <!--        Sidenav -->
         <ul id="slide-out" class="sidenav sidenav-fixed" ref="sidenavList">
-          <li>
-            <a class="modal-trigger" href="#modal1" >
-              <i class="material-icons">cloud_upload</i>
-              Upload AIXM
-            </a>
-          </li>
-            <div class="divider" id="progress-bar-divider"></div>
           <li class="hide" ref="progress">
           </li>
           <li ref="progressBar" class="hide">
@@ -74,11 +84,11 @@
           <li class="no-padding">
             <ul class="collapsible collapsible-accordion">
               <li>
-                <a class="collapsible-header" title="Data set: EA_AIP_DS_FULL_20170701.xml">Data set: {{ filename }}<i class="material-icons">arrow_drop_down</i></a>
+                <a class="collapsible-header">AIXM: {{ filename }}<i class="material-icons">arrow_drop_down</i></a>
                 <div class="collapsible-body">
                   <ul>
                   <li>
-                    <a href="/download" target="_blank" ref="skeleton">
+                    <a href="" target="_blank" ref="skeleton">
                       <i class="material-icons">cloud_off</i>
                       Skeleton not available
                     </a>
@@ -95,7 +105,7 @@
           <feature-item  v-for="feature in features"
             v-bind:feature="feature"
             v-bind:key="feature.name"
-            v-on:click.native="selectFeature(feature)">
+            v-on:click.native="getGraphForFeature(feature)">
           </feature-item>
         </ul>
       </div>

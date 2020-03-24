@@ -27,12 +27,12 @@ http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
-import sys
 import logging.config
 
 from flask import Flask
 from pkg_resources import resource_filename
 
+from aixm_graph import cache
 from aixm_graph.utils import load_config
 from aixm_graph.web_app.views import aixm_blueprint
 
@@ -45,6 +45,7 @@ app.register_blueprint(aixm_blueprint)
 app_config = load_config(filename=resource_filename(__name__, 'config.yml'))
 app.config.update(app_config)
 logging.config.dictConfig(app.config['LOGGING'])
+cache.save_features_config(app_config['FEATURES'])
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=3000)

@@ -1,5 +1,6 @@
 
 var config = null;
+var Files = {}
 
 function showError(text) {
     html = '<i class="material-icons">warning</i> <span style="margin-left: 10px;">' + text + '</span>';
@@ -33,5 +34,6 @@ $(document).ready(function(){
             config = response.data;
         },
     });
-    sidenav.init();
+    Sidenav.init();
+    $(".dropdown-trigger").dropdown();
 });
