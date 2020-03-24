@@ -83,3 +83,7 @@ nav .brand-logo {
 table#node-tooltip > td {
     padding: 0px;
 }
+
+#dropdown-aixm-files {
+    position: relative;
+}

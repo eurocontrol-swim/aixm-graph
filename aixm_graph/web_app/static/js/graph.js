@@ -88,16 +88,16 @@ function createGraph(data) {
 
             $.ajax({
                 type: "GET",
-                url: "/feature/" + nodeId + "/graph",
+                url: "/files/" + Sidenav.fileId + "/features/" + nodeId + "/graph",
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
                 success : function(response) {
                     createGraph(response.data.graph)
-                    main.disableFilter();
-                    main.disablePagination('next');
-                    main.disablePagination('prev');
-                    main.setPaginationText("");
-                    main.setDescription("<strong>" + nodeName + "</strong>" + " (" + nodeId + ")");
+                    Main.disableFilter();
+                    Main.disablePagination('next');
+                    Main.disablePagination('prev');
+                    Main.setPaginationText("");
+                    Main.setDescription("<strong>" + nodeName + "</strong>" + " (" + nodeId + ")");
                 },
                 error: function(response) {
                     console.log(response.responseJSON.error);
@@ -113,7 +113,7 @@ function createGraph(data) {
 
             $.ajax({
                 type: "GET",
-                url: "/feature/" + nodeId + "/graph",
+                url: "/files/" + Sidenav.fileId + "/features/" + nodeId + "/graph",
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
                 success : function(response) {

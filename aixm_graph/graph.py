@@ -135,14 +135,16 @@ class Graph:
         }
 
 
-def get_feature_graph(feature: AIXMFeature) -> Graph:
-    graph = Graph()
+def get_file_feature_graph(file_id: str, feature_id: str) -> Graph:
+    file = cache.get_file(file_id)
+    feature = file['features'].get(feature_id)
 
+    graph = Graph()
     graph.add_nodes(Node.from_feature(feature))
 
     for data in feature.feature_data:
         for xlink in (data.xlinks + data.extensions):
-            target = cache.get_aixm_feature_by_uuid(xlink.uuid)
+            target = file['features'].get(xlink.uuid)
             if target is not None:
                 node = Node.from_feature(target)
                 edge = Edge(source=feature.uuid, target=target.uuid, name=data.name)
@@ -156,14 +158,14 @@ def get_feature_graph(feature: AIXMFeature) -> Graph:
     return graph
 
 
-def get_features_graph(features: List[AIXMFeature], offset: int = 0, limit: Optional[int] = None):
-    graph = Graph()
+def get_file_features_graph(file_id: str, features: List[AIXMFeature], offset: int = 0, limit: Optional[int] = None):
 
+    graph = Graph()
     for i, feature in enumerate(features):
         if i < offset:
             continue
         if limit is not None and i > limit:
             break
-        graph += get_feature_graph(feature)
+        graph += get_file_feature_graph(file_id=file_id, feature_id=feature.uuid)
 
     return graph
