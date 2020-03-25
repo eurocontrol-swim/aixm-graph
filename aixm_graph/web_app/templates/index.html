@@ -110,7 +110,7 @@
                         <div class="switch">
                           <label>
                             All
-                            <input type="checkbox" ref="featuresCheckbox" @change="filterBrokenLinks()">
+                            <input type="checkbox" ref="featuresCheckbox" @change="setDisplayableFeatures()">
                             <span class="lever"></span>
                             Only with broken links
                           </label>
@@ -169,7 +169,8 @@
 
           <!--          Graph area-->
       <div class="row graph-area">
-        <div class="col s12" id="graph" ref="graph">
+        <div class="col s12 valign-wrapper" id="graph" ref="graph">
+
         </div>
       </div>
     </main>

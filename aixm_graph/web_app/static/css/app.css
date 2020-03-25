@@ -91,3 +91,7 @@ table#node-tooltip > td {
 .input-field {
     margin-bottom: 0px;
 }
+
+.graph-loader {
+    margin-left: 45%;
+}

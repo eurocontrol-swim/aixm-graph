@@ -32,7 +32,6 @@ var Sidenav = new Vue({
         },
         addFeature: function(data) {
             this.features.push(data);
-            this.displayFeatures.push(data);
         },
         resetFeatures: function() {
             this.features = [];
@@ -65,6 +64,7 @@ var Sidenav = new Vue({
                     response.data.features_details.forEach(function(data) {
                         self.addFeature(data);
                     });
+                    self.setDisplayableFeatures();
                 },
                 error: function(response) {
                     showError('File process failed!')
@@ -91,6 +91,7 @@ var Sidenav = new Vue({
                     showError('Failed to get the graph for ' + feature.name);
                 }
             });
+            Main.showGraphLoader();
         },
         showProgress: function(text) {
             this.$refs.progress.innerHTML = '<a class="center-align" id="progress-text">' + text + '</a>';
@@ -115,7 +116,7 @@ var Sidenav = new Vue({
               Skeleton not available`;
             this.$refs.skeleton.setAttribute('href', "")
         },
-        filterBrokenLinks: function() {
+        setDisplayableFeatures: function() {
             if (this.$refs.featuresCheckbox.checked) {
                 this.displayFeatures = this.features.filter((f) => f.has_broken_xlinks);
             }
@@ -148,6 +149,22 @@ var Main = new Vue({
         },
         hide: function() {
             this.$el.setAttribute('class', 'hide');
+        },
+        showGraphLoader: function() {
+            this.$refs.graph.innerHTML = `
+                  <div class="preloader-wrapper big active graph-loader" ref="graphLoader">
+                    <div class="spinner-layer spinner-blue-only">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div><div class="gap-patch">
+                        <div class="circle"></div>
+                      </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                  </div>
+            `
+//            this.$refs.graphLoader.setAttribute('class', '');
         },
         drawGraph: function(graph, offset, limit, total_count) {
             this.show();
@@ -186,6 +203,7 @@ var Main = new Vue({
                     showError('Failed to get the graph for ' + Sidenav.selectedFeature.name);
                 }
             });
+            this.showGraphLoader();
         },
         focusFilter: function(featureName) {
             this.$refs.filter.removeAttribute('disabled');
