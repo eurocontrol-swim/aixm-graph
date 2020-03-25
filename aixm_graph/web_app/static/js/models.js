@@ -79,7 +79,7 @@ var Sidenav = new Vue({
             var that = this;
             $.ajax({
                 type: "GET",
-                url: "/files/" + this.fileId + "/features/graph?name=" + feature.name + "&offset=0",
+                url: "/files/" + this.fileId + "/features/graph?name=" + feature.name + "&offset=0"  + "&limit=" + Main.featuresPerPage,
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
                 success : function(response) {
@@ -131,6 +131,13 @@ var Main = new Vue({
     el: 'main',
     data: {
         filterKey: null,
+        featuresPerPage: 5,
+        featuresPerPageOptions: [
+            { text: '5', value: 5 },
+            { text: '10', value: 10 },
+            { text: '15', value: 15 },
+            { text: '20', value: 20 },
+        ],
         nextOffset: null,
         prevOffset: null,
         filterNullified: true
@@ -152,20 +159,21 @@ var Main = new Vue({
         filter: function(event) {
             if (event.key == 'Backspace' || (event.keyCode >= 65 && event.keyCode <= 90) || (event.keyCode >= 48 && event.keyCode <= 57)) {
                 if (event.key == 'Backspace' && this.filterNullified) {
+                    this.updateDescription()
                     return;
                 }
-                this.getGraph(this.filterKey, 0);
+                this.getGraph(0);
                 this.filterNullified = !this.filterKey;
             }
         },
-        getGraph: function(key, offset) {
+        getGraph: function(offset) {
             offset = (!offset) ? 0 : offset;
-            var keyQuery = (!key)?"":"key=" + key;
+            var keyQuery = (!this.filterKey)?"":"key=" + this.filterKey;
 
             var that = this;
             $.ajax({
                 type: "GET",
-                url: "/files/" + Sidenav.fileId + "/features/graph?name=" + Sidenav.selectedFeature.name + "&" + keyQuery + "&offset=" + offset,
+                url: "/files/" + Sidenav.fileId + "/features/graph?name=" + Sidenav.selectedFeature.name + "&" + keyQuery + "&offset=" + offset + "&limit=" + this.featuresPerPage,
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
                 success : function(response) {
@@ -182,12 +190,10 @@ var Main = new Vue({
         focusFilter: function(featureName) {
             this.$refs.filter.removeAttribute('disabled');
             this.$refs.filter.focus();
-            this.$refs.filter.setAttribute('placeholder', 'Filter ' + featureName + ' by key');
         },
         disableFilter: function() {
             this.filterKey = null;
             this.$refs.filter.setAttribute('disabled', '');
-            this.$refs.filter.setAttribute('placeholder', '');
         },
         updatePagination(offset, limit, total) {
             if (total <= limit) {
@@ -221,8 +227,8 @@ var Main = new Vue({
         updateDescription: function() {
             var text = "<strong>" + Sidenav.selectedFeature.name + "</strong> features";
 
-            if (this.filterKey != null) {
-                text += " with matching key <strong>" + this.filterKey + "</strong>"
+            if (this.filterKey) {
+                text += " with matching key <strong>'" + this.filterKey + "'</strong>"
             }
             this.setDescription(text);
         },
@@ -233,10 +239,10 @@ var Main = new Vue({
             this.$refs.description.innerHTML = text;
         },
         nextPage: function() {
-            this.getGraph(this.filterKey, this.nextOffset)
+            this.getGraph(this.nextOffset)
         },
         prevPage: function() {
-            this.getGraph(this.filterKey, this.prevOffset)
+            this.getGraph(this.prevOffset)
         },
         enablePagination: function(direction) {
             paginationButton = (direction == "next") ? this.$refs.paginationNext : this.$refs.paginationPrev

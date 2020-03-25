@@ -87,3 +87,7 @@ table#node-tooltip > td {
 #dropdown-aixm-files {
     min-width: 400px;
 }
+
+.input-field {
+    margin-bottom: 0px;
+}

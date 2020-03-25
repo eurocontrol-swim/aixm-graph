@@ -36,4 +36,5 @@ $(document).ready(function(){
     });
     Sidenav.init();
     $(".dropdown-trigger").dropdown();
+    $('select').formSelect();
 });

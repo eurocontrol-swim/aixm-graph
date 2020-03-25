@@ -135,11 +135,22 @@
 
     <main class="hide">
       <div class="row valign-wrapper">
-        <div class="col s3">
-          <input id="input_text" type="text" data-length="10" placeholder="" ref="filter" v-model="filterKey" v-on:keyup="filter">
+        <div class="col s2">
+          <div class="input-field">
+            <input id="input_text" type="text" data-length="10" placeholder="" ref="filter" v-model="filterKey" v-on:keyup="filter">
+            <label>Filter by key</label>
+          </div>
         </div>
-        <div class="col s7">
-          <p ref="description"></p>
+        <div class="col s2">
+          <div class="input-field">
+            <select v-model="featuresPerPage" @change="getGraph(0)">
+              <option v-for="option in featuresPerPageOptions" v-bind:value="option.value">{{ option.text }}</option>
+            </select>
+            <label>Features per page</label>
+          </div>
+        </div>
+        <div class="col s6">
+          <p class="right" ref="description"></p>
         </div>
         <div class="col s1">
           <p class="right" ref="pagination"></p>

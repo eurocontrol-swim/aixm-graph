@@ -144,9 +144,9 @@ def get_graph_for_feature_name(file_id: str):
         raise ValueError("Feature name not specified")
 
     offset = int(request.args.get('offset', "0"))
+    limit = int(request.args.get('limit', app.config['PAGE_LIMIT']))
     filter_key = request.args.get('key')
 
-    limit = app.config['PAGE_LIMIT']
     # the features generator will be used twice
     features, features_ = tee(cache.filter_file_features(file_id=file_id, name=name, key=filter_key))
 
