@@ -164,21 +164,16 @@ var Main = new Vue({
                     </div>
                   </div>
             `
-//            this.$refs.graphLoader.setAttribute('class', '');
         },
         drawGraph: function(graph, offset, limit, total_count) {
             this.show();
             createGraph(graph)
-            this.focusFilter(Sidenav.selectedFeature.name);
+            this.focusFilter();
             this.updateDescription()
             this.updatePagination(offset, limit, total_count)
         },
         filter: function(event) {
-            if (event.key == 'Backspace' || (event.keyCode >= 65 && event.keyCode <= 90) || (event.keyCode >= 48 && event.keyCode <= 57)) {
-                if (event.key == 'Backspace' && this.filterNullified) {
-                    this.updateDescription()
-                    return;
-                }
+            if (event.key == 'Enter') {
                 this.getGraph(0);
                 this.filterNullified = !this.filterKey;
             }
@@ -205,7 +200,8 @@ var Main = new Vue({
             });
             this.showGraphLoader();
         },
-        focusFilter: function(featureName) {
+        focusFilter: function() {
+            this.filterKey = "";
             this.$refs.filter.removeAttribute('disabled');
             this.$refs.filter.focus();
         },
