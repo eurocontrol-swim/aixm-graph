@@ -128,6 +128,24 @@ var Sidenav = new Vue({
 });
 
 
+Vue.component('associations-dropdown', {
+    props: ['association'],
+    template:
+    `
+        <a href="#!" class="collection-item " v-on:click="select">
+            {{ association.name }}
+            <i v-if="association.selected" class="material-icons left" ref="checkboxIcon">check_box</i>
+            <i v-else="association.selected" class="material-icons left" ref="checkboxIcon">check_box_outline_blank</i>
+        </a>
+    `,
+    methods: {
+        select: function() {
+            this.association.selected = !this.association.selected;
+            this.$emit('select-association', this.association.name, this.association.selected)
+        }
+    }
+});
+
 var Main = new Vue({
     el: 'main',
     data: {
@@ -139,6 +157,7 @@ var Main = new Vue({
             { text: '15', value: 15 },
             { text: '20', value: 20 },
         ],
+        associations: [],
         nextOffset: null,
         prevOffset: null,
         filterNullified: true
@@ -165,9 +184,41 @@ var Main = new Vue({
                   </div>
             `
         },
+        updateAssociations: function(nodes) {
+            var uniqueAssociations = new Set(),
+                that = this;
+
+            nodes.forEach(function(node) {
+                if (node.name != Sidenav.selectedFeature.name) {
+                    uniqueAssociations.add(node.name);
+                }
+            });
+
+            this.associations = uniqueAssociations.size > 0 ? [{name: 'All', selected: true}] : [];
+
+            uniqueAssociations.forEach(function(ua) {
+                that.associations.push({name: ua, selected: true});
+            })
+        },
+        selectAssociation: function(association, isSelected) {
+            if (association == 'All') {
+                this.associations.forEach(function(a) {
+                    a.selected = isSelected;
+                });
+            } else {
+                if (!isSelected) {
+                    this.associations[0].selected = false;
+                } else {
+                    if (this.associations.slice(1).every((a) => a.selected)) {
+                        this.associations[0].selected = true;
+                    }
+                }
+            }
+        },
         drawGraph: function(graph, offset, limit, total_count) {
-            this.show();
             createGraph(graph)
+            this.updateAssociations(graph.nodes);
+            this.show();
             this.focusFilter();
             this.updateDescription()
             this.updatePagination(offset, limit, total_count)
@@ -190,6 +241,7 @@ var Main = new Vue({
                 contentType: "application/json; charset=utf-8",
                 success : function(response) {
                     createGraph(response.data.graph)
+                    that.updateAssociations(response.data.graph.nodes);
                     that.updateDescription()
                     that.updatePagination(response.data.offset, response.data.limit, response.data.total_count)
                 },

@@ -95,3 +95,12 @@ table#node-tooltip > td {
 .graph-loader {
     margin-left: 45%;
 }
+
+#associations-select {
+    position: absolute;
+    left: 400px;
+}
+
+#associations-select li{
+    padding-left: 20px;
+}
