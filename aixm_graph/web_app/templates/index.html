@@ -171,11 +171,15 @@
       <div class="row graph-area">
         <div class="col s12 valign-wrapper" id="graph" ref="graph"></div>
         <div class="collection" id="associations-select">
-          <a href="#!" class="collection-item active">Associations</a>
-          <associations-dropdown  v-for="association in associations"
+          <a href="#!" class="collection-item active" v-on:click="clickAllAssociations">
+            <i v-if="allAssociationsSelected" class="material-icons left">check_box</i>
+            <i v-else="allAssociationsSelected" class="material-icons left">check_box_outline_blank</i>
+            Associations
+          </a>
+          <associations-dropdown v-for="association in associations"
             v-bind:association="association"
             v-bind:key="association.name"
-            v-on:select-association="selectAssociation">
+            v-on:click-association="clickAssociation">
           </associations-dropdown>
         </div>
       </div>

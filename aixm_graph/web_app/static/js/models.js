@@ -76,14 +76,14 @@ var Sidenav = new Vue({
             this.showProgress('Processing file...');
         },
         getGraphForFeature: function(feature) {
-            var that = this;
+            var self = this;
             $.ajax({
                 type: "GET",
                 url: "/files/" + this.fileId + "/features/graph?name=" + feature.name + "&offset=0"  + "&limit=" + Main.featuresPerPage,
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
                 success : function(response) {
-                    that.selectedFeature = feature;
+                    self.selectedFeature = feature;
                     Main.drawGraph(response.data.graph, response.data.offset, response.data.limit, response.data.total_count);
                 },
                 error: function() {
@@ -132,35 +132,30 @@ Vue.component('associations-dropdown', {
     props: ['association'],
     template:
     `
-        <a href="#!" class="collection-item " v-on:click="select">
+        <a href="#!" class="collection-item " v-on:click="click">
             {{ association.name }}
             <i v-if="association.selected" class="material-icons left" ref="checkboxIcon">check_box</i>
             <i v-else="association.selected" class="material-icons left" ref="checkboxIcon">check_box_outline_blank</i>
         </a>
     `,
     methods: {
-        select: function() {
-            this.association.selected = !this.association.selected;
-            this.$emit('select-association', this.association.name, this.association.selected)
+        click: function() {
+            this.$emit('click-association', this.association)
         }
     }
 });
+
 
 var Main = new Vue({
     el: 'main',
     data: {
         filterKey: null,
         featuresPerPage: 5,
-        featuresPerPageOptions: [
-            { text: '5', value: 5 },
-            { text: '10', value: 10 },
-            { text: '15', value: 15 },
-            { text: '20', value: 20 },
-        ],
-        associations: [],
+        featuresPerPageOptions: [5, 10, 15, 20].map( (i) => ( {text: i, value: i} ) ),
+        associations: {},
+        allAssociationsSelected: true,
         nextOffset: null,
         prevOffset: null,
-        filterNullified: true
     },
     methods: {
         show: function() {
@@ -171,47 +166,54 @@ var Main = new Vue({
         },
         showGraphLoader: function() {
             this.$refs.graph.innerHTML = `
-                  <div class="preloader-wrapper big active graph-loader" ref="graphLoader">
-                    <div class="spinner-layer spinner-blue-only">
-                      <div class="circle-clipper left">
-                        <div class="circle"></div>
-                      </div><div class="gap-patch">
-                        <div class="circle"></div>
-                      </div><div class="circle-clipper right">
-                        <div class="circle"></div>
-                      </div>
-                    </div>
+              <div class="preloader-wrapper big active graph-loader" ref="graphLoader">
+                <div class="spinner-layer spinner-blue-only">
+                  <div class="circle-clipper left">
+                    <div class="circle"></div>
+                  </div><div class="gap-patch">
+                    <div class="circle"></div>
+                  </div><div class="circle-clipper right">
+                    <div class="circle"></div>
                   </div>
+                </div>
+              </div>
             `
         },
         updateAssociations: function(nodes) {
-            var uniqueAssociations = new Set(),
-                that = this;
+            var associations = {};
 
             nodes.forEach(function(node) {
                 if (node.name != Sidenav.selectedFeature.name) {
-                    uniqueAssociations.add(node.name);
+                    if (associations[node.name] == undefined) {
+                        associations[node.name] = {nodes: [], selected: true, name: node.name};
+                    }
+                    associations[node.name].nodes.push(node);
                 }
             });
-
-            this.associations = uniqueAssociations.size > 0 ? [{name: 'All', selected: true}] : [];
-
-            uniqueAssociations.forEach(function(ua) {
-                that.associations.push({name: ua, selected: true});
-            })
+            this.associations = Object.values(associations);
         },
-        selectAssociation: function(association, isSelected) {
-            if (association == 'All') {
-                this.associations.forEach(function(a) {
-                    a.selected = isSelected;
-                });
+        clickAllAssociations: function() {
+            this.allAssociationsSelected = !this.allAssociationsSelected;
+
+            var self = this;
+            this.associations.forEach(function(assoc) {
+                if (assoc.selected != self.allAssociationsSelected) {
+                    self.clickAssociation(assoc);
+                }
+            });
+        },
+        clickAssociation: function(association) {
+            association.selected = !association.selected;
+
+            association.nodes.forEach(function(node) {
+                association.selected ? Nodes.add(node) : Nodes.remove(node);
+            });
+
+            if (!association.selected) {
+                this.allAssociationsSelected = false;
             } else {
-                if (!isSelected) {
-                    this.associations[0].selected = false;
-                } else {
-                    if (this.associations.slice(1).every((a) => a.selected)) {
-                        this.associations[0].selected = true;
-                    }
+                if (this.associations.every((a) => a.selected)) {
+                    this.allAssociationsSelected = true;
                 }
             }
         },
@@ -226,14 +228,13 @@ var Main = new Vue({
         filter: function(event) {
             if (event.key == 'Enter') {
                 this.getGraph(0);
-                this.filterNullified = !this.filterKey;
             }
         },
         getGraph: function(offset) {
             offset = (!offset) ? 0 : offset;
             var keyQuery = (!this.filterKey)?"":"key=" + this.filterKey;
 
-            var that = this;
+            var self = this;
             $.ajax({
                 type: "GET",
                 url: "/files/" + Sidenav.fileId + "/features/graph?name=" + Sidenav.selectedFeature.name + "&" + keyQuery + "&offset=" + offset + "&limit=" + this.featuresPerPage,
@@ -241,9 +242,9 @@ var Main = new Vue({
                 contentType: "application/json; charset=utf-8",
                 success : function(response) {
                     createGraph(response.data.graph)
-                    that.updateAssociations(response.data.graph.nodes);
-                    that.updateDescription()
-                    that.updatePagination(response.data.offset, response.data.limit, response.data.total_count)
+                    self.updateAssociations(response.data.graph.nodes);
+                    self.updateDescription()
+                    self.updatePagination(response.data.offset, response.data.limit, response.data.total_count)
                 },
                 error: function(response) {
                     console.log(response.responseJSON.error);
