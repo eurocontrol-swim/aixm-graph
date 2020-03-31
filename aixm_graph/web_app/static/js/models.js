@@ -16,6 +16,7 @@ Vue.component('feature-item', {
 
 var Sidenav = new Vue({
     el: '#side-nav',
+
     data: {
         filename: null,
         fileId: null,
@@ -152,7 +153,7 @@ var Main = new Vue({
         filterKey: null,
         featuresPerPage: 5,
         featuresPerPageOptions: [5, 10, 15, 20].map( (i) => ( {text: i, value: i} ) ),
-        associations: {},
+        associations: [],
         allAssociationsSelected: true,
         nextOffset: null,
         prevOffset: null,
@@ -179,18 +180,21 @@ var Main = new Vue({
               </div>
             `
         },
-        updateAssociations: function(nodes) {
+        createAssociations: function(nodesData) {
             var associations = {};
 
-            nodes.forEach(function(node) {
-                if (node.name != Sidenav.selectedFeature.name) {
-                    if (associations[node.name] == undefined) {
-                        associations[node.name] = {nodes: [], selected: true, name: node.name};
+            nodesData.forEach(function(nodeData) {
+                if (nodeData.name != Sidenav.selectedFeature.name) {
+                    if (associations[nodeData.name] == undefined) {
+                        associations[nodeData.name] = {nodesData: [], selected: true, name: nodeData.name};
                     }
-                    associations[node.name].nodes.push(node);
+                    associations[nodeData.name].nodesData.push(nodeData);
                 }
             });
             this.associations = Object.values(associations);
+        },
+        getAssociationByName: function(associationName) {
+            return this.associations.filter((a) => a.name == associationName)[0];
         },
         clickAllAssociations: function() {
             this.allAssociationsSelected = !this.allAssociationsSelected;
@@ -202,12 +206,49 @@ var Main = new Vue({
                 }
             });
         },
+        getBranchIds: function(rootNodeId, branchIds, excludedNodeNames) {
+            branchIds = branchIds || [];
+
+            var self = this,
+                node = Network.body.nodes[rootNodeId];
+            var exclude = excludedNodeNames.concat(node.options.name);
+
+            node.edges.forEach(function(edge) {
+                var targetNode = edge.to;
+                if (exclude.indexOf(targetNode.options.name) < 0) {
+                    branchIds.push(targetNode.id);
+
+                    if (targetNode.edges) {
+                        self.getBranchIds(targetNode.id, branchIds, excludedNodeNames);
+                    }
+                }
+            });
+
+            return branchIds;
+        },
         clickAssociation: function(association) {
             association.selected = !association.selected;
 
-            association.nodes.forEach(function(node) {
-                association.selected ? Nodes.add(node) : Nodes.remove(node);
-            });
+            if (association.selected) {
+                association.nodesData.forEach(function(nodeData) {
+                    Nodes.add(nodeData)
+                });
+            } else {
+                var self = this;
+                association.nodesData.forEach(function(nodeData) {
+                    try{
+                        excludedNodeNames = [self.associations.map((a) => a.name)].concat(Sidenav.selectedFeature.name)
+                        branchIdsToRemove = self.getBranchIds(nodeData.id, [], excludedNodeNames);
+                        branchIdsToRemove.forEach(function(nodeId) {
+                            Nodes.remove(nodeId);
+                        });
+                    } catch(e) {
+                        console.table(e)
+                        showWarning('Loop detected. Cannot remove all ' + nodeData.name + ' branches.');
+                    }
+                    Nodes.remove(nodeData.id);
+                });
+            }
 
             if (!association.selected) {
                 this.allAssociationsSelected = false;
@@ -219,7 +260,7 @@ var Main = new Vue({
         },
         drawGraph: function(graph, offset, limit, total_count) {
             createGraph(graph)
-            this.updateAssociations(graph.nodes);
+            this.createAssociations(graph.nodes);
             this.show();
             this.focusFilter();
             this.updateDescription()
@@ -242,7 +283,7 @@ var Main = new Vue({
                 contentType: "application/json; charset=utf-8",
                 success : function(response) {
                     createGraph(response.data.graph)
-                    self.updateAssociations(response.data.graph.nodes);
+                    self.createAssociations(response.data.graph.nodes);
                     self.updateDescription()
                     self.updatePagination(response.data.offset, response.data.limit, response.data.total_count)
                 },
