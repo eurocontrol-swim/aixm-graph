@@ -216,13 +216,15 @@ class Feature(XMLSerializable):
 class AIXMFeatureData(FeatureData):
 
     def __init__(self, element: etree.Element, keys: List):
-        self.sequence_number = element.find('./aixm:sequenceNumber', namespaces=element.nsmap).text
+        super().__init__(element, keys)
+
+        self.sequence_number = element.find(f'./{self.el.prefix}:sequenceNumber', namespaces=element.nsmap).text
+
         try:
-            self.correction_number = element.find('./aixm:correctionNumber', namespaces=element.nsmap).text
+            self.correction_number = element.find(f'./{self.el.prefix}:correctionNumber', namespaces=element.nsmap).text
         except AttributeError:
             self.correction_number = ""
 
-        super().__init__(element, keys)
 
     @property
     def name(self):
@@ -254,7 +256,7 @@ class AIXMFeatureData(FeatureData):
 class AIXMFeature(Feature):
 
     def get_feature_data_xpath(self):
-        return f'./aixm:timeSlice/aixm:{self.el.name}TimeSlice'
+        return f'./{self.el.prefix}:timeSlice/{self.el.prefix}:{self.el.name}TimeSlice'
 
     def get_feature_data_class(self):
         return AIXMFeatureData

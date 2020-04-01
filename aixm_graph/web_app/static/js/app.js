@@ -12,6 +12,17 @@ function showError(text) {
     });
 }
 
+
+function showWarning(text) {
+    html = '<i class="material-icons">warning</i> <span style="margin-left: 10px; color: black">' + text + '</span>';
+
+    M.toast({
+        html: html,
+        displayLength: 10000,
+        classes: 'rounded orange lighten-3'
+    });
+}
+
 function copyToClipboard(str) {
     const el = document.createElement('textarea');
     el.value = str;
