@@ -186,7 +186,7 @@ function edgeExists(edge) {
     return false;
 }
 
-function getBranchIds(rootNodeId, branchIds, excludedNodeNames) {
+function getBranchIds(rootNodeId, branchIds, excludedNodeIds) {
     branchIds = branchIds || [];
 
     var self = this,
@@ -198,11 +198,11 @@ function getBranchIds(rootNodeId, branchIds, excludedNodeNames) {
 
     node.edges.forEach(function(edge) {
         var targetNode = edge.to;
-        if (excludedNodeNames.concat(node.options.name).indexOf(targetNode.options.name) < 0) {
+        if (excludedNodeIds.concat(node.id).indexOf(targetNode.id) < 0) {
             branchIds.push(targetNode.id);
 
             if (targetNode.edges) {
-                self.getBranchIds(targetNode.id, branchIds, excludedNodeNames);
+                self.getBranchIds(targetNode.id, branchIds, excludedNodeIds);
             }
         }
     });

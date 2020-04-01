@@ -154,6 +154,7 @@ var Main = new Vue({
         featuresPerPage: 5,
         featuresPerPageOptions: [5, 10, 15, 20].map( (i) => ( {text: i, value: i} ) ),
         associations: [],
+        selectedFeatureNodeIds: [],
         allAssociationsSelected: true,
         nextOffset: null,
         prevOffset: null,
@@ -181,8 +182,9 @@ var Main = new Vue({
             `
         },
         createAssociations: function(nodesData, selectedFeatureName) {
-            var associations = {};
+            this.selectedFeatureNodeIds = Nodes.getIds().filter( (id) => Nodes.get(id).name ==  Sidenav.selectedFeature.name)
 
+            var associations = {};
             nodesData.forEach(function(nodeData) {
                 if (nodeData.name != selectedFeatureName) {
                     if (associations[nodeData.name] == undefined) {
@@ -214,10 +216,14 @@ var Main = new Vue({
                     Nodes.add(nodeData)
                 });
             } else {
-                excludedNodeNames = [this.associations.map((a) => a.name)].concat(Sidenav.selectedFeature.name)
+                associationsNodeIds = this.associations.reduce((nodeIds, assoc) => nodeIds.concat(assoc.nodesData.map((data) => data.id)))
+
+                excludedNodeIds = this.selectedFeatureNodeIds.concat(associationsNodeIds);
+
                 association.nodesData.forEach(function(nodeData) {
                     try{
-                        branchIdsToRemove = getBranchIds(nodeData.id, [], excludedNodeNames);
+                        branchIdsToRemove = getBranchIds(nodeData.id, [], excludedNodeIds);
+                        console.log(branchIdsToRemove);
                         branchIdsToRemove.forEach(function(nodeId) {
                             Nodes.remove(nodeId);
                         });
