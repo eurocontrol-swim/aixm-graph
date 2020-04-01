@@ -134,7 +134,7 @@ Vue.component('associations-dropdown', {
     template:
     `
         <a href="#!" class="collection-item " v-on:click="click">
-            {{ association.name }}
+            {{ association.name }} ({{ association.nodesData.length }})
             <i v-if="association.selected" class="material-icons left" ref="checkboxIcon">check_box</i>
             <i v-else="association.selected" class="material-icons left" ref="checkboxIcon">check_box_outline_blank</i>
         </a>
@@ -180,11 +180,11 @@ var Main = new Vue({
               </div>
             `
         },
-        createAssociations: function(nodesData) {
+        createAssociations: function(nodesData, selectedFeatureName) {
             var associations = {};
 
             nodesData.forEach(function(nodeData) {
-                if (nodeData.name != Sidenav.selectedFeature.name) {
+                if (nodeData.name != selectedFeatureName) {
                     if (associations[nodeData.name] == undefined) {
                         associations[nodeData.name] = {nodesData: [], selected: true, name: nodeData.name};
                     }
@@ -206,26 +206,6 @@ var Main = new Vue({
                 }
             });
         },
-        getBranchIds: function(rootNodeId, branchIds, excludedNodeNames) {
-            branchIds = branchIds || [];
-
-            var self = this,
-                node = Network.body.nodes[rootNodeId];
-            var exclude = excludedNodeNames.concat(node.options.name);
-
-            node.edges.forEach(function(edge) {
-                var targetNode = edge.to;
-                if (exclude.indexOf(targetNode.options.name) < 0) {
-                    branchIds.push(targetNode.id);
-
-                    if (targetNode.edges) {
-                        self.getBranchIds(targetNode.id, branchIds, excludedNodeNames);
-                    }
-                }
-            });
-
-            return branchIds;
-        },
         clickAssociation: function(association) {
             association.selected = !association.selected;
 
@@ -234,17 +214,16 @@ var Main = new Vue({
                     Nodes.add(nodeData)
                 });
             } else {
-                var self = this;
+                excludedNodeNames = [this.associations.map((a) => a.name)].concat(Sidenav.selectedFeature.name)
                 association.nodesData.forEach(function(nodeData) {
                     try{
-                        excludedNodeNames = [self.associations.map((a) => a.name)].concat(Sidenav.selectedFeature.name)
-                        branchIdsToRemove = self.getBranchIds(nodeData.id, [], excludedNodeNames);
+                        branchIdsToRemove = getBranchIds(nodeData.id, [], excludedNodeNames);
                         branchIdsToRemove.forEach(function(nodeId) {
                             Nodes.remove(nodeId);
                         });
                     } catch(e) {
                         console.table(e)
-                        showWarning('Loop detected. Cannot remove all ' + nodeData.name + ' branches.');
+                        showWarning('An error occured while removing ' + nodeData.name + ' branches.');
                     }
                     Nodes.remove(nodeData.id);
                 });
@@ -260,7 +239,7 @@ var Main = new Vue({
         },
         drawGraph: function(graph, offset, limit, total_count) {
             createGraph(graph)
-            this.createAssociations(graph.nodes);
+            this.createAssociations(graph.nodes, Sidenav.selectedFeature.name);
             this.show();
             this.focusFilter();
             this.updateDescription()
@@ -283,7 +262,7 @@ var Main = new Vue({
                 contentType: "application/json; charset=utf-8",
                 success : function(response) {
                     createGraph(response.data.graph)
-                    self.createAssociations(response.data.graph.nodes);
+                    self.createAssociations(response.data.graph.nodes, Sidenav.selectedFeature.name);
                     self.updateDescription()
                     self.updatePagination(response.data.offset, response.data.limit, response.data.total_count)
                 },

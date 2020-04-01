@@ -81,30 +81,35 @@ function createGraph(data) {
 
     Network = new vis.Network(container, {nodes: Nodes, edges: Edges}, options);
 
-    Network.on("doubleClick", function (params) {
-        if (params.nodes.length > 0) {
-            var nodeId = params.nodes[0];
-            var nodeName = Nodes.get(nodeId).name;
+    Network.on("oncontext", function (params) {
+//        params.event = "[original event]";
+        params.event.preventDefault();
 
-            $.ajax({
-                type: "GET",
-                url: "/files/" + Sidenav.fileId + "/features/" + nodeId + "/graph",
-                dataType : "json",
-                contentType: "application/json; charset=utf-8",
-                success : function(response) {
-                    createGraph(response.data.graph)
-                    Main.disableFilter();
-                    Main.disablePagination('next');
-                    Main.disablePagination('prev');
-                    Main.setPaginationText("");
-                    Main.setDescription("<strong>" + nodeName + "</strong>" + " (" + nodeId + ")");
-                },
-                error: function(response) {
-                    console.log(response.responseJSON.error);
-                    showError('Failed to get the graph for feature ' + nodeName + ' ' + nodeId);
-                }
-            });
-        }
+        var nodeId = Network.getNodeAt(params.pointer.DOM);
+        var nodeName = Nodes.get(nodeId).name;
+
+        $.ajax({
+            type: "GET",
+            url: "/files/" + Sidenav.fileId + "/features/" + nodeId + "/graph",
+            dataType : "json",
+            contentType: "application/json; charset=utf-8",
+            success : function(response) {
+                createGraph(response.data.graph)
+
+                Main.createAssociations(response.data.graph.nodes, nodeName);
+                Main.disableFilter();
+                Main.disablePagination('next');
+                Main.disablePagination('prev');
+                Main.setPaginationText("");
+                Main.setDescription("<strong>" + nodeName + "</strong>" + " (" + nodeId + ")");
+            },
+            error: function(response) {
+                console.log(response.responseJSON.error);
+                showError('Failed to get the graph for feature ' + nodeName + ' ' + nodeId);
+            }
+        });
+
+        Main.showGraphLoader();
     });
 
     Network.on("click", function (params) {
@@ -179,4 +184,28 @@ function edgeExists(edge) {
         }
     }
     return false;
+}
+
+function getBranchIds(rootNodeId, branchIds, excludedNodeNames) {
+    branchIds = branchIds || [];
+
+    var self = this,
+        node = Network.body.nodes[rootNodeId];
+
+    if (node == undefined) {
+        return branchIds;
+    }
+
+    node.edges.forEach(function(edge) {
+        var targetNode = edge.to;
+        if (excludedNodeNames.concat(node.options.name).indexOf(targetNode.options.name) < 0) {
+            branchIds.push(targetNode.id);
+
+            if (targetNode.edges) {
+                self.getBranchIds(targetNode.id, branchIds, excludedNodeNames);
+            }
+        }
+    });
+
+    return branchIds;
 }
