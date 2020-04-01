@@ -7,7 +7,7 @@ function getNodePopup(node) {
         "</tr>" +
         "<tr>" +
             "<td style='padding: 0px;'><strong>UUID</strong></td>" +
-            "<td style='padding: 0px 10px;'>" + node.id + "</td>" +
+            "<td style='padding: 0px 10px;'>" + node.id + " (Ctrl-C to copy)</td>" +
         "</tr>";
 
      node.keys.forEach(function(key) {
@@ -132,15 +132,7 @@ function createGraph(data) {
         }
     });
 
-    $(document).keydown(function(e){
-        if(e.which === 67 && e.ctrlKey){
-            var tooltip = $("#node-tooltip")[0];
-            if (tooltip) {
-                var nodeId = tooltip.getAttribute('data-node-id');
-                copyToClipboard(nodeId);
-            }
-        }
-    });
+
 }
 
 function updateGraph(data) {

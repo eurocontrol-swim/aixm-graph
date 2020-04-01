@@ -49,3 +49,13 @@ $(document).ready(function(){
     $(".dropdown-trigger").dropdown();
     $('select').formSelect();
 });
+
+$(document).keydown(function(e){
+    if(e.which === 67 && e.ctrlKey){
+        var tooltip = $("#node-tooltip")[0];
+        if (tooltip) {
+            var nodeId = tooltip.getAttribute('data-node-id');
+            copyToClipboard(nodeId);
+        }
+    }
+});
