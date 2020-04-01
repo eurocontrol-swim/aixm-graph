@@ -265,6 +265,13 @@ class AIXMFeature(Feature):
         root = etree.Element(f"{{{nsmap[self.el.prefix]}}}{self.el.name}",
                              attrib=make_attrib(name='id', value=f"urn:uuid:{self.uuid}", ns=nsmap['gml']),
                              nsmap=nsmap)
+        # codeSpace = "urn:uuid:"
+        identifier = etree.Element(f"{{{nsmap['gml']}}}identifier",
+                                   attrib=make_attrib(name='codeSpace', value="urn:uuid:", ns=""),
+                                   nsmap=nsmap)
+        identifier.text = self.id
+        root.append(identifier)
+
         for data in self.feature_data:
             root.append(data.to_lxml(nsmap))
 
