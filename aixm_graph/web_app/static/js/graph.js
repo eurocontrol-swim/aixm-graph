@@ -10,9 +10,9 @@ function getNodePopup(node) {
             "<td style='padding: 0px 10px;'>" + node.id + " (Ctrl-C to copy)</td>" +
         "</tr>";
 
-     node.keys.forEach(function(key) {
-        var name = Object.keys(key)[0];
-        var value = Object.values(key)[0];
+     node.fields.forEach(function(field) {
+        var name = Object.keys(field)[0];
+        var value = Object.values(field)[0];
         result += "<tr>" +
             "<td style='padding: 0px;'><strong>" + name + "</strong></td>" +
             "<td style='padding: 0px 10px;'>" + value + "</td>" +
@@ -20,8 +20,8 @@ function getNodePopup(node) {
      });
 
      result += "<tr>" +
-         "<td style='padding: 0px;'><strong>Num of links</strong></td>" +
-         "<td style='padding: 0px 10px'>" + node.linksNum + "</td>" +
+         "<td style='padding: 0px;'><strong>Num of associations</strong></td>" +
+         "<td style='padding: 0px 10px'>" + node.associationsNum + "</td>" +
      "</tr>";
 
      result += "</table>"
@@ -33,21 +33,17 @@ function processData(data) {
     data.nodes.forEach(function(node) {
         var currentLinks = data.edges.filter((e) => e.source == node.id || e.target == node.id)
 
-        node.label = node.links_count > currentLinks.length ? "[+] " + node.abbrev : node.abbrev;
-        node.linksNum = node.links_count;
+        node.label = node.assoc_count > currentLinks.length ? "[+] " + node.abbrev : node.abbrev;
+        node.associationsNum = node.assoc_count;
 
-        if (node.keys.length > 0) {
-            var sep = node.keys_concat?"":","
-            node.label += ": " + node.keys.map((k) => Object.values(k)[0]).join(sep);
+        if (node.fields.length > 0) {
+            var sep = node.fields_concat?"":","
+            node.label += ": " + node.fields.map((k) => Object.values(k)[0]).join(sep);
         }
         node.title = getNodePopup(node);
         if (node.is_ghost) {
             node.color = "#FF0000";
             node.shape = "star";
-        }
-        else {
-            node.color = config[node.name].color;
-            node.shape = config[node.name].shape;
         }
     });
 
@@ -90,7 +86,7 @@ function createGraph(data) {
 
         $.ajax({
             type: "GET",
-            url: "/files/" + Sidenav.fileId + "/features/" + nodeId + "/graph",
+            url: "/datasets/" + Sidenav.datasetId + "/features/" + nodeId + "/graph",
             dataType : "json",
             contentType: "application/json; charset=utf-8",
             success : function(response) {
@@ -118,7 +114,7 @@ function createGraph(data) {
 
             $.ajax({
                 type: "GET",
-                url: "/files/" + Sidenav.fileId + "/features/" + nodeId + "/graph",
+                url: "/datasets/" + Sidenav.datasetId + "/features/" + nodeId + "/graph",
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
                 success : function(response) {
@@ -153,7 +149,7 @@ function updateGraph(data) {
     // update labels of existing nodes
     Network.body.nodeIndices.forEach(function(index) {
         node = Network.body.nodes[index];
-        if ( node.options.links_count == node.edges.length && node.options.label.startsWith("[+] ")) {
+        if ( node.options.assoc_count == node.edges.length && node.options.label.startsWith("[+] ")) {
             node.options.label = node.options.label.slice(4);
         }
     });

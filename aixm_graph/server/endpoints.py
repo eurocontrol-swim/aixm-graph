@@ -33,58 +33,16 @@ __author__ = "EUROCONTROL (SWIM)"
 import logging
 import os
 from functools import wraps
-from itertools import tee
 from typing import Dict
 
-from flask import Blueprint, send_from_directory, request, current_app as app, send_file
+from flask import request, current_app as app, send_file
 from werkzeug.utils import secure_filename
 
-from aixm_graph import cache
-from aixm_graph.graph import get_file_feature_graph, get_file_features_graph
-from aixm_graph.parser import process_aixm, generate_aixm_skeleton
-from aixm_graph.stats import get_file_stats
-
+from aixm_graph.server import cache
+from aixm_graph.web_app import aixm_blueprint
 
 _logger = logging.getLogger(__name__)
 
-aixm_blueprint = Blueprint('aixm_graph',
-                           __name__,
-                           template_folder='templates',
-                           static_folder='static')
-
-########
-# STATIC
-########
-
-
-@aixm_blueprint.route("/")
-def index():
-    return send_from_directory('web_app/templates/', "index.html")
-
-
-@aixm_blueprint.route('/js/<path:path>')
-def send_js(path):
-    return send_from_directory('web_app/static/js', path)
-
-
-@aixm_blueprint.route('/css/<path:path>')
-def send_css(path):
-    return send_from_directory('web_app/static/css', path)
-
-
-@aixm_blueprint.route('/img/<path:path>')
-def send_img(path):
-    return send_from_directory('web_app/static/img', path)
-
-
-@aixm_blueprint.route('/favicon.ico')
-def favicon():
-    return send_from_directory('web_app/static/img', 'favicon.png', mimetype='image/png')
-
-
-########
-# API
-########
 
 def handle_response(f):
     @wraps(f)
@@ -102,24 +60,18 @@ def handle_response(f):
     return decorator
 
 
-@aixm_blueprint.route('/load-config', methods=['GET'])
+@aixm_blueprint.route('/datasets/<dataset_id>/process', methods=['PUT'])
 @handle_response
-def load_config():
-    return cache.get_features_config()
+def process_dataset(dataset_id: str):
+    """
 
+    :param dataset_id:
+    :return:
+    """
+    dataset = cache.get_dataset(dataset_id)
 
-@aixm_blueprint.route('/files/<file_id>/process', methods=['PUT'])
-@handle_response
-def process_file(file_id: str):
-    file = cache.get_file(file_id)
-
-    if not file['features']:
-        process_aixm(file_id=file_id, features_config=cache.get_features_config())
-
-    stats = file['stats']
-    if not stats:
-        stats = get_file_stats(file_id)
-        cache.save_file_stats(file_id, stats)
+    if not dataset.stats:
+        dataset.process()
 
     features_details = [
         {
@@ -127,8 +79,9 @@ def process_file(file_id: str):
             'total_count': value['total_count'],
             'has_broken_xlinks': value['has_broken_xlinks']
         }
-        for key, value in stats.items() if value['total_count'] > 0
+        for key, value in dataset.stats.items() if value['total_count'] > 0
     ]
+    features_details.sort(key=lambda item: item.get("name"))
 
     return {
         "features_details": features_details,
@@ -136,34 +89,47 @@ def process_file(file_id: str):
     }
 
 
-@aixm_blueprint.route('/files/<file_id>/features/graph', methods=['GET'])
+@aixm_blueprint.route('/datasets/<dataset_id>/features/graph', methods=['GET'])
 @handle_response
-def get_graph_for_feature_name(file_id: str):
+def get_graph_for_feature_name(dataset_id: str):
+    """
+
+    :param dataset_id:
+    :return:
+    """
     name = request.args.get('name')
     if not name:
         raise ValueError("Feature name not specified")
 
-    offset = int(request.args.get('offset', "0"))
+    offset = int(request.args.get('offset', 0))
     limit = int(request.args.get('limit', app.config['PAGE_LIMIT']))
     filter_key = request.args.get('key')
 
-    # the features generator will be used twice
-    features, features_ = tee(cache.filter_file_features(file_id=file_id, name=name, key=filter_key))
+    dataset = cache.get_dataset(dataset_id)
 
-    graph = get_file_features_graph(file_id, features=features, offset=offset, limit=(limit + offset) - 1)
+    graph = dataset.get_graph(feature_name=name, offset=offset, limit=(limit + offset) - 1, key=filter_key)
 
     return {
         'offset': offset,
         'limit': limit,
-        'total_count': sum(1 for _ in features_),
+        'total_count': sum(1 for _ in dataset.get_features_by_name(name=name, field_filter=filter_key)),
         'graph': graph.to_json(),
     }
 
 
-@aixm_blueprint.route('/files/<file_id>/features/<uuid>/graph', methods=['GET'])
+@aixm_blueprint.route('/datasets/<dataset_id>/features/<feature_id>/graph', methods=['GET'])
 @handle_response
-def get_graph_for_feature_uuid(file_id: str, uuid: str):
-    graph = get_file_feature_graph(file_id=file_id, feature_id=uuid)
+def get_graph_for_feature_id(dataset_id: str, feature_id: str):
+    """
+
+    :param dataset_id:
+    :param feature_id:
+    :return:
+    """
+    dataset = cache.get_dataset(dataset_id)
+    feature = dataset.get_feature_by_id(feature_id)
+
+    graph = dataset.get_graph_for_feature(feature=feature)
 
     return {
         'graph': graph.to_json()
@@ -173,28 +139,44 @@ def get_graph_for_feature_uuid(file_id: str, uuid: str):
 @aixm_blueprint.route('/upload', methods=['POST'])
 @handle_response
 def upload_aixm():
-    file = validate_file_form(request.files)
+    """
+
+    :return:
+    """
+    file = _validate_file_form(request.files)
 
     filename = secure_filename(file.filename)
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(filepath)
 
-    file_id = cache.save_file(filepath)
+    dataset_id = cache.create_dataset(filepath)
 
     return {
-        'filename': filename,
-        'file_id': file_id
+        'dataset_name': filename,
+        'dataset_id': dataset_id
     }
 
 
-@aixm_blueprint.route('/files/<file_id>/download', methods=['GET'])
-def download(file_id: str):
-    skeleton_filepath = generate_aixm_skeleton(file_id=file_id, features=cache.get_file_features_gen(file_id))
+@aixm_blueprint.route('/datasets/<dataset_id>/download', methods=['GET'])
+def download(dataset_id: str):
+    """
+
+    :param dataset_id:
+    :return:
+    """
+    dataset = cache.get_dataset(dataset_id)
+
+    skeleton_filepath = dataset.generate_skeleton()
 
     return send_file(skeleton_filepath, as_attachment=True)
 
 
-def validate_file_form(file_form: Dict):
+def _validate_file_form(file_form: Dict):
+    """
+
+    :param file_form:
+    :return:
+    """
     if 'file' not in file_form:
         raise ValueError('No file part')
 
@@ -209,4 +191,9 @@ def validate_file_form(file_form: Dict):
 
 
 def allowed_file(filename):
+    """
+
+    :param filename:
+    :return:
+    """
     return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'xml'
