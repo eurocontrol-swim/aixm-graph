@@ -52,6 +52,7 @@ class AIXMDataSet:
 
         :param filepath:
         """
+        self.id = None
         self.stats = {}
         self._filepath = filepath
         self._features_dict = {}
@@ -66,6 +67,14 @@ class AIXMDataSet:
         """
         for _, feature in self._features_dict.items():
             yield feature
+
+    @property
+    def filename(self):
+        """
+
+        :return:
+        """
+        return os.path.basename(self._filepath)
 
     def get_feature_by_id(self, feature_id: str):
         """

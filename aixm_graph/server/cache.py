@@ -31,23 +31,27 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 __author__ = "EUROCONTROL (SWIM)"
 
 import uuid
+from typing import List
 
 from aixm_graph.server.datasets.datasets import AIXMDataSet
 
-CACHE = {}
+CACHE = {
+    'datasets': {}
+}
 
 
-def create_dataset(filepath: str) -> str:
+def create_dataset(filepath: str) -> AIXMDataSet:
     """
 
     :param dataset:
     :return:
     """
-    dataset_id = uuid.uuid4().hex[:6]
+    dataset = AIXMDataSet(filepath)
+    dataset.id = uuid.uuid4().hex[:6]
 
-    CACHE[dataset_id] = AIXMDataSet(filepath)
+    CACHE['datasets'][dataset.id] = dataset
 
-    return dataset_id
+    return dataset
 
 
 def get_dataset(dataset_id: str) -> AIXMDataSet:
@@ -56,4 +60,12 @@ def get_dataset(dataset_id: str) -> AIXMDataSet:
     :param dataset_id:
     :return:
     """
-    return CACHE.get(dataset_id)
+    return CACHE['datasets'].get(dataset_id)
+
+
+def get_datasets() -> List[AIXMDataSet]:
+    """
+
+    :return:
+    """
+    return list(CACHE['datasets'].values())

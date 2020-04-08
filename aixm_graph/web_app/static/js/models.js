@@ -354,7 +354,7 @@ Vue.component('dataset-item-dropdown', {
   `
     <li>
         <a href="#">
-            {{ dataset.datasetName }}
+            {{ dataset.dataset_name }}
         </a>
     </li>
   `

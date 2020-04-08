@@ -60,6 +60,20 @@ def handle_response(f):
     return decorator
 
 
+@aixm_blueprint.route('/load-datasets', methods=['GET'])
+@handle_response
+def load_datasets():
+    datasets = cache.get_datasets()
+
+    return [
+        {
+            "dataset_name": dataset.filename,
+            "dataset_id": dataset.id
+        }
+        for dataset in datasets
+    ]
+
+
 @aixm_blueprint.route('/datasets/<dataset_id>/process', methods=['PUT'])
 @handle_response
 def process_dataset(dataset_id: str):
@@ -149,11 +163,11 @@ def upload_aixm():
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(filepath)
 
-    dataset_id = cache.create_dataset(filepath)
+    dataset = cache.create_dataset(filepath)
 
     return {
-        'dataset_name': filename,
-        'dataset_id': dataset_id
+        'dataset_name': dataset.filename,
+        'dataset_id': dataset.id
     }
 
 

@@ -52,11 +52,11 @@
 
         <ul id="dropdown-aixm-datasets" class="dropdown-content">
 
-          <file-item-dropdown  v-for="dataset in datasets"
+          <dataset-item-dropdown  v-for="dataset in datasets"
             v-bind:dataset="dataset"
-            v-bind:key="dataset.datasetName"
+            v-bind:key="dataset.dataset_id"
             v-on:click.native="loadDataset(dataset)">
-          </file-item-dropdown>
+          </dataset-item-dropdown>
 
         </ul>
         <nav class="nav  blue lighten-1">

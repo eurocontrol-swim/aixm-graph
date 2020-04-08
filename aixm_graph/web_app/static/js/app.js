@@ -34,6 +34,22 @@ function copyToClipboard(str) {
 }
 
 $(document).ready(function(){
+
+    $.ajax({
+        type: "GET",
+        url: "/load-datasets",
+        dataType : "json",
+        contentType: "application/json; charset=utf-8",
+        success : function(response) {
+            response.data.forEach(function(dataset) {
+                Nav.datasets.push(dataset);
+            });
+        },
+        error: function(response) {
+            console.log(response.responseJSON.error);
+            showError('Failed to load datasets');
+        }
+    });
     Sidenav.init();
     $(".dropdown-trigger").dropdown();
     $('select').formSelect();
