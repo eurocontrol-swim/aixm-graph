@@ -31,6 +31,7 @@ import logging.config
 import os
 
 from flask import Flask
+from flask_cors import CORS
 
 from aixm_graph.server.datasets.features import AIXMFeatureClassRegistry
 from aixm_graph.server.utils import load_config
@@ -47,6 +48,10 @@ app.register_blueprint(aixm_blueprint)
 app_config = load_config(filename=os.path.join(os.path.dirname(__file__), 'config.yml'))
 app.config.update(app_config)
 logging.config.dictConfig(app.config['LOGGING'])
+
+# enable CORS
+CORS(app, resources={r'/*': {'origins': '*'}})
+
 
 AIXMFeatureClassRegistry.load_feature_classes(app.config['FEATURES'])
 

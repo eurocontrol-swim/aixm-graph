@@ -6,4 +6,5 @@ dependencies:
 - lxml
 - PyYAML
 - Flask
+- Flask-Cors
 - gunicorn
