@@ -27,8 +27,6 @@ http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
-from __future__ import annotations
-
 __author__ = "EUROCONTROL (SWIM)"
 
 from copy import deepcopy
@@ -69,7 +67,12 @@ class Field:
         self.prefix = prefix or ""
 
     @classmethod
-    def from_lxml(cls, element: etree.Element) -> Field:
+    def from_lxml(cls, element: etree.Element):
+        """
+
+        :param element:
+        :return: Field
+        """
         return cls(name=QName(element).localname, text=element.text, attrib=element.attrib, prefix=element.prefix)
 
     def to_lxml(self, nsmap: Dict[str, str]) -> etree.Element:
@@ -109,7 +112,14 @@ class XLinkField(Field):
 class Extension(Field):
 
     @classmethod
-    def create(cls, name: str, uuid: str, prefix: str) -> Extension:
+    def create(cls, name: str, uuid: str, prefix: str):
+        """
+
+        :param name:
+        :param uuid:
+        :param prefix:
+        :return: Extension
+        """
         extension = cls(name=name,
                         attrib=make_attrib(name='href', value=f"urn:uuid:{uuid}", ns=XLINK_NS),
                         prefix=prefix)

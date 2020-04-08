@@ -27,8 +27,6 @@ http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
-from __future__ import annotations
-
 __author__ = "EUROCONTROL (SWIM)"
 
 import os
@@ -62,9 +60,9 @@ class AIXMDataSet:
         self._skeleton_filepath = None
 
     @property
-    def features(self) -> Generator[FeatureType]:
+    def features(self):
         """
-
+        :return: Generator[FeatureType]
         """
         for _, feature in self._features_dict.items():
             yield feature
@@ -91,15 +89,15 @@ class AIXMDataSet:
 
         return features
 
-    def process(self) -> AIXMDataSet:
+    def process(self):
         """
-        :return:
+        :return: AIXMDataSet
         """
         return self._parse()._create_extensions()._run_stats()
 
-    def _parse(self) -> AIXMDataSet:
+    def _parse(self):
         """
-        :return:
+        :return: AIXMDataSet
         """
 
         kwargs = dict(events=('end', 'start-ns'), remove_comments=True)
@@ -129,9 +127,9 @@ class AIXMDataSet:
 
         return self
 
-    def _create_extensions(self) -> AIXMDataSet:
+    def _create_extensions(self):
         """
-
+        :return: AIXMDataSet
         """
         extension_prefix = list(self.extension_ns.keys())[0]
         for source_feature in self.features:
