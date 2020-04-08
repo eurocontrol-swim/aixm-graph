@@ -30,9 +30,30 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-from flask import Blueprint
+import uuid
 
-aixm_blueprint = Blueprint('aixm_graph',
-                           __name__,
-                           template_folder='templates',
-                           static_folder='static')
+from aixm_graph.server.datasets.datasets import AIXMDataSet
+
+CACHE = {}
+
+
+def create_dataset(filepath: str) -> str:
+    """
+
+    :param dataset:
+    :return:
+    """
+    dataset_id = uuid.uuid4().hex[:6]
+
+    CACHE[dataset_id] = AIXMDataSet(filepath)
+
+    return dataset_id
+
+
+def get_dataset(dataset_id: str) -> AIXMDataSet:
+    """
+
+    :param dataset_id:
+    :return:
+    """
+    return CACHE.get(dataset_id)

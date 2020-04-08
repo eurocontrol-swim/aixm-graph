@@ -18,8 +18,8 @@ var Sidenav = new Vue({
     el: '#side-nav',
 
     data: {
-        filename: null,
-        fileId: null,
+        datasetName: null,
+        datasetId: null,
         features: [],
         displayFeatures: [],
         selectedFeature: null
@@ -39,22 +39,22 @@ var Sidenav = new Vue({
             this.displayFeatures = [];
         },
         prepareLoad: function() {
-            this.filename = "";
+            this.datasetName = "";
             this.$refs.featuresTitle.innerHTML = 'No features yet <i class="material-icons">arrow_drop_down</i>';
             this.resetFeatures();
             this.disableSkeleton();
         },
-        fileLoaded: function(filename, fileId) {
+        datasetLoaded: function(datasetName, datasetId) {
             this.hideProgress();
-            this.filename = filename;
-            this.fileId = fileId;
-            this.process(fileId);
+            this.datasetName = datasetName;
+            this.datasetId = datasetId;
+            this.process(datasetId);
         },
-        process: function(fileId) {
+        process: function(datasetId) {
             var self = this;
             $.ajax({
                 type: "PUT",
-                url: "/files/" + fileId + "/process",
+                url: "/datasets/" + datasetId + "/process",
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
                 data: {},
@@ -68,19 +68,19 @@ var Sidenav = new Vue({
                     self.setDisplayableFeatures();
                 },
                 error: function(response) {
-                    showError('File process failed!')
+                    showError('Dataset process failed!')
                     console.log(response.responseJSON.error);
                     self.hideProgress();
                 }
             });
 
-            this.showProgress('Processing file...');
+            this.showProgress('Processing dataset...');
         },
         getGraphForFeature: function(feature) {
             var self = this;
             $.ajax({
                 type: "GET",
-                url: "/files/" + this.fileId + "/features/graph?name=" + feature.name + "&offset=0"  + "&limit=" + Main.featuresPerPage,
+                url: "/datasets/" + this.datasetId + "/features/graph?name=" + feature.name + "&offset=0"  + "&limit=" + Main.featuresPerPage,
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
                 success : function(response) {
@@ -105,7 +105,7 @@ var Sidenav = new Vue({
             this.$refs.progressBar.setAttribute('class', 'hide');
         },
         enableSkeleton: function() {
-            var downloadLink = "/files/" + this.fileId + "/download";
+            var downloadLink = "/datasets/" + this.datasetId + "/download";
             this.$refs.skeleton.innerHTML = `
               <i class="material-icons" ref="skeleton">cloud_downloadff</i>
               Download skeleton`;
@@ -223,7 +223,6 @@ var Main = new Vue({
                 association.nodesData.forEach(function(nodeData) {
                     try{
                         branchIdsToRemove = getBranchIds(nodeData.id, [], excludedNodeIds);
-                        console.log(branchIdsToRemove);
                         branchIdsToRemove.forEach(function(nodeId) {
                             Nodes.remove(nodeId);
                         });
@@ -263,7 +262,7 @@ var Main = new Vue({
             var self = this;
             $.ajax({
                 type: "GET",
-                url: "/files/" + Sidenav.fileId + "/features/graph?name=" + Sidenav.selectedFeature.name + "&" + keyQuery + "&offset=" + offset + "&limit=" + this.featuresPerPage,
+                url: "/datasets/" + Sidenav.datasetId + "/features/graph?name=" + Sidenav.selectedFeature.name + "&" + keyQuery + "&offset=" + offset + "&limit=" + this.featuresPerPage,
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
                 success : function(response) {
@@ -349,13 +348,13 @@ var Main = new Vue({
 });
 
 
-Vue.component('file-item-dropdown', {
-  props: ['file'],
+Vue.component('dataset-item-dropdown', {
+  props: ['dataset'],
   template:
   `
     <li>
         <a href="#">
-            {{ file.filename }}
+            {{ dataset.datasetName }}
         </a>
     </li>
   `
@@ -365,10 +364,10 @@ Vue.component('file-item-dropdown', {
 var Nav = new Vue({
     el: '#nav',
     data: {
-        files: []
+        datasets: []
     },
     methods: {
-        uploadFile: function() {
+        uploadDataset: function() {
             var self = this;
             var formData = new FormData(),
                 fileInputElement = $("#aixm-upload")[0];
@@ -382,23 +381,23 @@ var Nav = new Vue({
                 contentType: false,
                 processData: false,
                 success: function(response){
-                    self.files.push(response.data)
-                    Sidenav.fileLoaded(response.data.filename, response.data.file_id);
+                    self.datasets.push(response.data)
+                    Sidenav.datasetLoaded(response.data.dataset_name, response.data.dataset_id);
                 },
                 error: function(response) {
                     self.hideProgress();
                     console.log(response.responseJSON.error);
-                    showError('File upload failed')
+                    showError('Dataset upload failed')
                 }
             });
             Sidenav.showProgress('Uploading...');
             Sidenav.prepareLoad();
             Main.hide();
         },
-        loadFile: function(file) {
+        loadDataset: function(dataset) {
             Sidenav.prepareLoad();
             Main.hide();
-            Sidenav.fileLoaded(file.filename, file.file_id);
+            Sidenav.datasetLoaded(dataset.dataset_name, dataset.dataset_id);
         }
     }
 });

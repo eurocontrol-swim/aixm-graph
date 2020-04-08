@@ -46,16 +46,16 @@
             </div>
           </div>
           <div class="modal-footer">
-            <a class="modal-close waves-effect waves-green btn" v-on:click="uploadFile()" type="submit">Upload & process</a>
+            <a class="modal-close waves-effect waves-green btn" v-on:click="uploadDataset()" type="submit">Upload & process</a>
           </div>
         </div>
 
-        <ul id="dropdown-aixm-files" class="dropdown-content">
+        <ul id="dropdown-aixm-datasets" class="dropdown-content">
 
-          <file-item-dropdown  v-for="file in files"
-            v-bind:file="file"
-            v-bind:key="file.filename"
-            v-on:click.native="loadFile(file)">
+          <file-item-dropdown  v-for="dataset in datasets"
+            v-bind:dataset="dataset"
+            v-bind:key="dataset.datasetName"
+            v-on:click.native="loadDataset(dataset)">
           </file-item-dropdown>
 
         </ul>
@@ -63,8 +63,8 @@
           <div class="nav-wrapper">
             <a href="#" class="brand-logo">AIXM Graph </a>
             <ul class="right hide-on-med-and-down">
-              <li><a class="dropdown-trigger" href="#!" data-target="dropdown-aixm-files">AIXM Files<i class="material-icons right">arrow_drop_down</i></a></li>
-              <li><a class="btn red lighten-2 modal-trigger" href="#modal1" title="Upload AIXM file"><i class="material-icons left">cloud_upload</i>Upload</a></li>
+              <li><a class="dropdown-trigger" href="#!" data-target="dropdown-aixm-datasets">AIXM Datasets<i class="material-icons right">arrow_drop_down</i></a></li>
+              <li><a class="btn red lighten-2 modal-trigger" href="#modal1" title="Upload AIXM dataset"><i class="material-icons left">cloud_upload</i>Upload</a></li>
 
             </ul>
           </div>
@@ -84,7 +84,7 @@
           <li class="no-padding">
             <ul class="collapsible collapsible-accordion">
               <li>
-                <a class="collapsible-header">AIXM: {{ filename }}<i class="material-icons">arrow_drop_down</i></a>
+                <a class="collapsible-header">AIXM: {{ datasetName }}<i class="material-icons">arrow_drop_down</i></a>
                 <div class="collapsible-body">
                   <ul>
                   <li>

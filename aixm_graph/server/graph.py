@@ -30,53 +30,70 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-from typing import List, Optional, Union, Any
+from typing import List, Optional, Union, Any, Dict
 
-from aixm_graph import cache
-from aixm_graph.features import AIXMFeature, XLinkElement
+from aixm_graph.server.datasets.features import AIXMFeature
+from aixm_graph.server.datasets.fields import XLinkField
 
 
 class Node:
 
-    def __init__(self, id: str, name: str, abbrev: str, keys: List[str]):
+    def __init__(self,
+                 id: str,
+                 name: str,
+                 abbrev: str,
+                 fields: Optional[List[Dict[str, str]]] = None,
+                 color: Optional[str] = None,
+                 shape: Optional[str] = None,
+                 fields_concat: bool = False,
+                 assoc_count: int = 0,
+                 is_ghost: bool = False
+    ):
         self.id = id
         self.name = name
         self.abbrev = abbrev
-        self.keys = keys
-        self.keys_concat = False
-        self.links_count = 0
-        self.is_ghost = False
-        self.color = None
-        self.shape = None
+        self.color = color
+        self.shape = shape
+        self.fields = fields or []
+        self.fields_concat = fields_concat
+        self.assoc_count = assoc_count
+        self.is_ghost = is_ghost
 
     def __eq__(self, other):
         return self.id == other.id and self.name == other.name and self.abbrev == other.abbrev
 
     @classmethod
     def from_feature(cls, feature: AIXMFeature):
-        keys = [key for data in feature.feature_data for key in data.keys]
-        obj = cls(id=feature.uuid, name=feature.el.name, abbrev=feature.abbrev, keys=keys)
-        obj.keys_concat = feature.keys_concat
-        obj.links_count = feature.links_count()
-
-        return obj
+        return cls(
+            id=feature.id,
+            name=feature.name,
+            abbrev=feature.config['abbrev'],
+            fields=[
+                {field.name: field.text}
+                for _, slice in feature.time_slices.items()
+                for field in slice.data_fields
+            ],
+            color=feature.config['color'],
+            shape=feature.config['shape'],
+            fields_concat=feature.config['fields']['concat'],
+            assoc_count=len(feature.associations)
+        )
 
     @classmethod
-    def from_ghost_xlink(cls, xlink: XLinkElement):
-        obj = cls(id=xlink.uuid, name=xlink.name, abbrev=xlink.name, keys=[])
-        obj.is_ghost = True
-
-        return obj
+    def from_broken_xlink(cls, xlink: XLinkField):
+        return cls(id=xlink.uuid, name=xlink.name, abbrev=xlink.name, is_ghost=True)
 
     def to_json(self):
         return {
             'id': self.id,
             'name': self.name,
             'abbrev': self.abbrev,
-            'keys': self.keys,
-            'keys_concat': self.keys_concat,
+            'fields': self.fields,
+            'color': self.color,
+            'shape': self.shape,
+            'fields_concat': self.fields_concat,
             'is_ghost': self.is_ghost,
-            'links_count': self.links_count
+            'assoc_count': self.assoc_count
         }
 
 
@@ -133,39 +150,3 @@ class Graph:
             'nodes': [node.to_json() for node in self.nodes],
             'edges': [edge.to_json() for edge in self.edges]
         }
-
-
-def get_file_feature_graph(file_id: str, feature_id: str) -> Graph:
-    file = cache.get_file(file_id)
-    feature = file['features'].get(feature_id)
-
-    graph = Graph()
-    graph.add_nodes(Node.from_feature(feature))
-
-    for data in feature.feature_data:
-        for xlink in (data.xlinks + data.extensions):
-            target = file['features'].get(xlink.uuid)
-            if target is not None:
-                node = Node.from_feature(target)
-                edge = Edge(source=feature.uuid, target=target.uuid, name=data.name)
-            else:
-                node = Node.from_ghost_xlink(xlink)
-                edge = Edge(source=feature.uuid, target=xlink.uuid, name=data.name, broken=True)
-
-            graph.add_nodes(node)
-            graph.add_edges(edge)
-
-    return graph
-
-
-def get_file_features_graph(file_id: str, features: List[AIXMFeature], offset: int = 0, limit: Optional[int] = None):
-
-    graph = Graph()
-    for i, feature in enumerate(features):
-        if i < offset:
-            continue
-        if limit is not None and i > limit:
-            break
-        graph += get_file_feature_graph(file_id=file_id, feature_id=feature.uuid)
-
-    return graph

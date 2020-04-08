@@ -1,6 +1,4 @@
 
-var config = null;
-var Files = {}
 
 function showError(text) {
     html = '<i class="material-icons">warning</i> <span style="margin-left: 10px;">' + text + '</span>';
@@ -36,15 +34,6 @@ function copyToClipboard(str) {
 }
 
 $(document).ready(function(){
-    $.ajax({
-        url: '/load-config',
-        type: 'GET',
-        contentType: false,
-        processData: false,
-        success: function(response){
-            config = response.data;
-        },
-    });
     Sidenav.init();
     $(".dropdown-trigger").dropdown();
     $('select').formSelect();
