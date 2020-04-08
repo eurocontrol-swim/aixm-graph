@@ -46,12 +46,13 @@ def create_dataset(filepath: str) -> AIXMDataSet:
     :param dataset:
     :return:
     """
+    global CACHE
     dataset = AIXMDataSet(filepath)
     dataset.id = uuid.uuid4().hex[:6]
 
     CACHE['datasets'][dataset.id] = dataset
 
-    return dataset
+    return CACHE['datasets'][dataset.id]
 
 
 def get_dataset(dataset_id: str) -> AIXMDataSet:
