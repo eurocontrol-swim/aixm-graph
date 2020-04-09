@@ -1,41 +1,31 @@
 <template>
   <div>
-    <ul>
-      <li v-for="dataset in datasets"
-          v-bind:dataset="dataset"
-          v-bind:key="dataset.dataset_id">
-          {{ dataset.dataset_name }}
-      </li>
-    </ul>
+    <navbar></navbar>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import M from 'materialize-css';
+import Navbar from './navbar/Navbar.vue';
 
 export default {
   name: 'Main',
-  data() {
-    return {
-      datasets: [],
-    };
+  components: {
+    navbar: Navbar,
   },
   methods: {
-    getMessage() {
-      const path = 'http://localhost:3000/load-datasets';
-      axios.get(path)
-        .then((res) => {
-          console.log(res);
-          this.datasets = res.data.data;
-        })
-        .catch((error) => {
-          // eslint-disable-next-line
-          console.error(error);
-        });
+    initMateriazeComponents() {
+      document.addEventListener('DOMContentLoaded', () => {
+        M.Dropdown.init(document.querySelectorAll('.dropdown-trigger'), {});
+        M.Modal.init(document.querySelectorAll('.modal'), {});
+        M.Sidenav.init(document.querySelectorAll('.sidenav'), {});
+        M.Collapsible.init(document.querySelectorAll('.collapsible'), {});
+        M.Tooltip.init(document.querySelectorAll('.tooltipped'), {});
+      });
     },
   },
   created() {
-    this.getMessage();
+    this.initMateriazeComponents();
   },
 };
 </script>

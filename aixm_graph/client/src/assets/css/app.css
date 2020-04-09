@@ -71,10 +71,6 @@ table#node-tooltip > td {
     padding: 0px;
 }
 
-#dropdown-aixm-datasets {
-    min-width: 400px;
-}
-
 .input-field {
     margin-bottom: 0px;
 }
@@ -89,5 +85,5 @@ table#node-tooltip > td {
 }
 
 #associations-select li{
-    //padding-left: 20px;
+    padding-left: 20px;
 }
