@@ -55,13 +55,24 @@ def create_dataset(filepath: str) -> AIXMDataSet:
     return CACHE['datasets'][dataset.id]
 
 
-def get_dataset(dataset_id: str) -> AIXMDataSet:
+def get_dataset_by_id(dataset_id: str) -> AIXMDataSet:
     """
 
     :param dataset_id:
     :return:
     """
     return CACHE['datasets'].get(dataset_id)
+
+
+def get_dataset_by_name(name: str) -> AIXMDataSet:
+    """
+
+    :param name:
+    :return:
+    """
+    for _, dataset in CACHE['datasets'].items():
+        if dataset.name == name:
+            return dataset
 
 
 def get_datasets() -> List[AIXMDataSet]:

@@ -385,9 +385,9 @@ var Nav = new Vue({
                     Sidenav.datasetLoaded(response.data.dataset_name, response.data.dataset_id);
                 },
                 error: function(response) {
-                    self.hideProgress();
+                    Sidenav.hideProgress();
                     console.log(response.responseJSON.error);
-                    showError('Dataset upload failed')
+                    showError('Dataset upload failed: ' + response.responseJSON.error);
                 }
             });
             Sidenav.showProgress('Uploading...');

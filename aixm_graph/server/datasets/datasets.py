@@ -69,7 +69,7 @@ class AIXMDataSet:
             yield feature
 
     @property
-    def filename(self):
+    def name(self):
         """
 
         :return:

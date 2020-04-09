@@ -67,7 +67,7 @@ def load_datasets():
 
     return [
         {
-            "dataset_name": dataset.filename,
+            "dataset_name": dataset.name,
             "dataset_id": dataset.id
         }
         for dataset in datasets
@@ -82,7 +82,7 @@ def process_dataset(dataset_id: str):
     :param dataset_id:
     :return:
     """
-    dataset = cache.get_dataset(dataset_id)
+    dataset = cache.get_dataset_by_id(dataset_id)
 
     if not dataset.stats:
         dataset.process()
@@ -119,7 +119,7 @@ def get_graph_for_feature_name(dataset_id: str):
     limit = int(request.args.get('limit', app.config['PAGE_LIMIT']))
     filter_key = request.args.get('key')
 
-    dataset = cache.get_dataset(dataset_id)
+    dataset = cache.get_dataset_by_id(dataset_id)
 
     graph = dataset.get_graph(feature_name=name, offset=offset, limit=(limit + offset) - 1, key=filter_key)
 
@@ -140,7 +140,7 @@ def get_graph_for_feature_id(dataset_id: str, feature_id: str):
     :param feature_id:
     :return:
     """
-    dataset = cache.get_dataset(dataset_id)
+    dataset = cache.get_dataset_by_id(dataset_id)
     feature = dataset.get_feature_by_id(feature_id)
 
     graph = dataset.get_graph_for_feature(feature=feature)
@@ -159,6 +159,9 @@ def upload_aixm():
     """
     file = _validate_file_form(request.files)
 
+    if cache.get_dataset_by_name(file.filename) is not None:
+        raise ValueError('Dataset already exists.')
+
     filename = secure_filename(file.filename)
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(filepath)
@@ -166,7 +169,7 @@ def upload_aixm():
     dataset = cache.create_dataset(filepath)
 
     return {
-        'dataset_name': dataset.filename,
+        'dataset_name': dataset.name,
         'dataset_id': dataset.id
     }
 
@@ -178,7 +181,7 @@ def download(dataset_id: str):
     :param dataset_id:
     :return:
     """
-    dataset = cache.get_dataset(dataset_id)
+    dataset = cache.get_dataset_by_id(dataset_id)
 
     skeleton_filepath = dataset.generate_skeleton()
 
