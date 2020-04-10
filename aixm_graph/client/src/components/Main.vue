@@ -1,17 +1,20 @@
 <template>
   <div>
     <navbar></navbar>
+    <dataset></dataset>
   </div>
 </template>
 
 <script>
 import M from 'materialize-css';
 import Navbar from './navbar/Navbar.vue';
+import Dataset from './sidebar/Dataset.vue';
 
 export default {
   name: 'Main',
   components: {
-    navbar: Navbar,
+    Navbar,
+    Dataset,
   },
   methods: {
     initMateriazeComponents() {

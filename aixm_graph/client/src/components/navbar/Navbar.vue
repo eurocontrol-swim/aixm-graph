@@ -6,7 +6,7 @@
       <div class="modal-content">
         <div class="row">
           <div class="col s12">
-            <h5>Upload AIXM Dataset</h5>
+            <h5>Upload Dataset</h5>
           </div>
         </div>
         <div class="row">
@@ -39,7 +39,7 @@
         <a href="#" class="brand-logo">AIXM Graph </a>
         <ul class="right hide-on-med-and-down">
           <li>
-            <datasetslist :datasets="datasets"></datasetslist>
+            <datasets-list :datasets="datasets"></datasets-list>
           </li>
           <li>
 
@@ -57,6 +57,7 @@
 <script>
 import axios from 'axios';
 import DatasetsList from './DatasetsList.vue';
+import EventBus from '../event-bus';
 
 export default {
   name: 'Navbar',
@@ -66,15 +67,13 @@ export default {
     };
   },
   components: {
-    datasetslist: DatasetsList,
+    DatasetsList,
   },
   methods: {
     getDatasets() {
       const path = 'http://localhost:3000/load-datasets';
       axios.get(path)
         .then((res) => {
-          // eslint-disable-next-line
-          console.log(res);
           this.datasets = res.data.data;
         })
         .catch((error) => {
@@ -82,39 +81,25 @@ export default {
           console.error(error);
         });
     },
-    loadDataset() {
-
-    },
     uploadDataset() {
       // const self = this;
       const formData = new FormData();
 
       formData.append('file', this.$refs.fileInput.files[0]);
 
-      const path = 'http://localhost:3000/upload';
-      axios.post(path, formData)
+      EventBus.$emit('dataset-uploading');
+
+      axios.post('http://localhost:3000/upload', formData)
         .then((res) => {
           // store the dataset
           this.datasets.push(res.data.data);
 
-          // eslint-disable-next-line
-          console.log(res);
-
-          // self.datasets.push(response.data)
-          // Sidenav.datasetLoaded(response.data.dataset_name, response.data.dataset_id);
+          EventBus.$emit('dataset-uploaded', res.data.data);
         })
         .catch((error) => {
           // eslint-disable-next-line
           console.error(error);
-
-          // self.hideProgress();
-          // console.log(response.responseJSON.error);
-          // showError('Dataset upload failed')
         });
-
-      // Sidenav.showProgress('Uploading...');
-      // Sidenav.prepareLoad();
-      // Main.hide();
     },
   },
 

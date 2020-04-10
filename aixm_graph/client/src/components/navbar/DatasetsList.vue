@@ -1,14 +1,14 @@
 <template>
   <div>
     <a class="dropdown-trigger" href="#!" data-target="dropdown-aixm-datasets">
-      AIXM Datasets<i class="material-icons right">arrow_drop_down</i>
+      {{ title }}<i class="material-icons right">arrow_drop_down</i>
     </a>
 
     <ul id="dropdown-aixm-datasets" class="dropdown-content">
       <li v-for="dataset in datasets"
           :dataset="dataset"
           :key="dataset.dataset_id"
-          v-on:click="loadDataset(dataset)">
+          @click="datasetSelected(dataset)">
 
         <a href="#">{{ dataset.dataset_name }}</a>
       </li>
@@ -17,8 +17,21 @@
   </div>
 </template>
 <script>
+import EventBus from '../event-bus';
+
 export default {
+
   name: 'DatasetsList',
   props: ['datasets'],
+  methods: {
+    datasetSelected(dataset) {
+      EventBus.$emit('dataset-selected', dataset);
+    },
+  },
+  computed: {
+    title() {
+      return this.datasets.length > 0 ? `(${this.datasets.length}) Datasets` : 'No datasets yet...';
+    },
+  },
 };
 </script>
