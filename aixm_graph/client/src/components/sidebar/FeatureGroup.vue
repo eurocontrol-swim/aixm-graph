@@ -1,0 +1,31 @@
+<template>
+  <div>
+     <li>
+        <a class="waves-effect collection-item active" href="#!">
+             ({{ featureGroup.totalCount }}) {{ featureGroup.name}}
+          <i class="material-icons"
+             :style="[featureGroup.hasBrokenXlinks ? {color: '#ee6e73'} : {color: '#26a69a'}]"
+             @click="featureGroupSelected">{{ icon }}</i>
+        </a>
+     </li>
+  </div>
+</template>
+
+<script>
+import EventBus from '../event-bus';
+
+export default {
+  name: 'FeatureGroup',
+  props: ['featureGroup'],
+  methods: {
+    featureGroupSelected() {
+      EventBus.$emit('feature-group-selected', this.featureGroup);
+    },
+  },
+  computed: {
+    icon() {
+      return this.featureGroup.hasBrokenXlinks ? 'report' : 'done';
+    },
+  },
+};
+</script>

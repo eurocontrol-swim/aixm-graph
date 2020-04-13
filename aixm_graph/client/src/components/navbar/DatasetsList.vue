@@ -7,10 +7,10 @@
     <ul id="dropdown-aixm-datasets" class="dropdown-content">
       <li v-for="dataset in datasets"
           :dataset="dataset"
-          :key="dataset.dataset_id"
+          :key="dataset.id"
           @click="datasetSelected(dataset)">
 
-        <a href="#">{{ dataset.dataset_name }}</a>
+        <a href="#">{{ dataset.name }}</a>
       </li>
     </ul>
 

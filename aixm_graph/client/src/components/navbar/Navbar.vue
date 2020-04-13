@@ -55,9 +55,10 @@
 
 
 <script>
-import axios from 'axios';
 import DatasetsList from './DatasetsList.vue';
 import EventBus from '../event-bus';
+import DatasetModel from '../models/Dataset';
+import * as serverApi from '../server-api';
 
 export default {
   name: 'Navbar',
@@ -71,10 +72,11 @@ export default {
   },
   methods: {
     getDatasets() {
-      const path = 'http://localhost:3000/load-datasets';
-      axios.get(path)
+      serverApi.getDatasets()
         .then((res) => {
-          this.datasets = res.data.data;
+          res.data.data.forEach((data) => {
+            this.datasets.push(new DatasetModel(data.dataset_id, data.dataset_name));
+          });
         })
         .catch((error) => {
           // eslint-disable-next-line
@@ -89,12 +91,12 @@ export default {
 
       EventBus.$emit('dataset-uploading');
 
-      axios.post('http://localhost:3000/upload', formData)
+      serverApi.uploadDataset(formData)
         .then((res) => {
-          // store the dataset
-          this.datasets.push(res.data.data);
+          const dataset = new DatasetModel(res.data.data.dataset_id, res.data.data.dataset_name);
+          this.datasets.push(dataset);
 
-          EventBus.$emit('dataset-uploaded', res.data.data);
+          EventBus.$emit('dataset-uploaded', dataset);
         })
         .catch((error) => {
           // eslint-disable-next-line
@@ -107,6 +109,7 @@ export default {
     this.getDatasets();
   },
 };
+
 </script>
 
 <style>
