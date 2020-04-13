@@ -107,7 +107,6 @@ export default {
       serverApi.processDataset(this.dataset.id)
         .then((res) => {
           this.loaderText = '';
-          console.log(res.data.data);
           res.data.data.feature_groups.forEach((fg) => {
             this.dataset.featureGroups.push(
               new FeatureGroupModel(fg.name, fg.total_count, fg.has_broken_xlinks),

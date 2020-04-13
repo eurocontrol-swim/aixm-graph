@@ -1,11 +1,12 @@
 <template>
   <div>
-     <li>
-        <a class="waves-effect collection-item active" href="#!">
+     <li @click="featureGroupSelected">
+        <a class="waves-effect collection-item active" href="#!" >
              ({{ featureGroup.totalCount }}) {{ featureGroup.name}}
           <i class="material-icons"
-             :style="[featureGroup.hasBrokenXlinks ? {color: '#ee6e73'} : {color: '#26a69a'}]"
-             @click="featureGroupSelected">{{ icon }}</i>
+             :style="[featureGroup.hasBrokenXlinks ? {color: '#ee6e73'} : {color: '#26a69a'}]">
+             {{ icon }}
+          </i>
         </a>
      </li>
   </div>
