@@ -37,7 +37,7 @@ $(document).ready(function(){
 
     $.ajax({
         type: "GET",
-        url: "/load-datasets",
+        url: "/datasets",
         dataType : "json",
         contentType: "application/json; charset=utf-8",
         success : function(response) {

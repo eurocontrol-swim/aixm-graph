@@ -60,9 +60,9 @@ def handle_response(f):
     return decorator
 
 
-@aixm_blueprint.route('/load-datasets', methods=['GET'])
+@aixm_blueprint.route('/datasets', methods=['GET'])
 @handle_response
-def load_datasets():
+def get_datasets():
     datasets = cache.get_datasets()
 
     return [
@@ -87,7 +87,7 @@ def process_dataset(dataset_id: str):
     if not dataset.stats:
         dataset.process()
 
-    features_details = [
+    feature_groups = [
         {
             'name': key,
             'total_count': value['total_count'],
@@ -95,11 +95,10 @@ def process_dataset(dataset_id: str):
         }
         for key, value in dataset.stats.items() if value['total_count'] > 0
     ]
-    features_details.sort(key=lambda item: item.get("name"))
+    feature_groups.sort(key=lambda item: item.get("name"))
 
     return {
-        "features_details": features_details,
-        "total_count": sum(s['total_count'] for s in features_details)
+        "feature_groups": feature_groups
     }
 
 

@@ -60,11 +60,11 @@ var Sidenav = new Vue({
                 data: {},
                 success: function(response) {
                     self.hideProgress();
-                    self.$refs.featuresTitle.innerHTML = 'Features (' + response.data.total_count + ') <i class="material-icons">arrow_drop_down</i>';
                     self.enableSkeleton()
-                    response.data.features_details.forEach(function(data) {
+                    response.data.feature_groups.forEach(function(data) {
                         self.addFeature(data);
                     });
+                    self.$refs.featuresTitle.innerHTML = 'Features (' + self.features.map((fg) => fg.total_count).reduce((a, b) => a + b, 0) + ') <i class="material-icons">arrow_drop_down</i>';
                     self.setDisplayableFeatures();
                 },
                 error: function(response) {
