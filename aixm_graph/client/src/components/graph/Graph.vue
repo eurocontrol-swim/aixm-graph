@@ -46,23 +46,22 @@
         <!--          Graph area-->
     <div class="row graph-area">
       <div class="col s12 valign-wrapper" id="graph" ref="graph"></div>
+      <div class="collection" id="associations-select">
+        <a href="#!" class="collection-item active" @click="onClickAllAssociations">
+          <i class="material-icons left">{{ allAssociationsIcon }}</i>
+          Associations
+        </a>
 
-        <div class="collection" id="associations-select">
-          <a href="#!" class="collection-item active" @click="onClickAllAssociations">
-            <i class="material-icons left">{{ allAssociationsIcon }}</i>
-            Associations
-          </a>
-
-          <a href="#!" class="collection-item" v-for="association in associations"
-            :association="association"
-            :key="association.name"
-            @click="onClickAssociation(association.name)">
-            ({{ association.nodesData.length }}) {{ association.name }}
-            <i class="material-icons left" ref="checkboxIcon">
-              {{ getAssociationIcon(association) }}
-            </i>
-          </a>
-        </div>
+        <a href="#!" class="collection-item" v-for="association in associations"
+          :association="association"
+          :key="association.name"
+          @click="onClickAssociation(association.name)">
+          ({{ association.nodesData.length }}) {{ association.name }}
+          <i class="material-icons left" ref="checkboxIcon">
+            {{ getAssociationIcon(association) }}
+          </i>
+        </a>
+      </div>
     </div>
   </div>
 </template>
@@ -70,12 +69,15 @@
 <script>
 import EventBus from '../event-bus';
 import * as network from './network';
-
+import * as serverApi from '../server-api';
 
 export default {
   name: 'Graph',
   data() {
     return {
+      network: null,
+      datasetId: null,
+      featureGroup: null,
       query: '',
       featuresPerPage: 5,
       featuresPerPageOptions: [5, 10, 15, 20].map((i) => ({ text: i, value: i })),
@@ -85,11 +87,32 @@ export default {
   },
   methods: {
     onFilterFeatures() {
-      console.log(this.query);
+      this.getFeatureGroupGraph({ offset: 0 });
     },
-    onFeatureGroupSelected(featureGroup) {
-      console.log(featureGroup);
-      network.getNetwork(this.$refs.graph);
+    getFeatureGroupGraph({ offset }) {
+      serverApi.getFeatureGroupGraph({
+        datasetId: this.datasetId,
+        featureGroup: this.featureGroup,
+        offset,
+        limit: this.featuresPerPage,
+        filterQuery: this.query,
+      })
+        .then((res) => {
+          const data = res.data.data.graph;
+          this.network = network.createNetwork(
+            this.$refs.graph, data.nodes, data.edges,
+          );
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.error(error);
+        });
+    },
+    onFeatureGroupSelected(datasetId, featureGroup) {
+      this.datasetId = datasetId;
+      this.featureGroup = featureGroup;
+
+      this.getFeatureGroupGraph({ offset: 0 });
     },
     onClickAllAssociations() {
       this.allAssociationsSelected = !this.allAssociationsSelected;
@@ -121,11 +144,13 @@ export default {
   },
   watch: {
     featuresPerPage() {
-      console.log(this.featuresPerPage);
+      this.getFeatureGroupGraph({ offset: 0 });
     },
   },
   created() {
-    EventBus.$on('feature-group-selected', (featureGroup) => this.onFeatureGroupSelected(featureGroup));
+    EventBus.$on('feature-group-selected', (datasetId, featureGroup) => {
+      this.onFeatureGroupSelected(datasetId, featureGroup);
+    });
   },
 };
 </script>

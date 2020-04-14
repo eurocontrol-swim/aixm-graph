@@ -17,10 +17,10 @@ import EventBus from '../event-bus';
 
 export default {
   name: 'FeatureGroup',
-  props: ['featureGroup'],
+  props: ['featureGroup', 'datasetId'],
   methods: {
     featureGroupSelected() {
-      EventBus.$emit('feature-group-selected', this.featureGroup);
+      EventBus.$emit('feature-group-selected', this.datasetId, this.featureGroup.name);
     },
   },
   computed: {

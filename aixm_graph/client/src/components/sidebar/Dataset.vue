@@ -58,7 +58,8 @@
       </li>
       <feature-group v-for="featureGroup in displayableFeatureGroups"
                :featureGroup="featureGroup"
-               :key="featureGroup.name">
+               :key="featureGroup.name"
+               :datasetId="dataset.id">
       </feature-group>
     </ul>
   </div>
