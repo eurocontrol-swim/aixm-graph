@@ -167,7 +167,7 @@ class AIXMDataSet:
 
             filter_callback = partial(self.get_features_by_name, feature.name)
 
-            self.stats[feature.name]['total_count'] = sum(1 for _ in filter_callback())
+            self.stats[feature.name]['size'] = sum(1 for _ in filter_callback())
             self.stats[feature.name]['has_broken_xlinks'] = any((feature.has_broken_xlinks for feature in filter_callback()))
 
         return self

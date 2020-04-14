@@ -90,10 +90,10 @@ def process_dataset(dataset_id: str):
     feature_groups = [
         {
             'name': key,
-            'total_count': value['total_count'],
+            'size': value['size'],
             'has_broken_xlinks': value['has_broken_xlinks']
         }
-        for key, value in dataset.stats.items() if value['total_count'] > 0
+        for key, value in dataset.stats.items() if value['size'] > 0
     ]
     feature_groups.sort(key=lambda item: item.get("name"))
 
@@ -102,32 +102,62 @@ def process_dataset(dataset_id: str):
     }
 
 
-@aixm_blueprint.route('/datasets/<dataset_id>/features/graph', methods=['GET'])
+@aixm_blueprint.route('/datasets/<dataset_id>/feature_groups/<feature_group_name>/graph', methods=['GET'])
 @handle_response
-def get_graph_for_feature_name(dataset_id: str):
+def get_graph_for_feature_group(dataset_id: str, feature_group_name: str):
     """
 
     :param dataset_id:
+    :param feature_group_name:
     :return:
     """
-    name = request.args.get('name')
-    if not name:
-        raise ValueError("Feature name not specified")
-
     offset = int(request.args.get('offset', 0))
     limit = int(request.args.get('limit', app.config['PAGE_LIMIT']))
     filter_key = request.args.get('key')
 
     dataset = cache.get_dataset_by_id(dataset_id)
 
-    graph = dataset.get_graph(feature_name=name, offset=offset, limit=(limit + offset) - 1, key=filter_key)
+    graph = dataset.get_graph(feature_name=feature_group_name, offset=offset, limit=(limit + offset) - 1, key=filter_key)
+
+    size = sum(1 for _ in dataset.get_features_by_name(name=feature_group_name, field_filter=filter_key))
 
     return {
         'offset': offset,
         'limit': limit,
-        'total_count': sum(1 for _ in dataset.get_features_by_name(name=name, field_filter=filter_key)),
+        'size': size,
         'graph': graph.to_json(),
+        'next_offset': _get_next_offset(offset, limit, size),
+        'prev_offset': _get_prev_offset(offset, limit, size),
     }
+
+
+def _get_next_offset(offset, limit, size):
+    """
+
+    :param offset:
+    :param limit:
+    :param size:
+    :return:
+    """
+    next_offset = offset + limit
+    if next_offset >= size or size <= limit :
+        return
+
+    return next_offset
+
+
+def _get_prev_offset(offset, limit, size):
+    """
+
+    :param offset:
+    :param limit:
+    :param size:
+    :return:
+    """
+    pref_offset = offset - limit
+
+    if pref_offset >= 0:
+        return pref_offset
 
 
 @aixm_blueprint.route('/datasets/<dataset_id>/features/<feature_id>/graph', methods=['GET'])

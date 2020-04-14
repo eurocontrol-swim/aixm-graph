@@ -5,7 +5,7 @@ Vue.component('feature-item', {
   `
      <li>
         <a class="waves-effect collection-item active" href="#!">
-             ({{ feature.total_count }}) {{ feature.name}}
+             ({{ feature.size }}) {{ feature.name}}
           <i v-if="feature.has_broken_xlinks" class="material-icons" id="report-icon">report</i>
           <i v-else="feature.has_broken_xlinks" class="material-icons" id="ok-icon">done</i>
           </a>
@@ -64,7 +64,7 @@ var Sidenav = new Vue({
                     response.data.feature_groups.forEach(function(data) {
                         self.addFeature(data);
                     });
-                    self.$refs.featuresTitle.innerHTML = 'Features (' + self.features.map((fg) => fg.total_count).reduce((a, b) => a + b, 0) + ') <i class="material-icons">arrow_drop_down</i>';
+                    self.$refs.featuresTitle.innerHTML = 'Features (' + self.features.map((fg) => fg.size).reduce((a, b) => a + b, 0) + ') <i class="material-icons">arrow_drop_down</i>';
                     self.setDisplayableFeatures();
                 },
                 error: function(response) {
@@ -80,12 +80,12 @@ var Sidenav = new Vue({
             var self = this;
             $.ajax({
                 type: "GET",
-                url: "/datasets/" + this.datasetId + "/features/graph?name=" + feature.name + "&offset=0"  + "&limit=" + Main.featuresPerPage,
+                url: "/datasets/" + this.datasetId + "/feature_groups/" + feature.name + "/graph?offset=0&limit=" + Main.featuresPerPage,
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
                 success : function(response) {
                     self.selectedFeature = feature;
-                    Main.drawGraph(response.data.graph, response.data.offset, response.data.limit, response.data.total_count);
+                    Main.drawGraph(response.data.graph, response.data.offset, response.data.limit, response.data.size);
                 },
                 error: function() {
                     console.log(response.responseJSON.error);
@@ -242,13 +242,13 @@ var Main = new Vue({
                 }
             }
         },
-        drawGraph: function(graph, offset, limit, total_count) {
+        drawGraph: function(graph, offset, limit, size) {
             createGraph(graph)
             this.createAssociations(graph.nodes, Sidenav.selectedFeature.name);
             this.show();
             this.focusFilter();
             this.updateDescription()
-            this.updatePagination(offset, limit, total_count)
+            this.updatePagination(offset, limit, size)
         },
         filter: function(event) {
             if (event.key == 'Enter') {
@@ -262,14 +262,15 @@ var Main = new Vue({
             var self = this;
             $.ajax({
                 type: "GET",
-                url: "/datasets/" + Sidenav.datasetId + "/features/graph?name=" + Sidenav.selectedFeature.name + "&" + keyQuery + "&offset=" + offset + "&limit=" + this.featuresPerPage,
+                url: "/datasets/" + Sidenav.datasetId + "/feature_groups/" + Sidenav.selectedFeature.name + "/graph?" + keyQuery + "&offset=" + offset + "&limit=" + this.featuresPerPage,
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
                 success : function(response) {
+                    console.log(response.data.offset, response.data.next_offset, response.data.prev_offset);
                     createGraph(response.data.graph)
                     self.createAssociations(response.data.graph.nodes, Sidenav.selectedFeature.name);
                     self.updateDescription()
-                    self.updatePagination(response.data.offset, response.data.limit, response.data.total_count)
+                    self.updatePagination(response.data.offset, response.data.limit, response.data.size)
                 },
                 error: function(response) {
                     console.log(response.responseJSON.error);
