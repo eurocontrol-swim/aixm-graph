@@ -73,6 +73,17 @@ const createNetwork = (element, origNodes, origEdges) => {
     interaction: {
       hover: true,
     },
+    nodes: {
+      shapeProperties: {
+        interpolation: false,
+      },
+    },
+    layout: {
+      improvedLayout: false,
+    },
+    physics: {
+      stabilization: false,
+    },
   };
 
   return new Network(element, data, options);
