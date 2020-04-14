@@ -110,7 +110,7 @@ export default {
           this.loaderText = '';
           res.data.data.feature_groups.forEach((fg) => {
             this.dataset.featureGroups.push(
-              new FeatureGroupModel(fg.name, fg.total_count, fg.has_broken_xlinks),
+              new FeatureGroupModel(fg.name, fg.size, fg.has_broken_xlinks),
             );
           });
         })

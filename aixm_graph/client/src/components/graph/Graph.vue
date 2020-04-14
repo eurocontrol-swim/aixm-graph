@@ -22,7 +22,7 @@
       </div>
 
       <div class="col s6">
-        <p class="right">{{ graphSummary }}</p>
+        <p class="right">{{ summary }}</p>
       </div>
 
       <div class="col s1">
@@ -32,11 +32,11 @@
       <div class="col s1">
         <div>
           <a class="waves-effect waves-light btn btn-small red lighten-2"
-             @:click="getPrevPage" >
+             @click="getPrevPage" :disabled="prevOffset === null">
             <i class="material-icons">chevron_left</i>
           </a>
           <a class="waves-effect waves-light btn btn-small red lighten-2 right"
-             @:click="getNextPage" >
+             @click="getNextPage" :disabled="nextOffset === null">
             <i class="material-icons">chevron_right</i>
           </a>
         </div>
@@ -83,6 +83,10 @@ export default {
       featuresPerPageOptions: [5, 10, 15, 20].map((i) => ({ text: i, value: i })),
       allAssociationsSelected: false,
       associations: [{ name: 'alex', selected: false, nodesData: [] }],
+      nextOffset: null,
+      prevOffset: null,
+      summary: '',
+      paginationSummary: '',
     };
   },
   methods: {
@@ -98,9 +102,21 @@ export default {
         filterQuery: this.query,
       })
         .then((res) => {
-          const data = res.data.data.graph;
+          const response = res.data;
+
+          // update pagination stuff
+          this.nextOffset = response.data.next_offset;
+          this.prevOffset = response.data.prev_offset;
+          this.updatePaginationSummary(
+            response.data.offset, response.data.limit, response.data.size,
+          );
+
+          // update summary
+          this.updateSummary();
+
+          // create network
           this.network = network.createNetwork(
-            this.$refs.graph, data.nodes, data.edges,
+            this.$refs.graph, response.data.graph.nodes, response.data.graph.edges,
           );
         })
         .catch((error) => {
@@ -122,22 +138,28 @@ export default {
       association.selected = !association.selected;
     },
     getPrevPage() {
-
+      this.getFeatureGroupGraph({ offset: this.prevOffset });
     },
     getNextPage() {
-
+      this.getFeatureGroupGraph({ offset: this.nextOffset });
     },
     getAssociationIcon(association) {
       return association.selected ? 'check_box' : 'check_box_outline_blank';
     },
+    updateSummary() {
+      this.summary = `${this.featureGroup} features`;
+
+      if (this.query) {
+        this.summary += ` matching filter query '${this.query}'`;
+      }
+    },
+    updatePaginationSummary(offset, limit, size) {
+      const upperLimit = (size - offset) < limit ? size : offset + limit;
+
+      this.paginationSummary = `${offset + 1}-${upperLimit} of ${size}`;
+    },
   },
   computed: {
-    graphSummary() {
-      return 'alex';
-    },
-    paginationSummary() {
-      return '5-10 of 100';
-    },
     allAssociationsIcon() {
       return this.allAssociationsSelected ? 'check_box' : 'check_box_outline_blank';
     },

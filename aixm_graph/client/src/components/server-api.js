@@ -15,9 +15,9 @@ const getFeatureGroupGraph = ({
   limit,
   filterQuery = '',
 }) => {
-  const queryStr = `name=${featureGroup}&offset=${offset}&limit=${limit}&key=${filterQuery}`;
+  const queryStr = `offset=${offset}&limit=${limit}&key=${filterQuery}`;
 
-  return axios.get(`${baseUrl}/datasets/${datasetId}/features/graph?${queryStr}`);
+  return axios.get(`${baseUrl}/datasets/${datasetId}/feature_groups/${featureGroup}/graph?${queryStr}`);
 };
 
 const getDownloadSkeletonURL = (datasetId) => `${baseUrl}/datasets/${datasetId}/download`;
