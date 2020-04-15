@@ -3,14 +3,19 @@
     <div class="row valign-wrapper">
       <div class="col s2">
         <div class="input-field">
-          <input type="text" v-model="query" @keypress.enter="onFilterFeatures">
+          <input type="text"
+                 v-model="query"
+                 @keypress.enter="onFilterFeatures"
+                 :disabled="singleFeature !== null">
           <label>Filter by field value</label>
         </div>
       </div>
 
       <div class="col s2">
         <div id="input-field" class="input-field">
-          <select v-model="featuresPerPage">
+          <select v-model="featuresPerPage"
+                  :disabled="singleFeature !== null"
+                  ref="featuresPerPage">
             <option v-for="option in featuresPerPageOptions"
                     :value="option.value"
                     :key="option.value">
@@ -67,17 +72,24 @@
 </template>
 
 <script>
+import M from 'materialize-css';
 import EventBus from '../event-bus';
-import * as network from './network';
+import GraphModel from './GraphModel';
 import * as serverApi from '../server-api';
+
+/*
+NOTE: We keep the graphModel out of the component scope because of differences in vue.js and vis.js
+      implementations. More details here: https://github.com/almende/vis/issues/2567
+*/
+let graphModel = null;
 
 export default {
   name: 'Graph',
   data() {
     return {
-      network: null,
       datasetId: null,
-      featureGroup: null,
+      featureGroupName: null,
+      singleFeature: null,
       query: '',
       featuresPerPage: 5,
       featuresPerPageOptions: [5, 10, 15, 20].map((i) => ({ text: i, value: i })),
@@ -93,10 +105,15 @@ export default {
     onFilterFeatures() {
       this.getFeatureGroupGraph({ offset: 0 });
     },
+    createGraphModel(data) {
+      graphModel = new GraphModel(this.$refs.graph, data);
+      graphModel.on('click', this.onClickGraphFeature);
+      graphModel.on('oncontext', this.onRightClickGraphFeature);
+    },
     getFeatureGroupGraph({ offset }) {
       serverApi.getFeatureGroupGraph({
         datasetId: this.datasetId,
-        featureGroup: this.featureGroup,
+        featureGroupName: this.featureGroupName,
         offset,
         limit: this.featuresPerPage,
         filterQuery: this.query,
@@ -104,29 +121,64 @@ export default {
         .then((res) => {
           const response = res.data;
 
-          // update pagination stuff
+          this.createGraphModel(response.data.graph);
+
+          // update pagination
           this.nextOffset = response.data.next_offset;
           this.prevOffset = response.data.prev_offset;
           this.updatePaginationSummary(
             response.data.offset, response.data.limit, response.data.size,
           );
 
-          // update summary
           this.updateSummary();
 
-          // create network
-          this.network = network.createNetwork(
-            this.$refs.graph, response.data.graph.nodes, response.data.graph.edges,
-          );
+          this.singleFeature = null;
         })
         .catch((error) => {
           // eslint-disable-next-line
           console.error(error);
         });
     },
-    onFeatureGroupSelected(datasetId, featureGroup) {
+    onClickGraphFeature(params) {
+      const featureId = params.nodes[0];
+
+      serverApi.getFeatureGraph(this.datasetId, featureId)
+        .then((res) => {
+          graphModel.update(res.data.data.graph);
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.error(error);
+        });
+    },
+    onRightClickGraphFeature(params) {
+      params.event.preventDefault();
+
+      const featureId = graphModel.getNodeIdAtPointer(params.pointer.DOM);
+      const featureName = graphModel.getNodeName(featureId);
+
+      serverApi.getFeatureGraph(this.datasetId, featureId)
+        .then((res) => {
+          this.createGraphModel(res.data.data.graph);
+
+          this.singleFeature = featureName;
+          M.FormSelect.getInstance(this.$refs.featuresPerPage).destroy();
+          M.FormSelect.init(document.querySelectorAll('select'), {});
+          this.summary = `${featureName} (${featureId})`;
+          this.paginationSummary = '';
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.error(error);
+        });
+    },
+    onFeatureGroupSelected(datasetId, featureGroupName) {
+      if (featureGroupName === this.featureGroupName) {
+        return;
+      }
+
       this.datasetId = datasetId;
-      this.featureGroup = featureGroup;
+      this.featureGroupName = featureGroupName;
 
       this.getFeatureGroupGraph({ offset: 0 });
     },
@@ -147,7 +199,7 @@ export default {
       return association.selected ? 'check_box' : 'check_box_outline_blank';
     },
     updateSummary() {
-      this.summary = `${this.featureGroup} features`;
+      this.summary = `${this.featureGroupName} features`;
 
       if (this.query) {
         this.summary += ` matching filter query '${this.query}'`;
@@ -170,8 +222,8 @@ export default {
     },
   },
   created() {
-    EventBus.$on('feature-group-selected', (datasetId, featureGroup) => {
-      this.onFeatureGroupSelected(datasetId, featureGroup);
+    EventBus.$on('feature-group-selected', (datasetId, featureGroupName) => {
+      this.onFeatureGroupSelected(datasetId, featureGroupName);
     });
   },
 };
@@ -185,7 +237,7 @@ export default {
 
 #graph-area {
   padding-left: 380px;
-  height: 87%;
+  height: 86%;
 }
 
 

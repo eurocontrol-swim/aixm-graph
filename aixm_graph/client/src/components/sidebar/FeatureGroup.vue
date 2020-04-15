@@ -1,6 +1,6 @@
 <template>
   <div>
-     <li @click="featureGroupSelected">
+     <li @click="featureGroupSelected" class="feature-item">
         <a class="waves-effect collection-item active" href="#!" >
              ({{ featureGroup.totalCount }}) {{ featureGroup.name}}
           <i class="material-icons"
@@ -30,3 +30,16 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+
+.feature-item > a {
+    height: 35px;
+    line-height: 35px;
+}
+
+.feature-item > a > i.material-icons{
+    height: 35px;
+    line-height: 35px;
+}
+</style>

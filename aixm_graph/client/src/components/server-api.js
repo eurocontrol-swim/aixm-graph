@@ -10,15 +10,19 @@ const processDataset = (datasetId) => axios.put(`${baseUrl}/datasets/${datasetId
 
 const getFeatureGroupGraph = ({
   datasetId,
-  featureGroup,
+  featureGroupName,
   offset = 0,
   limit,
   filterQuery = '',
 }) => {
   const queryStr = `offset=${offset}&limit=${limit}&key=${filterQuery}`;
 
-  return axios.get(`${baseUrl}/datasets/${datasetId}/feature_groups/${featureGroup}/graph?${queryStr}`);
+  return axios.get(`${baseUrl}/datasets/${datasetId}/feature_groups/${featureGroupName}/graph?${queryStr}`);
 };
+
+const getFeatureGraph = (datasetId, featureId) => axios.get(
+  `${baseUrl}/datasets/${datasetId}/features/${featureId}/graph`,
+);
 
 const getDownloadSkeletonURL = (datasetId) => `${baseUrl}/datasets/${datasetId}/download`;
 
@@ -27,5 +31,6 @@ export {
   uploadDataset,
   processDataset,
   getFeatureGroupGraph,
+  getFeatureGraph,
   getDownloadSkeletonURL,
 };

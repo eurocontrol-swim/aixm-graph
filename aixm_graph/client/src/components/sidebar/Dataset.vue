@@ -152,3 +152,24 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+
+.sidenav li > a {
+  font-size: 12px;
+}
+
+.sidenav li > a > i, .sidenav li > a > i.material-icons {
+  margin: 0 10px 0 0;
+}
+
+.sidenav {
+  top: 64px;
+  height: 100%;
+  width: 380px;
+}
+
+.sidenav .divider {
+  margin: 0px;
+}
+</style>
