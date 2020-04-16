@@ -31,28 +31,34 @@ import logging.config
 
 from flask import Flask
 from flask_cors import CORS
+from pkg_resources import resource_filename
 
-from aixm_graph.server.datasets.features import AIXMFeatureClassRegistry
-from aixm_graph.server.utils import load_config
-from aixm_graph.server.web_app import aixm_blueprint
-from aixm_graph.server.web_app.static_views import *
-from aixm_graph.server.endpoints import *
+from server.datasets.features import AIXMFeatureClassRegistry
+from server.utils import load_config
+from server.web_app import aixm_blueprint
+from server.web_app import *
+from server.endpoints import *
 
 __author__ = "EUROCONTROL (SWIM)"
 
 
-app = Flask(__name__)
-app.register_blueprint(aixm_blueprint)
+def create_app(config_file: str) -> Flask:
+    app = Flask(__name__)
 
-app_config = load_config(filename=os.path.join(os.path.dirname(__file__), 'config.yml'))
-app.config.update(app_config)
-logging.config.dictConfig(app.config['LOGGING'])
+    app.register_blueprint(aixm_blueprint)
+    app_config = load_config(filename=config_file)
+    app.config.update(app_config)
 
-# enable CORS
-CORS(app, resources={r'/*': {'origins': '*'}})
+    logging.config.dictConfig(app.config['LOGGING'])
+    # enable CORS
 
-# generate classes per feature as they're found in the config file
-AIXMFeatureClassRegistry.load_feature_classes(app.config['FEATURES'])
+    CORS(app, resources={r'/*': {'origins': '*'}})
+    # generate classes per feature as they're found in the config file
+
+    AIXMFeatureClassRegistry.load_feature_classes(app.config['FEATURES'])
+
+    return app
 
 if __name__ == '__main__':
+    app = create_app(config_file=resource_filename(__name__, 'config.yml'))
     app.run(host="0.0.0.0", port=3000)

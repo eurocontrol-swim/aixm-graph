@@ -30,32 +30,8 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-from flask import send_from_directory
+from pkg_resources import resource_filename
 
-from aixm_graph.server.web_app import aixm_blueprint
+from server.app import create_app
 
-
-@aixm_blueprint.route("/")
-def index():
-    return send_from_directory('web_app/templates/', "index.html")
-
-
-@aixm_blueprint.route('/js/<path:path>')
-def send_js(path):
-    return send_from_directory('web_app/static/js', path)
-
-
-@aixm_blueprint.route('/css/<path:path>')
-def send_css(path):
-    return send_from_directory('web_app/static/css', path)
-
-
-@aixm_blueprint.route('/img/<path:path>')
-def send_img(path):
-    return send_from_directory('web_app/static/img', path)
-
-
-@aixm_blueprint.route('/favicon.ico')
-def favicon():
-    return send_from_directory('web_app/static/img', 'favicon.png', mimetype='image/png')
-
+app = create_app(config_file=resource_filename(__name__, 'config.yml'))

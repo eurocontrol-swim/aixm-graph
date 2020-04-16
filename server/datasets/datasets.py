@@ -32,13 +32,13 @@ __author__ = "EUROCONTROL (SWIM)"
 import os
 from collections import defaultdict
 from functools import partial
-from typing import Optional, Generator
+from typing import Optional
 
 from lxml import etree
 
-from aixm_graph.server.datasets.features import AIXMFeatureFactory, FeatureType, AIXMFeature
-from aixm_graph.server.datasets.fields import Extension
-from aixm_graph.server.graph import Graph, Node, Edge
+from server.datasets.features import AIXMFeatureFactory, AIXMFeature
+from server.datasets.fields import Extension
+from server.graph import Graph, Node, Edge
 
 
 class AIXMDataSet:

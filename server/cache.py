@@ -30,7 +30,54 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-from aixm_graph.server.app import app
+import uuid
+from typing import List
 
-if __name__ == '__main__':
-    app.run()
+from server.datasets.datasets import AIXMDataSet
+
+CACHE = {
+    'datasets': {}
+}
+
+
+def create_dataset(filepath: str) -> AIXMDataSet:
+    """
+
+    :param dataset:
+    :return:
+    """
+    global CACHE
+    dataset = AIXMDataSet(filepath)
+    dataset.id = uuid.uuid4().hex[:6]
+
+    CACHE['datasets'][dataset.id] = dataset
+
+    return CACHE['datasets'][dataset.id]
+
+
+def get_dataset_by_id(dataset_id: str) -> AIXMDataSet:
+    """
+
+    :param dataset_id:
+    :return:
+    """
+    return CACHE['datasets'].get(dataset_id)
+
+
+def get_dataset_by_name(name: str) -> AIXMDataSet:
+    """
+
+    :param name:
+    :return:
+    """
+    for _, dataset in CACHE['datasets'].items():
+        if dataset.name == name:
+            return dataset
+
+
+def get_datasets() -> List[AIXMDataSet]:
+    """
+
+    :return:
+    """
+    return list(CACHE['datasets'].values())

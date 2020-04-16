@@ -32,8 +32,8 @@ __author__ = "EUROCONTROL (SWIM)"
 
 from typing import List, Optional, Union, Any, Dict
 
-from aixm_graph.server.datasets.features import AIXMFeature
-from aixm_graph.server.datasets.fields import XLinkField
+from server.datasets.features import AIXMFeature
+from server.datasets.fields import XLinkField
 
 
 class Node:

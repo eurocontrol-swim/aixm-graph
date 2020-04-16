@@ -30,54 +30,32 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-import uuid
-from typing import List
+from flask import send_from_directory
 
-from aixm_graph.server.datasets.datasets import AIXMDataSet
-
-CACHE = {
-    'datasets': {}
-}
+from server.web_app import aixm_blueprint
 
 
-def create_dataset(filepath: str) -> AIXMDataSet:
-    """
-
-    :param dataset:
-    :return:
-    """
-    global CACHE
-    dataset = AIXMDataSet(filepath)
-    dataset.id = uuid.uuid4().hex[:6]
-
-    CACHE['datasets'][dataset.id] = dataset
-
-    return CACHE['datasets'][dataset.id]
+@aixm_blueprint.route("/")
+def index():
+    return send_from_directory('web_app/templates/', "index.html")
 
 
-def get_dataset_by_id(dataset_id: str) -> AIXMDataSet:
-    """
-
-    :param dataset_id:
-    :return:
-    """
-    return CACHE['datasets'].get(dataset_id)
+@aixm_blueprint.route('/js/<path:path>')
+def send_js(path):
+    return send_from_directory('web_app/static/js', path)
 
 
-def get_dataset_by_name(name: str) -> AIXMDataSet:
-    """
-
-    :param name:
-    :return:
-    """
-    for _, dataset in CACHE['datasets'].items():
-        if dataset.name == name:
-            return dataset
+@aixm_blueprint.route('/css/<path:path>')
+def send_css(path):
+    return send_from_directory('web_app/static/css', path)
 
 
-def get_datasets() -> List[AIXMDataSet]:
-    """
+@aixm_blueprint.route('/img/<path:path>')
+def send_img(path):
+    return send_from_directory('web_app/static/img', path)
 
-    :return:
-    """
-    return list(CACHE['datasets'].values())
+
+@aixm_blueprint.route('/favicon.ico')
+def favicon():
+    return send_from_directory('web_app/static/img', 'favicon.png', mimetype='image/png')
+

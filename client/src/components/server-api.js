@@ -4,7 +4,7 @@ const config = {
   baseURL: 'http://localhost:3000/',
 };
 
-const getDatasets = () => axios.get('datasets', config);
+const getDatasets = () => axios.get('/datasets', config);
 
 const uploadDataset = (formData) => axios.post('/upload', formData, config);
 
@@ -29,7 +29,7 @@ const getFeatureGraph = (datasetId, featureId) => axios.get(
   `/datasets/${datasetId}/features/${featureId}/graph`, config,
 );
 
-const getDownloadSkeletonURL = (datasetId) => `${config.baseURL}/datasets/${datasetId}/download`;
+const getDownloadSkeletonURL = (datasetId) => `${config.baseURL}datasets/${datasetId}/download`;
 
 export {
   getDatasets,
