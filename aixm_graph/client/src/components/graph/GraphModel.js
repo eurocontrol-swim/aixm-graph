@@ -60,25 +60,33 @@ export default class GraphModel {
     });
   };
 
+  getNodes = () => this.network.body.data.nodes;
+
+  getEdges = () => this.network.body.data.edges;
+
   addNode = (node) => {
     if (!this.nodeExists(node)) {
-      this.network.body.data.nodes.add(node);
+      this.getNodes().add(node);
     }
   }
 
+  removeNodeById = (nodeId) => {
+    this.getNodes().remove(nodeId);
+  };
+
   addEdge = (edge) => {
     if (!this.edgeExists(edge)) {
-      this.network.body.data.edges.add(edge);
+      this.getEdges().add(edge);
     }
   }
 
   nodeExists = (node) => this.network.body.nodeIndices.indexOf(node.id) >= 0;
 
   edgeExists = (edge) => {
-    const edgeIds = this.network.body.data.edges.getIds();
+    const edgeIds = this.getEdges().getIds();
 
     for (let i = 0; i < edgeIds.length; i += 1) {
-      const e = this.network.body.data.edges.get(edgeIds[i]);
+      const e = this.getEdges().get(edgeIds[i]);
 
       if ((e.to === edge.to && e.from === edge.from)
           || (e.to === edge.from && e.from === edge.to)) {
@@ -90,8 +98,9 @@ export default class GraphModel {
 
   getNodeIdAtPointer = (pointer) => this.network.getNodeAt(pointer);
 
-  getNodeName = (nodeId) => this.network.body.data.nodes.get(nodeId).name;
+  getNodeById = (nodeId) => this.getNodes().get(nodeId);
 
+  // getNodeIdsByName = (name) => this.getNodes()
   static getNodePopup = (node) => {
     let result = `<table id="node-tooltip" data-node-id="${node.id}">`
       + '<tr style="border-bottom: 1px solid black;">'
@@ -155,7 +164,29 @@ export default class GraphModel {
     const getEnhancedNode = GraphModel.getEnhancedNodeClosure(origEdges);
     const nodes = origNodes.map((node) => getEnhancedNode(node));
     const edges = origEdges.map((edge) => GraphModel.getEnhancedEdge(edge));
-
     return { nodes, edges };
+  };
+
+  getBranchIds = (rootNodeId, incomingBranchIds, excludedNodeIds) => {
+    const branchIds = incomingBranchIds || [];
+    const self = this;
+    const node = this.network.body.nodes[rootNodeId];
+
+    if (node === undefined) {
+      return branchIds;
+    }
+
+    node.edges.forEach((edge) => {
+      const targetNode = edge.to;
+      if (excludedNodeIds.concat(node.id).indexOf(targetNode.id) < 0) {
+        branchIds.push(targetNode.id);
+
+        if (targetNode.edges) {
+          self.getBranchIds(targetNode.id, branchIds, excludedNodeIds);
+        }
+      }
+    });
+
+    return branchIds;
   };
 }

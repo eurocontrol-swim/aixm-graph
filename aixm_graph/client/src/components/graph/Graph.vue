@@ -61,7 +61,7 @@
           :association="association"
           :key="association.name"
           @click="onClickAssociation(association.name)">
-          ({{ association.nodesData.length }}) {{ association.name }}
+          ({{ association.nodes.length }}) {{ association.name }}
           <i class="material-icons left" ref="checkboxIcon">
             {{ getAssociationIcon(association) }}
           </i>
@@ -93,8 +93,8 @@ export default {
       query: '',
       featuresPerPage: 5,
       featuresPerPageOptions: [5, 10, 15, 20].map((i) => ({ text: i, value: i })),
-      allAssociationsSelected: false,
-      associations: [{ name: 'alex', selected: false, nodesData: [] }],
+      allAssociationsSelected: true,
+      associations: [],
       nextOffset: null,
       prevOffset: null,
       summary: '',
@@ -110,6 +110,10 @@ export default {
       graphModel.on('click', this.onClickGraphFeature);
       graphModel.on('oncontext', this.onRightClickGraphFeature);
     },
+    initGraph(data) {
+      this.createGraphModel(data);
+      this.registerAssociations();
+    },
     getFeatureGroupGraph({ offset }) {
       serverApi.getFeatureGroupGraph({
         datasetId: this.datasetId,
@@ -119,25 +123,29 @@ export default {
         filterQuery: this.query,
       })
         .then((res) => {
-          const response = res.data;
-
-          this.createGraphModel(response.data.graph);
-
-          // update pagination
-          this.nextOffset = response.data.next_offset;
-          this.prevOffset = response.data.prev_offset;
-          this.updatePaginationSummary(
-            response.data.offset, response.data.limit, response.data.size,
-          );
-
+          this.initGraph(res.data.data.graph);
+          this.updatePagination(res.data.data);
           this.updateSummary();
-
-          this.singleFeature = null;
         })
         .catch((error) => {
           // eslint-disable-next-line
           console.error(error);
         });
+    },
+    registerAssociations() {
+      const associations = {};
+
+      graphModel.getNodes().forEach((node) => {
+        if (node.name !== this.featureGroupName) {
+          if (associations[node.name] === undefined) {
+            associations[node.name] = {
+              nodes: [], selected: true, name: node.name,
+            };
+          }
+          associations[node.name].nodes.push(node);
+        }
+      });
+      this.associations = Object.values(associations);
     },
     onClickGraphFeature(params) {
       const featureId = params.nodes[0];
@@ -155,11 +163,11 @@ export default {
       params.event.preventDefault();
 
       const featureId = graphModel.getNodeIdAtPointer(params.pointer.DOM);
-      const featureName = graphModel.getNodeName(featureId);
+      const featureName = graphModel.getNodeById(featureId).name;
 
       serverApi.getFeatureGraph(this.datasetId, featureId)
         .then((res) => {
-          this.createGraphModel(res.data.data.graph);
+          graphModel = this.createGraphModel(res.data.data.graph);
 
           this.singleFeature = featureName;
           M.FormSelect.getInstance(this.$refs.featuresPerPage).destroy();
@@ -180,14 +188,65 @@ export default {
       this.datasetId = datasetId;
       this.featureGroupName = featureGroupName;
 
+      this.singleFeature = null;
+      this.allAssociationsSelected = true;
+
       this.getFeatureGroupGraph({ offset: 0 });
     },
     onClickAllAssociations() {
+      console.log('all');
       this.allAssociationsSelected = !this.allAssociationsSelected;
+
+      const self = this;
+      this.associations.forEach((assoc) => {
+        if (assoc.selected !== this.allAssociationsSelected) {
+          self.onClickAssociation(assoc.name);
+        }
+      });
     },
     onClickAssociation(associationName) {
       const association = this.associations.filter((assoc) => assoc.name === associationName)[0];
       association.selected = !association.selected;
+
+      // update the 'all' checkbox
+      if (!association.selected) {
+        this.allAssociationsSelected = false;
+      }
+
+      if (this.associations.every((a) => a.selected)) {
+        this.allAssociationsSelected = true;
+      }
+
+      this.updateGraphAssociations(association);
+    },
+    updateGraphAssociations(association) {
+      if (association.selected) {
+        association.nodes.forEach((node) => {
+          graphModel.addNode(node);
+        });
+      } else {
+        const associationsNodeIds = this.associations.reduce(
+          (nodeIds, assoc) => nodeIds.concat(assoc.nodes.map((node) => node.id)), [],
+        );
+
+        const featureGroupNodeIds = graphModel.getNodes().getIds().filter(
+          (id) => graphModel.getNodeById(id).name === this.featureGroupName,
+        );
+
+        const excludedNodeIds = featureGroupNodeIds.concat(associationsNodeIds);
+
+        association.nodes.forEach((node) => {
+          try {
+            const branchIdsToRemove = graphModel.getBranchIds(node.id, [], excludedNodeIds);
+            branchIdsToRemove.forEach((nodeId) => {
+              graphModel.removeNodeById(nodeId);
+            });
+          } catch (e) {
+            console.log(e);
+          }
+          graphModel.removeNodeById(node.id);
+        });
+      }
     },
     getPrevPage() {
       this.getFeatureGroupGraph({ offset: this.prevOffset });
@@ -204,6 +263,11 @@ export default {
       if (this.query) {
         this.summary += ` matching filter query '${this.query}'`;
       }
+    },
+    updatePagination(response) {
+      this.nextOffset = response.next_offset;
+      this.prevOffset = response.prev_offset;
+      this.updatePaginationSummary(response.offset, response.limit, response.size);
     },
     updatePaginationSummary(offset, limit, size) {
       const upperLimit = (size - offset) < limit ? size : offset + limit;
