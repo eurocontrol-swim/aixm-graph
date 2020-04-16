@@ -1,14 +1,40 @@
+# server
 *.py[cod]
 venv*/
 dist/
 build/
 log/
 *.egg-info/
-.idea/workspace.xml
-.idea/dbnavigator.xml
 .cache/
 __pycache__/
 .coverage
 /.pytest_cache
+
+# client
+.DS_Store
+node_modules
+/dist
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# misc
+.idea/workspace.xml
+.idea/dbnavigator.xml
 specs
 samples
