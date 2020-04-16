@@ -283,7 +283,6 @@ class AIXMFeatureClassRegistry:
             try:
                 data = {
                     'config': cls.validate_config(config_data),
-                    # 'extension_prefix': 'mxia'
                 }
                 feature_class = type(feature_name, (AIXMFeature,), data)
                 cls.feature_classes[feature_class.__name__] = feature_class

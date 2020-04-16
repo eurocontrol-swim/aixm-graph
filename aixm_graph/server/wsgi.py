@@ -27,33 +27,10 @@ http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
-import logging.config
-import os
-
-from flask import Flask
-from flask_cors import CORS
-
-from aixm_graph.server.datasets.features import AIXMFeatureClassRegistry
-from aixm_graph.server.utils import load_config
-from aixm_graph.web_app import aixm_blueprint
-from aixm_graph.web_app.static_views import *
-from aixm_graph.server.endpoints import *
 
 __author__ = "EUROCONTROL (SWIM)"
 
-
-app = Flask(__name__)
-app.register_blueprint(aixm_blueprint)
-
-app_config = load_config(filename=os.path.join(os.path.dirname(__file__), 'config.yml'))
-app.config.update(app_config)
-logging.config.dictConfig(app.config['LOGGING'])
-
-# enable CORS
-CORS(app, resources={r'/*': {'origins': '*'}})
-
-
-AIXMFeatureClassRegistry.load_feature_classes(app.config['FEATURES'])
+from aixm_graph.server.app import app
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=3000)
+    app.run()

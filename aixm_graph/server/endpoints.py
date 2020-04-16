@@ -39,7 +39,7 @@ from flask import request, current_app as app, send_file
 from werkzeug.utils import secure_filename
 
 from aixm_graph.server import cache
-from aixm_graph.web_app import aixm_blueprint
+from aixm_graph.server.web_app import aixm_blueprint
 
 _logger = logging.getLogger(__name__)
 
