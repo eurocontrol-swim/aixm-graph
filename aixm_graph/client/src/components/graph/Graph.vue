@@ -72,7 +72,6 @@
 </template>
 
 <script>
-import M from 'materialize-css';
 import EventBus from '../event-bus';
 import GraphModel from './GraphModel';
 import * as serverApi from '../server-api';
@@ -177,15 +176,13 @@ export default {
 
       const featureName = graphModel.getNodeById(featureId).name;
 
+      this.singleFeature = featureName;
+      this.summary = `${featureName} (${featureId})`;
+      this.paginationSummary = '';
+
       serverApi.getFeatureGraph(this.datasetId, featureId)
         .then((res) => {
           graphModel = this.createGraphModel(res.data.data.graph);
-
-          this.singleFeature = featureName;
-          M.FormSelect.getInstance(this.$refs.featuresPerPage).destroy();
-          M.FormSelect.init(document.querySelectorAll('select'), {});
-          this.summary = `${featureName} (${featureId})`;
-          this.paginationSummary = '';
         })
         .catch((error) => {
           // eslint-disable-next-line
