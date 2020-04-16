@@ -72,6 +72,7 @@ import FeatureGroup from './FeatureGroup.vue';
 import FeatureGroupModel from '../models/FeatureGroup';
 import DatasetModel from '../models/Dataset';
 import * as serverApi from '../server-api';
+import * as alert from '../alert';
 
 export default {
   name: 'Dataset',
@@ -117,7 +118,8 @@ export default {
         .catch((error) => {
           this.loaderText = '';
           // eslint-disable-next-line
-          console.error(error);
+          console.error(error.response);
+          alert.showError('Failed to process dataset!');
         });
     },
   },

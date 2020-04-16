@@ -76,6 +76,7 @@ import M from 'materialize-css';
 import EventBus from '../event-bus';
 import GraphModel from './GraphModel';
 import * as serverApi from '../server-api';
+import * as alert from '../alert';
 
 /*
 NOTE: We keep the graphModel out of the component scope because of differences in vue.js and vis.js
@@ -129,7 +130,8 @@ export default {
         })
         .catch((error) => {
           // eslint-disable-next-line
-          console.error(error);
+          console.error(error.response);
+          alert.showError('Failed to get features!');
         });
     },
     registerAssociations() {
@@ -150,6 +152,10 @@ export default {
     onClickGraphFeature(params) {
       const featureId = params.nodes[0];
 
+      if (featureId === undefined) {
+        return;
+      }
+
       serverApi.getFeatureGraph(this.datasetId, featureId)
         .then((res) => {
           graphModel.update(res.data.data.graph);
@@ -157,12 +163,18 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line
           console.error(error);
+          alert.showError('Failed to expand graph!');
         });
     },
     onRightClickGraphFeature(params) {
       params.event.preventDefault();
 
       const featureId = graphModel.getNodeIdAtPointer(params.pointer.DOM);
+
+      if (featureId === undefined) {
+        return;
+      }
+
       const featureName = graphModel.getNodeById(featureId).name;
 
       serverApi.getFeatureGraph(this.datasetId, featureId)
@@ -177,7 +189,8 @@ export default {
         })
         .catch((error) => {
           // eslint-disable-next-line
-          console.error(error);
+          console.error(error.response);
+          alert.showError('Failed to fetch feature graph!');
         });
     },
     onFeatureGroupSelected(datasetId, featureGroupName) {
@@ -194,7 +207,6 @@ export default {
       this.getFeatureGroupGraph({ offset: 0 });
     },
     onClickAllAssociations() {
-      console.log('all');
       this.allAssociationsSelected = !this.allAssociationsSelected;
 
       const self = this;
@@ -241,8 +253,10 @@ export default {
             branchIdsToRemove.forEach((nodeId) => {
               graphModel.removeNodeById(nodeId);
             });
-          } catch (e) {
-            console.log(e);
+          } catch (error) {
+          // eslint-disable-next-line
+            console.error(error);
+            alert.showError('Failed to update associations!');
           }
           graphModel.removeNodeById(node.id);
         });

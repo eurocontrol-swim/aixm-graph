@@ -1,12 +1,14 @@
 import axios from 'axios';
 
-const baseUrl = 'http://localhost:3000';
+const config = {
+  baseURL: 'http://localhost:3000/',
+};
 
-const getDatasets = () => axios.get(`${baseUrl}/datasets`);
+const getDatasets = () => axios.get('datasets', config);
 
-const uploadDataset = (formData) => axios.post(`${baseUrl}/upload`, formData);
+const uploadDataset = (formData) => axios.post('/upload', formData, config);
 
-const processDataset = (datasetId) => axios.put(`${baseUrl}/datasets/${datasetId}/process`);
+const processDataset = (datasetId) => axios.put(`/datasets/${datasetId}/process`, {}, config);
 
 const getFeatureGroupGraph = ({
   datasetId,
@@ -17,14 +19,17 @@ const getFeatureGroupGraph = ({
 }) => {
   const queryStr = `offset=${offset}&limit=${limit}&key=${filterQuery}`;
 
-  return axios.get(`${baseUrl}/datasets/${datasetId}/feature_groups/${featureGroupName}/graph?${queryStr}`);
+  return axios.get(
+    `/datasets/${datasetId}/feature_groups/${featureGroupName}/graph?${queryStr}`,
+    config,
+  );
 };
 
 const getFeatureGraph = (datasetId, featureId) => axios.get(
-  `${baseUrl}/datasets/${datasetId}/features/${featureId}/graph`,
+  `/datasets/${datasetId}/features/${featureId}/graph`, config,
 );
 
-const getDownloadSkeletonURL = (datasetId) => `${baseUrl}/datasets/${datasetId}/download`;
+const getDownloadSkeletonURL = (datasetId) => `${config.baseUrl}/datasets/${datasetId}/download`;
 
 export {
   getDatasets,
