@@ -43,6 +43,6 @@ RUN set -x \
     && rm -rf /source
 
 COPY ./server .
-CMD gunicorn -b 0.0.0.0:5000 wsgi:app --daemon && \
+CMD gunicorn -w 1 -b 0.0.0.0:5000 wsgi:app --daemon && \
       sed -i -e 's/$PORT/'"$PORT"'/g' /etc/nginx/conf.d/default.conf && \
       nginx -g 'daemon off;'
