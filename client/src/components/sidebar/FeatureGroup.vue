@@ -2,7 +2,7 @@
   <div>
      <li @click="featureGroupSelected" class="feature-item">
         <a class="waves-effect collection-item active" href="#!" >
-             ({{ featureGroup.totalCount }}) {{ featureGroup.name}}
+             {{ featureGroup.name}} ({{ featureGroup.totalCount }})
           <i class="material-icons"
              :style="[featureGroup.hasBrokenXlinks ? {color: '#ee6e73'} : {color: '#26a69a'}]">
              {{ icon }}
