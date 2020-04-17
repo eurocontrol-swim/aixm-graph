@@ -147,10 +147,9 @@ export default {
     },
   },
   mounted() {
-    const self = this;
-    EventBus.$on('dataset-uploading', () => self.onDatasetUploading());
-    EventBus.$on('dataset-uploaded', (dataset) => self.onDatasetUploaded(dataset));
-    EventBus.$on('dataset-selected', (dataset) => self.onDatasetSelected(dataset));
+    EventBus.$on('dataset-uploading', () => this.onDatasetUploading());
+    EventBus.$on('dataset-uploaded', (dataset) => this.onDatasetUploaded(dataset));
+    EventBus.$on('dataset-selected', (dataset) => this.onDatasetSelected(dataset));
   },
 };
 </script>

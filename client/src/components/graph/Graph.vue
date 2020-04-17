@@ -1,20 +1,23 @@
 <template>
   <div id="graph-area">
-    <div class="row valign-wrapper">
+    <div class="row valign-wrapper" :class="{hide: featureGroupName === null}">
+
+      <div class="col s6">
+        <p v-html="summary"></p>
+      </div>
+
       <div class="col s2">
-        <div class="input-field">
+        <div class="input-field" :class="{hide: filterHidden}">
           <input type="text"
                  v-model="query"
-                 @keypress.enter="onFilterFeatures"
-                 :disabled="singleFeature !== null">
+                 @keypress.enter="onFilterFeatures">
           <label>Filter by field value</label>
         </div>
       </div>
 
       <div class="col s2">
-        <div id="input-field" class="input-field">
+        <div id="input-field" class="input-field" :class="{hide: filterHidden}">
           <select v-model="featuresPerPage"
-                  :disabled="singleFeature !== null"
                   ref="featuresPerPage">
             <option v-for="option in featuresPerPageOptions"
                     :value="option.value"
@@ -26,16 +29,12 @@
         </div>
       </div>
 
-      <div class="col s6">
-        <p class="right">{{ summary }}</p>
-      </div>
-
       <div class="col s1">
         <p class="right">{{ paginationSummary }}</p>
       </div>
 
       <div class="col s1">
-        <div>
+        <div :class="{hide: singleFeature !== null}">
           <a class="waves-effect waves-light btn btn-small red lighten-2"
              @click="getPrevPage" :disabled="prevOffset === null">
             <i class="material-icons">chevron_left</i>
@@ -49,9 +48,12 @@
     </div>
 
         <!--          Graph area-->
-    <div class="row graph-area">
+    <div class="row graph-area" :class="{hide: featureGroupName === null}">
+      <div class="progress" id="graphLoader" :class="{hide: loadingGraph === false}">
+        <div class="indeterminate"></div>
+      </div>
       <div class="col s12 valign-wrapper" id="graph" ref="graph"></div>
-      <div class="collection" id="associations-select">
+      <div class="collection" id="associations-select" :class="{hide: featureGroupName === null}">
         <a href="#!" class="collection-item active" @click="onClickAllAssociations">
           <i class="material-icons left">{{ allAssociationsIcon }}</i>
           Associations
@@ -99,9 +101,25 @@ export default {
       prevOffset: null,
       summary: '',
       paginationSummary: '',
+      loadingGraph: false,
     };
   },
   methods: {
+    reset(datasetId) {
+      graphModel = null;
+      this.datasetId = datasetId;
+      this.featureGroupName = null;
+      this.singleFeature = null;
+      this.query = '';
+      this.featuresPerPage = 5;
+      this.allAssociationsSelected = true;
+      this.associations = [];
+      this.nextOffset = null;
+      this.prevOffset = null;
+      this.summary = '';
+      this.paginationSummary = '';
+      this.loadingGraph = false;
+    },
     onFilterFeatures() {
       this.getFeatureGroupGraph({ offset: 0 });
     },
@@ -115,6 +133,7 @@ export default {
       this.registerAssociations();
     },
     getFeatureGroupGraph({ offset }) {
+      this.loadingGraph = true;
       serverApi.getFeatureGroupGraph({
         datasetId: this.datasetId,
         featureGroupName: this.featureGroupName,
@@ -126,8 +145,10 @@ export default {
           this.initGraph(res.data.data.graph);
           this.updatePagination(res.data.data);
           this.updateSummary();
+          this.loadingGraph = false;
         })
         .catch((error) => {
+          this.loadingGraph = false;
           // eslint-disable-next-line
           console.error(error.response);
           alert.showError('Failed to get features!');
@@ -155,11 +176,14 @@ export default {
         return;
       }
 
+      this.loadingGraph = true;
       serverApi.getFeatureGraph(this.datasetId, featureId)
         .then((res) => {
           graphModel.update(res.data.data.graph);
+          this.loadingGraph = false;
         })
         .catch((error) => {
+          this.loadingGraph = false;
           // eslint-disable-next-line
           console.error(error);
           alert.showError('Failed to expand graph!');
@@ -177,14 +201,17 @@ export default {
       const featureName = graphModel.getNodeById(featureId).name;
 
       this.singleFeature = featureName;
-      this.summary = `${featureName} (${featureId})`;
+      this.summary = `<strong>${featureName}</strong> with id: <strong>${featureId}</strong>`;
       this.paginationSummary = '';
 
+      this.loadingGraph = true;
       serverApi.getFeatureGraph(this.datasetId, featureId)
         .then((res) => {
-          graphModel = this.createGraphModel(res.data.data.graph);
+          this.createGraphModel(res.data.data.graph);
+          this.loadingGraph = false;
         })
         .catch((error) => {
+          this.loadingGraph = false;
           // eslint-disable-next-line
           console.error(error.response);
           alert.showError('Failed to fetch feature graph!');
@@ -269,10 +296,10 @@ export default {
       return association.selected ? 'check_box' : 'check_box_outline_blank';
     },
     updateSummary() {
-      this.summary = `${this.featureGroupName} features`;
+      this.summary = `<strong>${this.featureGroupName}</strong> features`;
 
       if (this.query) {
-        this.summary += ` matching filter query '${this.query}'`;
+        this.summary += ` matching filter query '<strong>${this.query}</strong>'`;
       }
     },
     updatePagination(response) {
@@ -290,6 +317,9 @@ export default {
     allAssociationsIcon() {
       return this.allAssociationsSelected ? 'check_box' : 'check_box_outline_blank';
     },
+    filterHidden() {
+      return this.featureGroupName === null || this.singleFeature !== null;
+    },
   },
   watch: {
     featuresPerPage() {
@@ -300,6 +330,11 @@ export default {
     EventBus.$on('feature-group-selected', (datasetId, featureGroupName) => {
       this.onFeatureGroupSelected(datasetId, featureGroupName);
     });
+    EventBus.$on('dataset-uploading', () => this.reset());
+    EventBus.$on('dataset-uploaded', (dataset) => {
+      this.datasetId = dataset.id;
+    });
+    EventBus.$on('dataset-selected', (dataset) => this.reset(dataset.id));
   },
 };
 </script>
@@ -330,4 +365,9 @@ export default {
 #associations-select li{
     padding-left: 20px;
 }
+
+#graphLoader {
+  position: absolute;
+}
+
 </style>

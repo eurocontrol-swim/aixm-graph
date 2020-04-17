@@ -88,3 +88,7 @@ table#node-tooltip > td {
 #associations-select li{
     padding-left: 20px;
 }
+
+.vis-active:focus {
+    outline: none;
+}
