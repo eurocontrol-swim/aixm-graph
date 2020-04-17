@@ -395,9 +395,8 @@ export default {
 }
 
 #copyPasteArea {
-  position: 'absolute';
-  left: '-9999px';
-  z-index: -1;
+  position: absolute;
+  left: -9999px;
 }
 
 </style>
