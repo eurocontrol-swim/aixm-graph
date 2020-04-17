@@ -10,8 +10,9 @@
         <div class="input-field" :class="{hide: filterHidden}">
           <input type="text"
                  v-model="query"
-                 @keypress.enter="onFilterFeatures">
-          <label>Filter by field value</label>
+                 @keypress.enter="onFilterFeatures"
+                 placeholder="By field value">
+          <label>Filter</label>
         </div>
       </div>
 
@@ -238,7 +239,7 @@ export default {
       this.currentHoveredFeatureNodeId = params.node;
     },
     onFeatureGroupSelected(datasetId, featureGroupName) {
-      if (featureGroupName === this.featureGroupName) {
+      if (featureGroupName === this.featureGroupName && this.singleFeature === null) {
         return;
       }
 
