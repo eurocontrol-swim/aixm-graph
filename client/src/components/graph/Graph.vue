@@ -70,10 +70,19 @@
         </a>
       </div>
     </div>
+
+    <textarea readonly id="copyPasteArea" ref="copyPasteArea" v-model="currentHoveredFeatureNodeId">
+    </textarea>
+
+    <GlobalEvents
+      @keydown.ctrl.67="copyNodeIdToClipboard"
+    />
   </div>
 </template>
 
 <script>
+import GlobalEvents from 'vue-global-events';
+import Vue from 'vue';
 import EventBus from '../event-bus';
 import GraphModel from './GraphModel';
 import * as serverApi from '../server-api';
@@ -85,8 +94,13 @@ NOTE: We keep the graphModel out of the component scope because of differences i
 */
 let graphModel = null;
 
+
+// register globally
+Vue.component('GlobalEvents', GlobalEvents);
+
 export default {
   name: 'Graph',
+  components: { GlobalEvents },
   data() {
     return {
       datasetId: null,
@@ -102,6 +116,7 @@ export default {
       summary: '',
       paginationSummary: '',
       loadingGraph: false,
+      currentHoveredFeatureNodeId: null,
     };
   },
   methods: {
@@ -119,6 +134,7 @@ export default {
       this.summary = '';
       this.paginationSummary = '';
       this.loadingGraph = false;
+      this.currentHoveredFeatureNodeId = null;
     },
     onFilterFeatures() {
       this.getFeatureGroupGraph({ offset: 0 });
@@ -127,6 +143,7 @@ export default {
       graphModel = new GraphModel(this.$refs.graph, data);
       graphModel.on('click', this.onClickGraphFeature);
       graphModel.on('oncontext', this.onRightClickGraphFeature);
+      graphModel.on('hoverNode', this.onHoverFeatureNode);
     },
     initGraph(data) {
       this.createGraphModel(data);
@@ -216,6 +233,9 @@ export default {
           console.error(error.response);
           alert.showError('Failed to fetch feature graph!');
         });
+    },
+    onHoverFeatureNode(params) {
+      this.currentHoveredFeatureNodeId = params.node;
     },
     onFeatureGroupSelected(datasetId, featureGroupName) {
       if (featureGroupName === this.featureGroupName) {
@@ -312,6 +332,10 @@ export default {
 
       this.paginationSummary = `${offset + 1}-${upperLimit} of ${size}`;
     },
+    copyNodeIdToClipboard() {
+      this.$refs.copyPasteArea.select();
+      document.execCommand('copy');
+    },
   },
   computed: {
     allAssociationsIcon() {
@@ -368,6 +392,12 @@ export default {
 
 #graphLoader {
   position: absolute;
+}
+
+#copyPasteArea {
+  position: 'absolute';
+  left: '-9999px';
+  z-index: -1;
 }
 
 </style>

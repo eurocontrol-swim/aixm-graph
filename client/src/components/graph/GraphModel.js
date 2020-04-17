@@ -8,11 +8,10 @@ export default class GraphModel {
     this.element = element;
     this.data = data;
 
-
-    this.network = this.createNetwork(element, data.nodes, data.edges);
+    this.network = this.createNetwork(element, data);
   }
 
-  createNetwork = (element, origNodes, origEdges) => {
+  createNetwork = (element, origData) => {
     const options = {
       interaction: {
         hover: true,
@@ -30,7 +29,7 @@ export default class GraphModel {
       },
     };
 
-    const data = GraphModel.getEnhancedData(origNodes, origEdges);
+    const data = GraphModel.getEnhancedData(origData);
 
     return new Network(element, data, options);
   };
@@ -40,7 +39,7 @@ export default class GraphModel {
   };
 
   update = (origData) => {
-    const data = GraphModel.getEnhancedData(origData.nodes, origData.edges);
+    const data = GraphModel.getEnhancedData(origData);
 
     data.nodes.forEach((node) => {
       this.addNode(node);
@@ -160,10 +159,11 @@ export default class GraphModel {
     dashes: origEdge.is_broken,
   });
 
-  static getEnhancedData = (origNodes, origEdges) => {
-    const getEnhancedNode = GraphModel.getEnhancedNodeClosure(origEdges);
-    const nodes = origNodes.map((node) => getEnhancedNode(node));
-    const edges = origEdges.map((edge) => GraphModel.getEnhancedEdge(edge));
+  static getEnhancedData = (origData) => {
+    const getEnhancedNode = GraphModel.getEnhancedNodeClosure(origData.edges);
+    const nodes = origData.nodes.map((node) => getEnhancedNode(node));
+    const edges = origData.edges.map((edge) => GraphModel.getEnhancedEdge(edge));
+
     return { nodes, edges };
   };
 

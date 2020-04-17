@@ -20,6 +20,7 @@
     "vis-network": "^7.5.2",
     "vis-util": "^4.0.0",
     "vue": "^2.6.11",
+    "vue-global-events": "^1.1.2",
     "vue-router": "^3.1.6",
     "vuex": "^3.1.3"
   },

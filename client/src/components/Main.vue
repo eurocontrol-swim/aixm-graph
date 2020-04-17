@@ -12,6 +12,7 @@ import Navbar from './navbar/Navbar.vue';
 import Dataset from './sidebar/Dataset.vue';
 import Graph from './graph/Graph.vue';
 
+
 export default {
   name: 'Main',
   components: {
