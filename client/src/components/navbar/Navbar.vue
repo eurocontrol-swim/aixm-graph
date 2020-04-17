@@ -41,7 +41,7 @@
           <li>
             <datasets-list :datasets="datasets"></datasets-list>
           </li>
-          <li>
+          <li class="hide">
 
           <a class="btn red lighten-2 modal-trigger" href="#modal1" title="Upload AIXM dataset">
             <i class="material-icons left">cloud_upload</i>Upload

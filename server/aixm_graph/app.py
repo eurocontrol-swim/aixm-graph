@@ -28,14 +28,17 @@ http://opensource.org/licenses/BSD-3-Clause
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
 import logging.config
+import os
 
 from flask import Flask
 from flask_cors import CORS
 from pkg_resources import resource_filename
 
+from aixm_graph import cache
+from aixm_graph.datasets.datasets import AIXMDataSet
 from aixm_graph.datasets.features import AIXMFeatureClassRegistry
 from aixm_graph.utils import load_config
-from aixm_graph.endpoints import *
+from aixm_graph.endpoints import aixm_blueprint
 
 __author__ = "EUROCONTROL (SWIM)"
 
@@ -55,7 +58,24 @@ def create_app(config_file: str) -> Flask:
 
     AIXMFeatureClassRegistry.load_feature_classes(app.config['FEATURES'])
 
+    preload_files()
+
     return app
+
+
+def preload_files():
+    filenames = [
+        '2004_v6.xml',
+        'EA_AIP_DS_FULL_20170701.xml'
+    ]
+
+    for filename in filenames:
+        filepath = os.path.join('../', filename)
+
+        dataset = cache.create_dataset(filepath)
+
+        dataset.process()
+
 
 if __name__ == '__main__':
     app = create_app(config_file=resource_filename(__name__, 'config.yml'))
