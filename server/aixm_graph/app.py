@@ -70,7 +70,7 @@ def preload_files():
     ]
 
     for filename in filenames:
-        filepath = os.path.join('../', filename)
+        filepath = os.path.join('../samples', filename)
 
         dataset = cache.create_dataset(filepath)
 
