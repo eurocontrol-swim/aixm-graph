@@ -36,9 +36,9 @@ from typing import Optional
 
 from lxml import etree
 
-from server.datasets.features import AIXMFeatureFactory, AIXMFeature
-from server.datasets.fields import Extension
-from server.graph import Graph, Node, Edge
+from aixm_graph.datasets.features import AIXMFeatureFactory, AIXMFeature
+from aixm_graph.datasets.fields import Extension
+from aixm_graph.graph import Graph, Node, Edge
 
 
 class AIXMDataSet:

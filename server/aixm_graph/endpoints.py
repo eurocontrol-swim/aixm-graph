@@ -35,13 +35,16 @@ import os
 from functools import wraps
 from typing import Dict
 
+from flask import Blueprint
 from flask import request, current_app as app, send_file
 from werkzeug.utils import secure_filename
 
-from server import cache
-from server.web_app import aixm_blueprint
+from aixm_graph import cache
 
 _logger = logging.getLogger(__name__)
+
+
+aixm_blueprint = Blueprint('aixm_graph', __name__)
 
 
 def handle_response(f):

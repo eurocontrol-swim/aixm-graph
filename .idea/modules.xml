@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/aixm.iml" filepath="$PROJECT_DIR$/.idea/aixm.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/aixm-graph.iml" filepath="$PROJECT_DIR$/.idea/aixm-graph.iml" />
     </modules>
   </component>
 </project>

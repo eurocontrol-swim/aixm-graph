@@ -27,35 +27,36 @@ http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
+import logging.config
+
+from flask import Flask
+from flask_cors import CORS
+from pkg_resources import resource_filename
+
+from aixm_graph.datasets.features import AIXMFeatureClassRegistry
+from aixm_graph.utils import load_config
+from aixm_graph.endpoints import *
 
 __author__ = "EUROCONTROL (SWIM)"
 
-from flask import send_from_directory
 
-from server.web_app import aixm_blueprint
+def create_app(config_file: str) -> Flask:
+    app = Flask(__name__)
 
+    app.register_blueprint(aixm_blueprint)
+    app_config = load_config(filename=config_file)
+    app.config.update(app_config)
 
-@aixm_blueprint.route("/")
-def index():
-    return send_from_directory('web_app/templates/', "index.html")
+    logging.config.dictConfig(app.config['LOGGING'])
+    # enable CORS
 
+    CORS(app, resources={r'/*': {'origins': '*'}})
+    # generate classes per feature as they're found in the config file
 
-@aixm_blueprint.route('/js/<path:path>')
-def send_js(path):
-    return send_from_directory('web_app/static/js', path)
+    AIXMFeatureClassRegistry.load_feature_classes(app.config['FEATURES'])
 
+    return app
 
-@aixm_blueprint.route('/css/<path:path>')
-def send_css(path):
-    return send_from_directory('web_app/static/css', path)
-
-
-@aixm_blueprint.route('/img/<path:path>')
-def send_img(path):
-    return send_from_directory('web_app/static/img', path)
-
-
-@aixm_blueprint.route('/favicon.ico')
-def favicon():
-    return send_from_directory('web_app/static/img', 'favicon.png', mimetype='image/png')
-
+if __name__ == '__main__':
+    app = create_app(config_file=resource_filename(__name__, 'config.yml'))
+    app.run(host="0.0.0.0", port=5000)

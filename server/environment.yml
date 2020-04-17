@@ -41,9 +41,9 @@ dependencies:
   - sqlite=3.31.1=h7b6447c_0
   - tk=8.6.8=hbc83047_0
   - wcwidth=0.1.9=py_0
-  - werkzeug=1.0.0=py_0
+  - werkzeug=1.0.1=py_0
   - wheel=0.34.2=py37_0
-  - xz=5.2.4=h14c3975_4
+  - xz=5.2.5=h7b6447c_0
   - yaml=0.1.7=had09818_2
   - zipp=2.2.0=py_0
   - zlib=1.2.11=h7b6447c_3

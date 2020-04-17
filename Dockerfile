@@ -31,18 +31,18 @@ RUN apk update && apk add postgresql-dev gcc g++ libxslt-dev python3-dev musl-de
 
 COPY --from=build-vue /app/dist /usr/share/nginx/html
 
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY ./docker/nginx/default.conf /etc/nginx/conf.d/default.conf
 
 COPY ./server/requirements.txt ./
 RUN pip install -r requirements.txt
 RUN pip install gunicorn
 
-COPY . /source/
+COPY ./server /source/
 RUN set -x \
     && pip install /source \
     && rm -rf /source
 
 COPY ./server .
-CMD gunicorn -b 0.0.0.0:3000 wsgi:app --daemon && \
+CMD gunicorn -b 0.0.0.0:5000 wsgi:app --daemon && \
       sed -i -e 's/$PORT/'"$PORT"'/g' /etc/nginx/conf.d/default.conf && \
       nginx -g 'daemon off;'

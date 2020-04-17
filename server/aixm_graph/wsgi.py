@@ -32,6 +32,6 @@ __author__ = "EUROCONTROL (SWIM)"
 
 from pkg_resources import resource_filename
 
-from server.app import create_app
+from aixm_graph.app import create_app
 
 app = create_app(config_file=resource_filename(__name__, 'config.yml'))

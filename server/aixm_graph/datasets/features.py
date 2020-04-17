@@ -35,8 +35,8 @@ from typing import Dict, Tuple, List, Type, TypeVar
 from lxml import etree
 from lxml.etree import QName
 
-from server.datasets.fields import Field, XLinkField, Extension
-from server.utils import get_attrib_value, make_attrib
+from aixm_graph.datasets.fields import Field, XLinkField, Extension
+from aixm_graph.utils import get_attrib_value, make_attrib
 
 
 class Feature(Field):

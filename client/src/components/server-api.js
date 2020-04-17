@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const config = {
-  baseURL: 'http://localhost:3000/',
+  baseURL: 'http://localhost:5000/',
 };
 
 const getDatasets = () => axios.get('/datasets', config);
