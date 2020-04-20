@@ -44,7 +44,7 @@ from aixm_graph import cache
 _logger = logging.getLogger(__name__)
 
 
-aixm_blueprint = Blueprint('aixm_graph', __name__)
+aixm_blueprint = Blueprint('aixm_graph', __name__, url_prefix='/api')
 
 
 def handle_response(f):
