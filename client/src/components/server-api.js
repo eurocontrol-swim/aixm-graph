@@ -1,10 +1,16 @@
 import axios from 'axios';
 
-const getDatasets = () => axios.get('/api/datasets');
+const isDev = Boolean(window.webpackHotUpdate);
 
-const uploadDataset = (formData) => axios.post('/api/upload', formData);
+const config = {
+  baseURL: isDev ? 'http://localhost:5000' : '',
+};
 
-const processDataset = (datasetId) => axios.put(`/api/datasets/${datasetId}/process`, {});
+const getDatasets = () => axios.get('/api/datasets', config);
+
+const uploadDataset = (formData) => axios.post('/api/upload', formData, config);
+
+const processDataset = (datasetId) => axios.put(`/api/datasets/${datasetId}/process`, {}, config);
 
 const getFeatureGroupGraph = ({
   datasetId,
@@ -16,15 +22,15 @@ const getFeatureGroupGraph = ({
   const queryStr = `offset=${offset}&limit=${limit}&key=${filterQuery}`;
 
   return axios.get(
-    `/api/datasets/${datasetId}/feature_groups/${featureGroupName}/graph?${queryStr}`,
+    `/api/datasets/${datasetId}/feature_groups/${featureGroupName}/graph?${queryStr}`, config,
   );
 };
 
 const getFeatureGraph = (datasetId, featureId) => axios.get(
-  `/api/datasets/${datasetId}/features/${featureId}/graph`,
+  `/api/datasets/${datasetId}/features/${featureId}/graph`, config,
 );
 
-const getDownloadSkeletonURL = (datasetId) => `/api/datasets/${datasetId}/download`;
+const getDownloadSkeletonURL = (datasetId) => `${config.baseURL}/api/datasets/${datasetId}/download`;
 
 export {
   getDatasets,
