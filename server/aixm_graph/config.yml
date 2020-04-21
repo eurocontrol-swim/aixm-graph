@@ -38,7 +38,7 @@ FEATURES:
         - designatorNumber
         - designatorSuffix
         - designatorDirection
-    shape: square
+    shape: sub
   AeronauticalGroundLight:
     abbrev: AGL
     color: '#efdecd'
@@ -46,7 +46,7 @@ FEATURES:
       names:
         - type
         - name
-    shape: square
+    shape: sub
   AirTrafficControlService:
     abbrev: ATC
     color: '#f4c2c2'
@@ -54,20 +54,20 @@ FEATURES:
       names:
         - location
         - type
-    shape: square
+    shape: sub
   AirTrafficManagementService:
     abbrev: ATM
     color: '#fae7b5'
     fields:
       names:
-    shape: square
+    shape: sub
   AircraftGroundService:
     abbrev: ACG
     color: '#ffbf00'
     fields:
       names:
         - type
-    shape: square
+    shape: sub
   AircraftStand:
     abbrev: AST
     color: '#a4c639'
@@ -75,40 +75,40 @@ FEATURES:
       names:
         - designator
         - type
-    shape: square
+    shape: sub
   AirportClearanceService:
     abbrev: ACS
     color: '#cd9575'
     fields:
       names:
         - name
-    shape: square
+    shape: sub
   AirportHeliport:
     abbrev: AHP
     color: '#faebd7'
     fields:
       names:
         - designator
-    shape: square
+    shape: sub
   AirportHeliportCollocation:
     abbrev: AHC
     color: '#8db600'
     fields:
       names:
-    shape: square
+    shape: sub
   AirportHotSpot:
     abbrev: AHT
     color: '#fbceb1'
     fields:
       names:
         - designator
-    shape: square
+    shape: sub
   AirportProtectionAreaMarking:
     abbrev: APM
     color: '#7fffd4'
     fields:
       names:
-    shape: square
+    shape: sub
   AirportSuppliesService:
     abbrev: ASV
     color: '#e9d66b'
@@ -118,7 +118,7 @@ FEATURES:
         - oilSupply
         - nitrogenSupply
         - oxygenSupply
-    shape: square
+    shape: sub
   Airspace:
     abbrev: ASE
     color: '#ff9966'
@@ -126,58 +126,58 @@ FEATURES:
       names:
         - designator
         - type
-    shape: square
+    shape: sub
   AirspaceBorderCrossing:
     abbrev: ABC
     color: '#89cff0'
     fields:
       names:
-    shape: square
+    shape: sub
   AltimeterSource:
     abbrev: ALT
     color: '#bcd4e6'
     fields:
       names:
-    shape: square
+    shape: sub
   AngleIndication:
     abbrev: AIN
     color: '#f0ffff'
     fields:
       names:
-    shape: square
+    shape: sub
   ApproachLightingSystem:
     abbrev: APL
     color: '#f0f8ff'
     fields:
       names:
-    shape: hexagon
+    shape: sub
   Apron:
     abbrev: APN
     color: '#efdecd'
     fields:
       names:
         - name
-    shape: hexagon
+    shape: sub
   ApronElement:
     abbrev: AEL
     color: '#ffbf00'
     fields:
       names:
         - type
-    shape: hexagon
+    shape: sub
   ApronLightSystem:
     abbrev: ALS
     color: '#a4c639'
     fields:
       names:
         - color
-    shape: hexagon
+    shape: sub
   ApronMarking:
     abbrev: AMK
     color: '#cd9575'
     fields:
       names:
-    shape: hexagon
+    shape: sub
   ArrestingGear:
     abbrev: AGR
     color: '#faebd7'
@@ -187,28 +187,28 @@ FEATURES:
         - length
         - width
         - status
-    shape: hexagon
+    shape: sub
   ArrivalFeederLeg:
     abbrev: AFL
     color: '#fbceb1'
     fields:
       names:
         - length
-    shape: hexagon
+    shape: sub
   ArrivalLeg:
     abbrev: ARL
     color: '#8db600'
     fields:
       names:
         - length
-    shape: hexagon
+    shape: sub
   AuthorityForAirspace:
     abbrev: AFA
     color: '#7fffd4'
     fields:
       names:
         - type
-    shape: hexagon
+    shape: sub
   Azimuth:
     abbrev: AZM
     color: '#e9d66b'
@@ -216,13 +216,13 @@ FEATURES:
       names:
         - designator
         - type
-    shape: hexagon
+    shape: sub
   ChangeOverPoint:
     abbrev: COP
     color: '#ff9966'
     fields:
       names:
-    shape: hexagon
+    shape: sub
   CheckpointINS:
     abbrev: CNS
     color: '#89cff0'
@@ -230,7 +230,7 @@ FEATURES:
       names:
         - category
         - position
-    shape: hexagon
+    shape: sub
   CheckpointVOR:
     abbrev: CVO
     color: '#f4c2c2'
@@ -238,13 +238,13 @@ FEATURES:
       names:
         - category
         - position
-    shape: hexagon
+    shape: sub
   CirclingArea:
     abbrev: CIA
     color: '#fae7b5'
     fields:
       names:
-    shape: hexagon
+    shape: sub
   DME:
     abbrev: DME
     color: '#cd9575'
@@ -252,94 +252,94 @@ FEATURES:
       names:
         - type
         - designator
-    shape: diamond
+    shape: sub
   DeicingArea:
     abbrev: DAA
     color: '#bcd4e6'
     fields:
       names:
-    shape: hexagon
+    shape: sub
   DeicingAreaMarking:
     abbrev: DAM
     color: '#f0ffff'
     fields:
       names:
-    shape: hexagon
+    shape: sub
   DepartureLeg:
     abbrev: DLG
     color: '#f0f8ff'
     fields:
       names:
-    shape: diamond
+    shape: sub
   DesignatedPoint:
     abbrev: DPN
     color: '#efdecd'
     fields:
       names:
         - designator
-    shape: diamond
+    shape: sub
   DirectionFinder:
     abbrev: DFN
     color: '#ffbf00'
     fields:
       names:
-    shape: diamond
+    shape: sub
   DistanceIndication:
     abbrev: DIN
     color: '#a4c639'
     fields:
       names:
-    shape: diamond
+    shape: sub
   Elevation:
     abbrev: ELV
     color: '#faebd7'
     fields:
       names:
-    shape: diamond
+    shape: sub
   FinalLeg:
     abbrev: FLG
     color: '#8db600'
     fields:
       names:
-    shape: diamond
+    shape: sub
   FireFightingService:
     abbrev: FFS
     color: '#fbceb1'
     fields:
       names:
-    shape: diamond
+    shape: sub
   FlightRestriction:
     abbrev: FRS
     color: '#7fffd4'
     fields:
       names:
-    shape: diamond
+    shape: sub
   FloatingDockSite:
     abbrev: FGD
     color: '#e9d66b'
     fields:
       names:
-    shape: diamond
+    shape: sub
   GeoBorder:
     abbrev: GBR
     color: '#ff9966'
     fields:
       names:
         - type
-    shape: diamond
+    shape: sub
   Glidepath:
     abbrev: GPT
     color: '#89cff0'
     fields:
       names:
         - designator
-    shape: diamond
+    shape: sub
   GroundTrafficControlService:
     abbrev: GTC
     color: '#f4c2c2'
     fields:
       names:
-    shape: diamond
+    shape: sub
   GuidanceLine:
     abbrev: GLN
     color: '#fae7b5'
@@ -347,69 +347,69 @@ FEATURES:
       names:
         - type
         - designator
-    shape: diamond
+    shape: sub
   GuidanceLineLightSystem:
     abbrev: GLL
     color: '#bcd4e6'
     fields:
       names:
-    shape: diamond
+    shape: sub
   GuidanceLineMarking:
     abbrev: GLM
     color: '#f0ffff'
     fields:
       names:
-    shape: diamond
+    shape: sub
   HoldingAssessment:
     abbrev: HAS
     color: '#f0f8ff'
     fields:
       names:
-    shape: triangle
+    shape: sub
   HoldingPattern:
     abbrev: HPT
     color: '#efdecd'
     fields:
       names:
-    shape: triangle
+    shape: sub
   InformationService:
     abbrev: ISV
     color: '#ffbf00'
     fields:
       names:
-    shape: triangle
+    shape: sub
   InitialLeg:
     abbrev: ILG
     color: '#a4c639'
     fields:
       names:
-    shape: triangle
+    shape: sub
   InstrumentApproachProcedure:
     abbrev: IAP
     color: '#cd9575'
     fields:
       names:
-    shape: triangle
+    shape: sub
   IntermediateLeg:
     abbrev: INL
     color: '#faebd7'
     fields:
       names:
-    shape: triangle
+    shape: sub
   Localizer:
     abbrev: LLZ
     color: '#8db600'
     fields:
       names:
         - designator
-    shape: triangle
+    shape: sub
   MarkerBeacon:
     abbrev: MBC
     color: '#fbceb1'
     fields:
       names:
         - designator
-    shape: triangle
+    shape: sub
   MarkingBuoy:
     abbrev: MKB
     color: '#7fffd4'
@@ -417,20 +417,20 @@ FEATURES:
       names:
         - type
         - designator
-    shape: triangle
+    shape: sub
   MissedApproachLeg:
     abbrev: MAL
     color: '#e9d66b'
     fields:
       names:
-    shape: triangle
+    shape: sub
   NDB:
     abbrev: NDB
     color: '#fae7b5'
     fields:
       names:
         - keys
-    shape: triangle
+    shape: sub
   Navaid:
     abbrev: NAV
     color: '#ff9966'
@@ -438,7 +438,7 @@ FEATURES:
       names:
         - type
         - designator
-    shape: triangle
+    shape: sub
   NavigationArea:
     abbrev: NAA
     color: '#89cff0'
@@ -446,90 +446,90 @@ FEATURES:
       names:
         - navigationAreaType
         - sector
-    shape: triangle
+    shape: sub
   NavigationAreaRestriction:
     abbrev: NAN
     color: '#f4c2c2'
     fields:
       names:
         - type
-    shape: triangle
+    shape: sub
   NonMovementArea:
     abbrev: NMA
     color: '#bcd4e6'
     fields:
       names:
-    shape: triangle
+    shape: sub
   ObstacleArea:
     abbrev: OAR
     color: '#f0ffff'
     fields:
       names:
-    shape: triangle
+    shape: sub
   OrganisationAuthority:
     abbrev: ORG
     color: '#f0f8ff'
     fields:
       names:
         - name
-    shape: triangleDown
+    shape: sub
   PassengerLoadingBridge:
     abbrev: PLB
     color: '#efdecd'
     fields:
       names:
-    shape: triangleDown
+    shape: sub
   PassengerService:
     abbrev: PSV
     color: '#ffbf00'
     fields:
       names:
-    shape: triangleDown
+    shape: sub
   PilotControlledLighting:
     abbrev: PCG
     color: '#a4c639'
     fields:
       names:
-    shape: triangleDown
+    shape: sub
   PrecisionApproachRadar:
     abbrev: PAR
     color: '#cd9575'
     fields:
       names:
-    shape: triangleDown
+    shape: sub
   PrimarySurveillanceRadar:
     abbrev: PSR
     color: '#faebd7'
     fields:
       names:
         - location
-    shape: triangleDown
+    shape: sub
   ProcedureDME:
     abbrev: PDM
     color: '#8db600'
     fields:
       names:
-    shape: triangleDown
+    shape: sub
   RadioCommunicationChannel:
     abbrev: RCC
     color: '#fbceb1'
     fields:
       names:
-    shape: triangleDown
+    shape: sub
   RadioFrequencyArea:
     abbrev: RFA
     color: '#7fffd4'
     fields:
       names:
         - type
-    shape: triangleDown
+    shape: sub
   Road:
     abbrev: ROA
     color: '#e9d66b'
     fields:
       names:
         - designator
-    shape: triangleDown
+    shape: sub
   Route:
     abbrev: RTE
     color: '#ff9966'
@@ -540,25 +540,25 @@ FEATURES:
         - designatorNumber
         - designatorSecondLetter
         - type
-    shape: triangleDown
+    shape: sub
   RouteDME:
     abbrev: RDM
     color: '#89cff0'
     fields:
       names:
-    shape: triangleDown
+    shape: sub
   RouteSegment:
     abbrev: RSG
     color: '#f4c2c2'
     fields:
       names:
-    shape: triangleDown
+    shape: sub
   RulesProcedures:
     abbrev: RUP
     color: '#fae7b5'
     fields:
       names:
-    shape: triangleDown
+    shape: sub
   Runway:
     abbrev: RWY
     color: '#bcd4e6'
@@ -566,120 +566,120 @@ FEATURES:
       names:
         - designator
         - type
-    shape: triangleDown
+    shape: sub
   RunwayBlastPad:
     abbrev: RBP
     color: '#f0ffff'
     fields:
       names:
-    shape: triangleDown
+    shape: sub
   RunwayCentrelinePoint:
     abbrev: RCP
     color: '#f0f8ff'
     fields:
       names:
         - designator
-    shape: ellipse
+    shape: sub
   RunwayDirection:
     abbrev: RDN
     color: '#efdecd'
     fields:
       names:
         - designator
-    shape: ellipse
+    shape: sub
   RunwayDirectionLightSystem:
     abbrev: RLS
     color: '#ffbf00'
     fields:
       names:
-    shape: ellipse
+    shape: sub
   RunwayElement:
     abbrev: REL
     color: '#a4c639'
     fields:
       names:
-    shape: ellipse
+    shape: sub
   RunwayMarking:
     abbrev: RMG
     color: '#cd9575'
     fields:
       names:
-    shape: ellipse
+    shape: sub
   RunwayProtectArea:
     abbrev: RPA
     color: '#faebd7'
     fields:
       names:
         - type
-    shape: ellipse
+    shape: sub
   RunwayProtectAreaLightSystem:
     abbrev: RPL
     color: '#8db600'
     fields:
       names:
-    shape: ellipse
+    shape: sub
   RunwayVisualRange:
     abbrev: RVR
     color: '#fbceb1'
     fields:
       names:
-    shape: ellipse
+    shape: sub
   SDF:
     abbrev: SDF
     color: '#e9d66b'
     fields:
       names:
         - designator
-    shape: ellipse
+    shape: sub
   SafeAltitudeArea:
     abbrev: SAA
     color: '#7fffd4'
     fields:
       names:
-    shape: ellipse
+    shape: sub
   SeaplaneLandingArea:
     abbrev: SLA
     color: '#ff9966'
     fields:
       names:
-    shape: ellipse
+    shape: sub
   SeaplaneRampSite:
     abbrev: SPR
     color: '#89cff0'
     fields:
       names:
-    shape: ellipse
+    shape: sub
   SearchRescueService:
     abbrev: SRE
     color: '#f4c2c2'
     fields:
       names:
         - type
-    shape: ellipse
+    shape: sub
   SecondarySurveillanceRadar:
     abbrev: SSV
     color: '#fae7b5'
     fields:
       names:
-    shape: ellipse
+    shape: sub
   SignificantPointInAirspace:
     abbrev: SPA
     color: '#bcd4e6'
     fields:
       names:
-    shape: ellipse
+    shape: sub
   SpecialDate:
     abbrev: SPD
     color: '#f0ffff'
     fields:
       names:
-    shape: ellipse
+    shape: sub
   SpecialNavigationStation:
     abbrev: SNS
     color: '#f0f8ff'
     fields:
       names:
-    shape: dot
+    shape: sub
   SpecialNavigationSystem:
     abbrev: SNY
     color: '#efdecd'
@@ -687,77 +687,77 @@ FEATURES:
       names:
         - designator
         - type
-    shape: dot
+    shape: sub
   StandMarking:
     abbrev: SMK
     color: '#fbceb1'
     fields:
       names:
-    shape: dot
+    shape: sub
   StandardInstrumentArrival:
     abbrev: SIA
     color: '#ffbf00'
     fields:
       names:
         - designator
-    shape: dot
+    shape: sub
   StandardInstrumentDeparture:
     abbrev: SID
     color: '#a4c639'
     fields:
       names:
         - designator
-    shape: dot
+    shape: sub
   StandardLevelColumn:
     abbrev: SLC
     color: '#cd9575'
     fields:
       names:
-    shape: dot
+    shape: sub
   StandardLevelSector:
     abbrev: SLS
     color: '#faebd7'
     fields:
       names:
-    shape: dot
+    shape: sub
   StandardLevelTable:
     abbrev: SLB
     color: '#8db600'
     fields:
       names:
-    shape: dot
+    shape: sub
   SurveyControlPoint:
     abbrev: SCP
     color: '#7fffd4'
     fields:
       names:
         - designator
-    shape: dot
+    shape: sub
   TACAN:
     abbrev: TCN
     color: '#e9d66b'
     fields:
       names:
         - designator
-    shape: dot
+    shape: sub
   TaxiHoldingPosition:
     abbrev: THP
     color: '#ff9966'
     fields:
       names:
-    shape: dot
+    shape: sub
   TaxiHoldingPositionLightSystem:
     abbrev: THL
     color: '#89cff0'
     fields:
       names:
-    shape: dot
+    shape: sub
   TaxiHoldingPositionMarking:
     abbrev: THM
     color: '#f4c2c2'
     fields:
       names:
-    shape: dot
+    shape: sub
   Taxiway:
     abbrev: TWY
     color: '#fae7b5'
@@ -765,57 +765,57 @@ FEATURES:
       names:
         - designator
         - type
-    shape: dot
+    shape: sub
   TaxiwayElement:
     abbrev: TWE
     color: '#bcd4e6'
     fields:
       names:
         - type
-    shape: dot
+    shape: sub
   TaxiwayLightSystem:
     abbrev: TWL
     color: '#f0ffff'
     fields:
       names:
-    shape: dot
+    shape: sub
   TaxiwayMarking:
     abbrev: TWM
     color: '#f0f8ff'
     fields:
       names:
-    shape: box
+    shape: sub
   TerminalArrivalArea:
     abbrev: TAA
     color: '#efdecd'
     fields:
       names:
-    shape: box
+    shape: sub
   TouchDownLiftOff:
     abbrev: TLA
     color: '#ffbf00'
     fields:
       names:
         - designator
-    shape: box
+    shape: sub
   TouchDownLiftOffLightSystem:
     abbrev: TLS
     color: '#a4c639'
     fields:
       names:
-    shape: box
+    shape: sub
   TouchDownLiftOffMarking:
     abbrev: TLM
     color: '#cd9575'
     fields:
       names:
-    shape: box
+    shape: sub
   TouchDownLiftOffSafeArea:
     abbrev: TSA
     color: '#faebd7'
     fields:
       names:
-    shape: box
+    shape: sub
   Unit:
     abbrev: UNI
     color: '#8db600'
@@ -823,13 +823,13 @@ FEATURES:
       names:
         - designator
         - type
-    shape: box
+    shape: sub
   UnplannedHolding:
     abbrev: UHG
     color: '#fbceb1'
     fields:
       names:
-    shape: box
+    shape: sub
   VOR:
     abbrev: VOR
     color: '#ff9966'
@@ -837,23 +837,23 @@ FEATURES:
       names:
         - designator
         - type
-    shape: box
+    shape: sub
   VerticalStructure:
     abbrev: VST
     color: '#7fffd4'
     fields:
       names:
-    shape: box
+    shape: sub
   VisualGlideSlopeIndicator:
     abbrev: VGI
     color: '#e9d66b'
     fields:
       names:
         - type
-    shape: box
+    shape: sub
   WorkArea:
     abbrev: WAR
     color: '#89cff0'
     fields:
       names:
-    shape: box
+    shape: sub
