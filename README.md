@@ -23,23 +23,28 @@ The project can get easily up and running in any machine regardless the running 
 >     - [Docker Toolbox on Windows](https://docs.docker.com/toolbox/toolbox_install_windows/) (which installs all the
 >   required tools and runs the Docker Engine via VirtualBox)
 
+
 Steps:
 
 Get the repository
+
 ```shell script
 git clone git@github.com:eurocontrol-swim/aixm-graph.git
 cd aixm-graph
 ```
 
 Build the image
+
 ```shell script
 docker build -t aixm-graph:latest .
 ```
 
 Run the container
+
 ```shell script
 docker run -d --name aixm_graph -e "PORT=8765" -p 3000:8765 aixm-graph:latest
 ```
+
 
 After the steps are successfully completed the project will be available at 
 [http://localhost:3000](http://localhost:3000) 
@@ -64,23 +69,28 @@ and the client separately.
 > First make sure that [python](https://www.python.org/downloads/) and 
 >[conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/) are installed on your system.
 
+
 Create a dedicated environment using conda
+
 ```shell script
 cd server
 conda env -create --name aixm-graph -f requirements.yml
 ```
 
 activate the environment
+
 ```shell script
 source activate aixm-graph
 ```
 
 install the server package in your env
+
 ```shell script
 pip install . 
 ```
 
 run the local server
+
 ```shell script
 python ./aixm_graph/app.py
 ```
@@ -90,13 +100,16 @@ The server should now be able to receive calls at http://localhost:5000
 ### Client
 > Make sure you have [npm](https://www.npmjs.com/get-npm) installed on your system
 
+
 First install the dependencies
+
 ```shell script
 cd client
 npm install
 ```
 
 and then run the client locally
+
 ```shell script
 npm run serve
 ```
@@ -112,12 +125,14 @@ Since the project is packaged with docker there are many options of easily deplo
 > Make sure you have the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) installed on you system
 
 First create a heroku app
+
 ```shell script
 cd aixm-graph
 heroku create <app-name>
 ```
 
 Login to the Heroku Container Registry:
+
 ```shell script
 heroku container:login
 ```
@@ -125,16 +140,19 @@ heroku container:login
 > Make sure to replace <app-name> in the below commands with the name of the Heroku app that you just created.
 
 Build the image and tag it with the following format:
+
 ```shell script
 docker build -t registry.heroku.com/<app-name>/web
 ```
 
 Push the image to the registry:
+
 ```shell script
 docker push registry.heroku.com/<app-name>/web
 ```
 
 Release the image:
+
 ```shell script
 heroku container:release --app <app-name> web
 ```
