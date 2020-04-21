@@ -350,7 +350,6 @@ branch. Pull requests are warmly welcome.
 
 ## Links
 
-- Project homepage: https://your.github.com/awesome-project/
 - Repository: https://github.com/eurocontrol-swim/aixm-graph
 - Issue tracker: https://github.com/eurocontrol-swim/aixm-graph/issues
 - AIXM: http://aixm.aero/
