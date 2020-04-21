@@ -1,0 +1,41 @@
+---
+LOGGING:
+  version: 1
+
+  handlers:
+    console:
+      class: logging.StreamHandler
+      formatter: default
+      level: DEBUG
+
+  formatters:
+    default:
+      format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+      class: logging.Formatter
+
+  disable_existing_loggers: false
+
+  root:
+    level: DEBUG
+    handlers: [console]
+
+  loggers:
+    aixm_graph:
+      level: DEBUG
+
+UPLOAD_FOLDER: /tmp
+
+PAGE_LIMIT: 5
+
+FEATURES:
+  AerialRefuelling:
+    abbrev: ARF
+    color: '#f0f8ff'
+    fields:
+      concat: true
+      names:
+        - designatorPrefix
+        - designatorNumber
+        - designatorSuffix
+        - designatorDirection
+    shape: sub
