@@ -41,6 +41,11 @@ from aixm_graph.datasets.fields import Extension
 from aixm_graph.graph import Graph, Node, Edge
 
 
+class FeatureTypeStats:
+    def __init__(self, name: str):
+        self.name = name
+
+
 class AIXMDataSet:
     feature_factory = AIXMFeatureFactory
     basic_message_tag = 'AIXMBasicMessage'
@@ -53,12 +58,20 @@ class AIXMDataSet:
         :param filepath:
         """
         self.id = None
-        self.stats = {}
+        self._feature_type_stats = None
         self._filepath = filepath
         self._features_dict = {}
         self._sequence_ns = ''
         self._ns_map = self.extension_ns
         self._skeleton_filepath = None
+
+    @property
+    def name(self):
+        """
+
+        :return:
+        """
+        return os.path.basename(self._filepath)
 
     @property
     def features(self):
@@ -69,12 +82,34 @@ class AIXMDataSet:
             yield feature
 
     @property
-    def name(self):
+    def feature_type_stats(self):
         """
 
         :return:
         """
-        return os.path.basename(self._filepath)
+        return self._feature_type_stats
+
+    def _compute_feature_type_stats(self):
+        """
+
+        :return:
+        """
+        self._feature_type_stats = defaultdict(lambda: defaultdict(int))
+
+        for feature in self.features:
+            self._feature_type_stats[feature.name]['size'] += 1
+
+            if feature.has_broken_xlinks:
+                self._feature_type_stats[feature.name]['features_num_with_broken_xlinks'] += 1
+
+        return self
+
+    def has_feature_name(self, name: str) -> bool:
+        for feature in self.features:
+            if feature.name == name:
+                return True
+
+        return False
 
     def get_feature_by_id(self, feature_id: str):
         """
@@ -84,17 +119,17 @@ class AIXMDataSet:
         """
         return self._features_dict.get(feature_id)
 
-    def get_features_by_name(self, name: str, field_filter: Optional[str] = None):
+    def filter_features(self, name: str, field_value: Optional[str] = None):
         """
 
         :param name:
-        :param field_filter:
+        :param field_value:
         :return:
         """
         features = (feature for feature in self.features if feature.name == name)
 
-        if field_filter:
-            features = (feature for feature in features if feature.matches_field_value(field_filter))
+        if field_value:
+            features = (feature for feature in features if feature.matches_field_value(field_value))
 
         return features
 
@@ -102,7 +137,7 @@ class AIXMDataSet:
         """
         :return: AIXMDataSet
         """
-        return self._parse()._create_extensions()._run_stats()
+        return self._parse()._create_extensions()._compute_feature_type_stats()
 
     def _parse(self):
         """
@@ -141,6 +176,7 @@ class AIXMDataSet:
         :return: AIXMDataSet
         """
         extension_prefix = list(self.extension_ns.keys())[0]
+
         for source_feature in self.features:
             for xlink in source_feature.xlinks:
                 target_feature = self._features_dict.get(xlink.uuid)
@@ -151,24 +187,6 @@ class AIXMDataSet:
                                          prefix=extension_prefix))
                 else:
                     xlink.set_broken()
-
-        return self
-
-    def _run_stats(self):
-        """
-
-        :return:
-        """
-        self.stats = defaultdict(dict)
-
-        for feature in self.features:
-            if feature.name in self.stats:
-                continue
-
-            filter_callback = partial(self.get_features_by_name, feature.name)
-
-            self.stats[feature.name]['size'] = sum(1 for _ in filter_callback())
-            self.stats[feature.name]['has_broken_xlinks'] = any((feature.has_broken_xlinks for feature in filter_callback()))
 
         return self
 
@@ -227,14 +245,14 @@ class AIXMDataSet:
 
         return graph
 
-    def get_graph(self, feature_name: str, offset: int, limit: int, key: Optional[str] = None) -> Graph:
+    def get_graph(self, features: [AIXMFeature], offset: int, limit: int) -> Graph:
         """
 
         :param offset:
         :param limit:
         :return:
         """
-        features = self.get_features_by_name(feature_name, key)
+        # features = self.filter_features(feature_name, filter_field)
         graph = Graph()
         for i, feature in enumerate(features):
             if i < offset:

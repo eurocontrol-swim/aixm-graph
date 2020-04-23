@@ -197,7 +197,7 @@ class AIXMFeatureFactory:
 
         time_slice._data_fields = [Field.from_lxml(child) for child in element
                                    if QName(child).localname in field_names]
-        time_slice._xlinks = [XLinkField.from_lxml(AIXMFeatureFactory.process_xlink_element(xlink, element))
+        time_slice._xlinks = [XLinkField.from_lxml(AIXMFeatureFactory.process_xlink_element(xlink=xlink, root=element))
                               for xlink in element.findall('.//*[@xlink:href]', namespaces=element.nsmap)]
 
         version = AIXMFeatureFactory.get_time_slice_element_version(element, time_slice.prefix)

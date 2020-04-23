@@ -57,3 +57,60 @@ def load_config(filename: str):
         obj = yaml.load(f, Loader=yaml.FullLoader)
 
     return obj or None
+
+
+def get_next_offset(offset, limit, size):
+    """
+
+    :param offset:
+    :param limit:
+    :param size:
+    :return:
+    """
+    next_offset = offset + limit
+    if next_offset >= size or size <= limit :
+        return
+
+    return next_offset
+
+
+def get_prev_offset(offset, limit, size):
+    """
+
+    :param offset:
+    :param limit:
+    :param size:
+    :return:
+    """
+    pref_offset = offset - limit
+
+    if pref_offset >= 0:
+        return pref_offset
+
+
+def validate_file_form(file_form: Dict):
+    """
+
+    :param file_form:
+    :return:
+    """
+    if 'file' not in file_form:
+        raise ValueError('No file part')
+
+    file = file_form['file']
+    if file.filename == '' or file.filename is None:
+        raise ValueError('No selected file')
+
+    if not filename_is_valid(file.filename):
+        raise ValueError('File is not allowed')
+
+    return file
+
+
+def filename_is_valid(filename):
+    """
+
+    :param filename:
+    :return:
+    """
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'xml'

@@ -30,31 +30,29 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-import sys
-
-from unittest.mock import Mock
-
 import pytest
-from pkg_resources import resource_filename
 
-from aixm_graph.app import create_app
-
-
-@pytest.yield_fixture(scope='session')
-def test_app():
-    config_file = resource_filename(__name__, 'test_config.yml')
-    _app = create_app(config_file)
-    if _app.testing:
-        _app.pub_app = Mock()
-        _app.swim_publisher = Mock()
-    ctx = _app.app_context()
-    ctx.push()
-
-    yield _app
-
-    ctx.pop()
+from aixm_graph.utils import make_attrib, get_next_offset, get_prev_offset
 
 
-@pytest.fixture(scope='session')
-def test_client(test_app):
-    return test_app.test_client()
+@pytest.mark.parametrize('name, value, ns, expected_attrib', [
+    ('name', 'value', 'ns', {'{ns}{name}': 'value'})
+])
+def test_make_attrib(name, value, ns, expected_attrib):
+    expected_attrib == make_attrib(name, value, ns)
+
+
+@pytest.mark.parametrize('offset, limit, size, expected_next_offset', [
+    (0, 5, 10, 5),
+    (0, 5, 5, None),
+])
+def test_get_next_offset(offset, limit, size, expected_next_offset):
+    assert expected_next_offset == get_next_offset(offset, limit, size)
+
+
+@pytest.mark.parametrize('offset, limit, size, expected_prev_offset', [
+    (0, 5, 10, None),
+    (5, 5, 10, 0),
+])
+def test_get_prev_offset(offset, limit, size, expected_prev_offset):
+    assert expected_prev_offset == get_prev_offset(offset, limit, size)

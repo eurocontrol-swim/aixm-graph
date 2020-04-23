@@ -30,31 +30,19 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-import sys
 
-from unittest.mock import Mock
+class APIError(Exception):
 
-import pytest
-from pkg_resources import resource_filename
-
-from aixm_graph.app import create_app
+    def __init__(self, status_code, description=None):
+        self.status_code = status_code
+        self.description = description or ""
 
 
-@pytest.yield_fixture(scope='session')
-def test_app():
-    config_file = resource_filename(__name__, 'test_config.yml')
-    _app = create_app(config_file)
-    if _app.testing:
-        _app.pub_app = Mock()
-        _app.swim_publisher = Mock()
-    ctx = _app.app_context()
-    ctx.push()
-
-    yield _app
-
-    ctx.pop()
+class NotFoundError(APIError):
+    def __init__(self, description):
+        super().__init__(404, description)
 
 
-@pytest.fixture(scope='session')
-def test_client(test_app):
-    return test_app.test_client()
+class BadRequestError(APIError):
+    def __init__(self, description):
+        super().__init__(400, description)

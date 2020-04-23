@@ -35,7 +35,7 @@ from pkg_resources import resource_filename
 
 from aixm_graph.datasets.features import AIXMFeatureClassRegistry
 from aixm_graph.utils import load_config
-from aixm_graph.endpoints import *
+from aixm_graph.endpoints import aixm_graph_blueprint
 
 __author__ = "EUROCONTROL (SWIM)"
 
@@ -43,7 +43,7 @@ __author__ = "EUROCONTROL (SWIM)"
 def create_app(config_file: str) -> Flask:
     app = Flask(__name__)
 
-    app.register_blueprint(aixm_blueprint)
+    app.register_blueprint(aixm_graph_blueprint)
     app_config = load_config(filename=config_file)
     app.config.update(app_config)
 

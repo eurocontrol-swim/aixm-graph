@@ -41,11 +41,13 @@ const getDatasets = () => axios.get('/api/datasets', config);
 
 const uploadDataset = (formData) => axios.post('/api/upload', formData, config);
 
-const processDataset = (datasetId) => axios.put(`/api/datasets/${datasetId}/process`, {}, config);
+const getFeatureTypes = (datasetId) => axios.get(
+  `/api/datasets/${datasetId}/feature_types`, config,
+);
 
-const getFeatureGroupGraph = ({
+const getFeatureTypeGraph = ({
   datasetId,
-  featureGroupName,
+  featureTypeName,
   offset = 0,
   limit,
   filterQuery = '',
@@ -53,7 +55,7 @@ const getFeatureGroupGraph = ({
   const queryStr = `offset=${offset}&limit=${limit}&key=${filterQuery}`;
 
   return axios.get(
-    `/api/datasets/${datasetId}/feature_groups/${featureGroupName}/graph?${queryStr}`, config,
+    `/api/datasets/${datasetId}/feature_types/${featureTypeName}/graph?${queryStr}`, config,
   );
 };
 
@@ -66,8 +68,8 @@ const getDownloadSkeletonURL = (datasetId) => `${config.baseURL}/api/datasets/${
 export {
   getDatasets,
   uploadDataset,
-  processDataset,
-  getFeatureGroupGraph,
+  getFeatureTypes,
+  getFeatureTypeGraph,
   getFeatureGraph,
   getDownloadSkeletonURL,
 };

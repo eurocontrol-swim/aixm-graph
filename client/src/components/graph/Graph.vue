@@ -31,7 +31,7 @@
 
 <template>
   <div id="graph-area">
-    <div class="row valign-wrapper" :class="{hide: featureGroupName === null}">
+    <div class="row valign-wrapper" :class="{hide: featureTypeName === null}">
 
       <div class="col s6">
         <p v-html="summary"></p>
@@ -80,12 +80,12 @@
     </div>
 
         <!--          Graph area-->
-    <div class="row graph-area" :class="{hide: featureGroupName === null}">
+    <div class="row graph-area" :class="{hide: featureTypeName === null}">
       <div class="progress" id="graphLoader" :class="{hide: loadingGraph === false}">
         <div class="indeterminate"></div>
       </div>
       <div class="col s12 valign-wrapper" id="graph" ref="graph"></div>
-      <div class="collection" id="associations-select" :class="{hide: featureGroupName === null}">
+      <div class="collection" id="associations-select" :class="{hide: featureTypeName === null}">
         <a href="#!" class="collection-item active" @click="onClickAllAssociations">
           <i class="material-icons left">{{ allAssociationsIcon }}</i>
           Associations
@@ -136,7 +136,7 @@ export default {
   data() {
     return {
       datasetId: null,
-      featureGroupName: null,
+      featureTypeName: null,
       singleFeature: null,
       query: '',
       featuresPerPage: 5,
@@ -155,7 +155,7 @@ export default {
     reset(datasetId) {
       graphModel = null;
       this.datasetId = datasetId;
-      this.featureGroupName = null;
+      this.featureTypeName = null;
       this.singleFeature = null;
       this.query = '';
       this.featuresPerPage = 5;
@@ -169,7 +169,7 @@ export default {
       this.currentHoveredFeatureNodeId = null;
     },
     onFilterFeatures() {
-      this.getFeatureGroupGraph({ offset: 0 });
+      this.getFeatureTypeGraph({ offset: 0 });
     },
     createGraphModel(data) {
       graphModel = new GraphModel(this.$refs.graph, data);
@@ -181,11 +181,11 @@ export default {
       this.createGraphModel(data);
       this.registerAssociations();
     },
-    getFeatureGroupGraph({ offset }) {
+    getFeatureTypeGraph({ offset }) {
       this.loadingGraph = true;
-      serverApi.getFeatureGroupGraph({
+      serverApi.getFeatureTypeGraph({
         datasetId: this.datasetId,
-        featureGroupName: this.featureGroupName,
+        featureTypeName: this.featureTypeName,
         offset,
         limit: this.featuresPerPage,
         filterQuery: this.query,
@@ -207,7 +207,7 @@ export default {
       const associations = {};
 
       graphModel.getNodes().forEach((node) => {
-        if (node.name !== this.featureGroupName) {
+        if (node.name !== this.featureTypeName) {
           if (associations[node.name] === undefined) {
             associations[node.name] = {
               nodes: [], selected: true, name: node.name,
@@ -269,18 +269,18 @@ export default {
     onHoverFeatureNode(params) {
       this.currentHoveredFeatureNodeId = params.node;
     },
-    onFeatureGroupSelected(datasetId, featureGroupName) {
-      if (featureGroupName === this.featureGroupName && this.singleFeature === null) {
+    onFeatureTypeSelected(datasetId, featureTypeName) {
+      if (featureTypeName === this.featureTypeName && this.singleFeature === null) {
         return;
       }
 
       this.datasetId = datasetId;
-      this.featureGroupName = featureGroupName;
+      this.featureTypeName = featureTypeName;
 
       this.singleFeature = null;
       this.allAssociationsSelected = true;
 
-      this.getFeatureGroupGraph({ offset: 0 });
+      this.getFeatureTypeGraph({ offset: 0 });
     },
     onClickAllAssociations() {
       this.allAssociationsSelected = !this.allAssociationsSelected;
@@ -317,11 +317,11 @@ export default {
           (nodeIds, assoc) => nodeIds.concat(assoc.nodes.map((node) => node.id)), [],
         );
 
-        const featureGroupNodeIds = graphModel.getNodes().getIds().filter(
-          (id) => graphModel.getNodeById(id).name === this.featureGroupName,
+        const featureTypeNodeIds = graphModel.getNodes().getIds().filter(
+          (id) => graphModel.getNodeById(id).name === this.featureTypeName,
         );
 
-        const excludedNodeIds = featureGroupNodeIds.concat(associationsNodeIds);
+        const excludedNodeIds = featureTypeNodeIds.concat(associationsNodeIds);
 
         association.nodes.forEach((node) => {
           try {
@@ -339,16 +339,16 @@ export default {
       }
     },
     getPrevPage() {
-      this.getFeatureGroupGraph({ offset: this.prevOffset });
+      this.getFeatureTypeGraph({ offset: this.prevOffset });
     },
     getNextPage() {
-      this.getFeatureGroupGraph({ offset: this.nextOffset });
+      this.getFeatureTypeGraph({ offset: this.nextOffset });
     },
     getAssociationIcon(association) {
       return association.selected ? 'check_box' : 'check_box_outline_blank';
     },
     updateSummary() {
-      this.summary = `<strong>${this.featureGroupName}</strong> features`;
+      this.summary = `<strong>${this.featureTypeName}</strong> features`;
 
       if (this.query) {
         this.summary += ` matching filter query '<strong>${this.query}</strong>'`;
@@ -374,17 +374,17 @@ export default {
       return this.allAssociationsSelected ? 'check_box' : 'check_box_outline_blank';
     },
     filterHidden() {
-      return this.featureGroupName === null || this.singleFeature !== null;
+      return this.featureTypeName === null || this.singleFeature !== null;
     },
   },
   watch: {
     featuresPerPage() {
-      this.getFeatureGroupGraph({ offset: 0 });
+      this.getFeatureTypeGraph({ offset: 0 });
     },
   },
   created() {
-    EventBus.$on('feature-group-selected', (datasetId, featureGroupName) => {
-      this.onFeatureGroupSelected(datasetId, featureGroupName);
+    EventBus.$on('feature-type-selected', (datasetId, featureTypeName) => {
+      this.onFeatureTypeSelected(datasetId, featureTypeName);
     });
     EventBus.$on('dataset-uploading', () => this.reset());
     EventBus.$on('dataset-uploaded', (dataset) => {
