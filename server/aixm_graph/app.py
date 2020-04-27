@@ -57,6 +57,7 @@ def create_app(config_file: str) -> Flask:
 
     return app
 
+
 if __name__ == '__main__':
     app = create_app(config_file=resource_filename(__name__, 'config.yml'))
     app.run(host="0.0.0.0", port=5000)

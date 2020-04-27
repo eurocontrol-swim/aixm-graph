@@ -32,7 +32,7 @@ __author__ = "EUROCONTROL (SWIM)"
 
 import pytest
 
-from aixm_graph.utils import make_attrib, get_next_offset, get_prev_offset
+from aixm_graph.utils import make_attrib, get_next_offset, get_prev_offset, filename_is_valid, get_attrib_value
 
 
 @pytest.mark.parametrize('name, value, ns, expected_attrib', [
@@ -56,3 +56,22 @@ def test_get_next_offset(offset, limit, size, expected_next_offset):
 ])
 def test_get_prev_offset(offset, limit, size, expected_prev_offset):
     assert expected_prev_offset == get_prev_offset(offset, limit, size)
+
+
+@pytest.mark.parametrize('filename, is_valid', [
+    ('invalid', False),
+    ('nodotxml', False),
+    ('invalid.pdf', False),
+    ('valid.xml', True),
+])
+def test_filename_is_valid(filename, is_valid):
+    assert is_valid == filename_is_valid(filename)
+
+
+@pytest.mark.parametrize('attribs, name, ns, value_prefixes, expected_value', [
+    ({'{ns}attr': 'value'}, 'attr', 'ns', None, 'value'),
+    ({'{ns}attr': '#value'}, 'attr', 'ns', ['#'], 'value'),
+    ({'{ns}attr': '#value'}, 'invalid_attr', 'ns', ['#'], None),
+])
+def test_get_attrib_value(attribs, name, ns, value_prefixes, expected_value):
+    assert expected_value == get_attrib_value(attribs, name, ns, value_prefixes)

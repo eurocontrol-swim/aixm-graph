@@ -76,7 +76,7 @@ class AIXMDataSet:
     @property
     def features(self):
         """
-        :return: Generator[FeatureType]
+        :return: Generator[Feature]
         """
         for _, feature in self._features_dict.items():
             yield feature
@@ -88,21 +88,6 @@ class AIXMDataSet:
         :return:
         """
         return self._feature_type_stats
-
-    def _compute_feature_type_stats(self):
-        """
-
-        :return:
-        """
-        self._feature_type_stats = defaultdict(lambda: defaultdict(int))
-
-        for feature in self.features:
-            self._feature_type_stats[feature.name]['size'] += 1
-
-            if feature.has_broken_xlinks:
-                self._feature_type_stats[feature.name]['features_num_with_broken_xlinks'] += 1
-
-        return self
 
     def has_feature_name(self, name: str) -> bool:
         for feature in self.features:
@@ -190,6 +175,21 @@ class AIXMDataSet:
 
         return self
 
+    def _compute_feature_type_stats(self):
+        """
+
+        :return:
+        """
+        self._feature_type_stats = defaultdict(lambda: defaultdict(int))
+
+        for feature in self.features:
+            self._feature_type_stats[feature.name]['size'] += 1
+
+            if feature.has_broken_xlinks:
+                self._feature_type_stats[feature.name]['features_num_with_broken_xlinks'] += 1
+
+        return self
+
     def make_skeleton_path(self):
         """
 
@@ -238,7 +238,7 @@ class AIXMDataSet:
                     edge = Edge(source=feature.id, target=target.id, name=time_slice_id)
                 else:
                     node = Node.from_broken_xlink(association)
-                    edge = Edge(source=feature.id, target=association.uuid, name=time_slice_id, broken=True)
+                    edge = Edge(source=feature.id, target=association.uuid, name=time_slice_id, is_broken=True)
 
                 graph.add_nodes(node)
                 graph.add_edges(edge)

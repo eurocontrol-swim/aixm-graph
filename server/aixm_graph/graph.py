@@ -99,11 +99,11 @@ class Node:
 
 class Edge:
 
-    def __init__(self, source: str, target: str, name: str, broken: Optional[bool] = False):
+    def __init__(self, source: str, target: str, name: str, is_broken: Optional[bool] = False):
         self.source = source
         self.target = target
         self.name = name
-        self.broken = broken
+        self.is_broken = is_broken
 
     def __eq__(self, other):
         return (self.source == other.source and self.target == other.target and self.name == other.name) or \
@@ -114,7 +114,7 @@ class Edge:
             'source': self.source,
             'target': self.target,
             'name': self.name,
-            'is_broken': self.broken
+            'is_broken': self.is_broken
         }
 
 

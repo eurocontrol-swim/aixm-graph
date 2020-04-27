@@ -38,6 +38,7 @@ import pytest
 from pkg_resources import resource_filename
 
 from aixm_graph.app import create_app
+from aixm_graph.datasets.features import AIXMFeatureClassRegistry
 
 
 @pytest.yield_fixture(scope='session')
@@ -58,3 +59,10 @@ def test_app():
 @pytest.fixture(scope='session')
 def test_client(test_app):
     return test_app.test_client()
+
+
+@pytest.fixture(scope='session')
+def test_config(test_app):
+    AIXMFeatureClassRegistry.load_feature_classes(test_app.config['FEATURES'])
+
+    return test_app.config

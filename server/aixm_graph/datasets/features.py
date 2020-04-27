@@ -118,13 +118,13 @@ class AIXMFeature(Feature):
                              attrib=make_attrib(name='id',
                                                 value=f"urn:uuid:{self.id}",
                                                 ns=nsmap['gml']),
-                             nsmap=nsmap)
+                                                nsmap=nsmap)
 
         identifier = etree.Element(f"{{{nsmap['gml']}}}identifier",
                                    attrib=make_attrib(name='codeSpace',
                                                       value="urn:uuid:",
                                                       ns=""),
-                                   nsmap=nsmap)
+                                                      nsmap=nsmap)
 
         identifier.text = self.gml_identifier
         root.append(identifier)

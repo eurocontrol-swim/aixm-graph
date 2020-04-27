@@ -30,90 +30,57 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-from typing import Optional, Dict, List
+import os
 
-import yaml
+import pytest
+from pkg_resources import resource_filename
 
+from aixm_graph.datasets.datasets import AIXMDataSet
 
-def get_attrib_value(attribs: Dict[str, str], name: str, ns: str, value_prefixes: Optional[List[str]] = None):
-    value_prefixes = value_prefixes or []
-    result = attribs.get(f'{{{ns}}}{name}')
-
-    if result is None:
-        return
-
-    for value_prefix in value_prefixes:
-        if result.startswith(value_prefix):
-            result = result[len(value_prefix):]
-            break
-
-    return result
+TEST_FILENAME = 'dataset.xml'
+SKELETON_FILENAME = 'skeleton.xml'
 
 
-def make_attrib(name, value, ns):
-    return {f'{{{ns}}}{name}': value}
+@pytest.fixture
+def test_filepath():
+    return resource_filename(__name__, f'../../static/{TEST_FILENAME}')
 
 
-def load_config(filename: str):
-
-    with open(filename) as f:
-        obj = yaml.load(f, Loader=yaml.FullLoader)
-
-    return obj or None
+@pytest.fixture
+def test_skeleton_path():
+    return resource_filename(__name__, f'../../static/{SKELETON_FILENAME}')
 
 
-def get_next_offset(offset, limit, size):
-    """
+def test_dataset__name(test_filepath):
+    dataset = AIXMDataSet(test_filepath)
 
-    :param offset:
-    :param limit:
-    :param size:
-    :return:
-    """
-    next_offset = offset + limit
-    if next_offset >= size or size <= limit :
-        return
-
-    return next_offset
+    assert TEST_FILENAME == dataset.name
 
 
-def get_prev_offset(offset, limit, size):
-    """
+def test_dataset__process__features_are_retrieved(test_filepath, test_config):
+    dataset = AIXMDataSet(test_filepath)
 
-    :param offset:
-    :param limit:
-    :param size:
-    :return:
-    """
-    pref_offset = offset - limit
+    dataset.process()
 
-    if pref_offset >= 0:
-        return pref_offset
+    features = list(dataset.features)
 
+    assert len(features) > 0
 
-def validate_file_form(file_form: Dict):
-    """
-
-    :param file_form:
-    :return:
-    """
-    if 'file' not in file_form:
-        raise ValueError('No file part')
-
-    file = file_form['file']
-    if file.filename == '' or file.filename is None:
-        raise ValueError('No selected file')
-
-    if not filename_is_valid(file.filename):
-        raise ValueError('File is not allowed')
-
-    return file
+    for feature_name in test_config['FEATURES']:
+        assert feature_name in [f.name for f in features]
 
 
-def filename_is_valid(filename):
-    """
+def test_dataset__generate_skeleton(test_filepath, test_skeleton_path, test_config):
+    dataset = AIXMDataSet(test_filepath)
 
-    :param filename:
-    :return:
-    """
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'xml'
+    dataset.process()
+
+    skeleton_path = dataset.generate_skeleton()
+
+    assert os.path.exists(skeleton_path)
+
+    with open(skeleton_path, 'r') as skeleton:
+        with open(test_skeleton_path, 'r') as test_skeleton:
+            assert skeleton.read() == test_skeleton.read()
+
+    os.remove(skeleton_path)
