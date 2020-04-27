@@ -134,7 +134,7 @@ def get_graph_for_feature_type(dataset_id: str, feature_type_name: str):
     if dataset is None:
         raise NotFoundError(f'Dataset with id {dataset_id} does not exist')
 
-    if not dataset.has_feature_name(feature_type_name):
+    if not dataset.has_feature_type_name(feature_type_name):
         raise NotFoundError(f'Dataset has not feature type with name {feature_type_name}')
 
     # filter features returns a generator and we need it twice here, hence the use of tee

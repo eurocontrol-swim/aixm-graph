@@ -33,19 +33,13 @@ __author__ = "EUROCONTROL (SWIM)"
 
 import os
 from collections import defaultdict
-from functools import partial
-from typing import Optional
+from typing import Optional, Dict, Generator
 
 from lxml import etree
 
 from aixm_graph.datasets.features import AIXMFeatureFactory, AIXMFeature
 from aixm_graph.datasets.fields import Extension
 from aixm_graph.graph import Graph, Node, Edge
-
-
-class FeatureTypeStats:
-    def __init__(self, name: str):
-        self.name = name
 
 
 class AIXMDataSet:
@@ -56,49 +50,71 @@ class AIXMDataSet:
 
     def __init__(self, filepath: str) -> None:
         """
+        Holds the dataset data from the parsing point and produces the graph and skeleton file.
 
         :param filepath:
         """
-        self.id = None
-        self._feature_type_stats = None
-        self._filepath = filepath
-        self._features_dict = {}
-        self._sequence_ns = ''
-        self._ns_map = self.extension_ns
-        self._skeleton_filepath = None
+        """A unique identifier that is acquired upon being saved in cache (memory)"""
+        self.id: Optional[int] = None
+
+        """Holds that stat info of the dataset, i.e. the total number of features as well as broken
+           xlinks per feature type 
+        """
+        self._feature_type_stats: Optional[Dict[str, int]] = None
+
+        self._filepath: str = filepath
+
+        """Holds the features of the dataset per id in a hashtable for faster access"""
+        self._features_dict: Dict[str, AIXMFeature] = {}
+
+        """Holds the namespace of the sequence element, i.e. `hasMember` to be used in skeleton
+           generation
+        """
+        self._sequence_ns: str = ''
+
+        """Is updated with the namespaces of each element"""
+        self._ns_map: Dict[str, str] = self.extension_ns
+
+        self._skeleton_filepath: Optional[str] = None
 
     @property
-    def name(self):
+    def name(self) -> str:
         """
-
-        :return:
+        :return: The basename of the dataset file
         """
         return os.path.basename(self._filepath)
 
     @property
     def features(self):
         """
+        Enables faster access to the features of the dataset
+
         :return: Generator[Feature]
         """
         for _, feature in self._features_dict.items():
             yield feature
 
     @property
-    def feature_type_stats(self):
+    def feature_type_stats(self) -> Dict[str, int]:
         """
 
         :return:
         """
         return self._feature_type_stats
 
-    def has_feature_name(self, name: str) -> bool:
+    def has_feature_type_name(self, name: str) -> bool:
+        """
+
+        :param name:
+        :return:
+        """
         for feature in self.features:
             if feature.name == name:
                 return True
 
         return False
 
-    def get_feature_by_id(self, feature_id: str):
+    def get_feature_by_id(self, feature_id: str) -> AIXMFeature:
         """
 
         :param feature_id:
@@ -106,8 +122,11 @@ class AIXMDataSet:
         """
         return self._features_dict.get(feature_id)
 
-    def filter_features(self, name: str, field_value: Optional[str] = None):
+    def filter_features(self,
+                        name: str,
+                        field_value: Optional[str] = None) -> Generator[AIXMFeature]:
         """
+        Filters the features per name and/or field value
 
         :param name:
         :param field_value:
@@ -122,12 +141,23 @@ class AIXMDataSet:
 
     def process(self):
         """
+        Performs the processing of the dataset including:
+            - parse the dataset file
+            - extract features and store their essential data
+            - create extensions (bi-directional associations)
+            - generate stats to be used in front-end
         :return: AIXMDataSet
         """
         return self._parse()._create_extensions()._compute_feature_type_stats()
 
     def _parse(self):
         """
+        Parse the file using the `etree.iterparse` method in order to handle big files and avoid
+        loading them in memory at once.
+
+        The element features are parsed and extracted one by one. Their data are stored and they are
+        deleted before proceeding to the next one.
+
         :return: AIXMDataSet
         """
 
@@ -160,6 +190,10 @@ class AIXMDataSet:
 
     def _create_extensions(self):
         """
+        For each xlink reference found in a feature, an extension (xlink) is created to the
+        referred featured pointing back to it. If the referred feature is not found then the xlink
+        is marked as broken.
+
         :return: AIXMDataSet
         """
         extension_prefix = list(self.extension_ns.keys())[0]
@@ -179,7 +213,8 @@ class AIXMDataSet:
 
     def _compute_feature_type_stats(self):
         """
-
+        Generates a few stats to be used in the front-end, i.e. the total number of features as well
+        as broken xlinks per feature type.
         :return:
         """
         self._feature_type_stats = defaultdict(lambda: defaultdict(int))
@@ -192,7 +227,7 @@ class AIXMDataSet:
 
         return self
 
-    def make_skeleton_path(self):
+    def make_skeleton_path(self) -> str:
         """
 
         :return:
@@ -201,10 +236,12 @@ class AIXMDataSet:
 
         return f"{filename}_skeleton{ext}"
 
-    def generate_skeleton(self):
+    def generate_skeleton(self) -> str:
         """
+        Skeleton is a subset of the original dataset including only the information that was
+        extracted by it plus the created extensions
 
-        :return:
+        :return: the path of the generated skeleton file
         """
         if self._skeleton_filepath:
             return self._skeleton_filepath
@@ -225,6 +262,8 @@ class AIXMDataSet:
 
     def get_graph_for_feature(self, feature: AIXMFeature) -> Graph:
         """
+        Creates a graph (nodes, edges) for the given feature. The nodes will include the feature and
+        it's associations while the edges will indicate which is connected with which.
 
         :param feature:
         :return:
@@ -247,9 +286,11 @@ class AIXMDataSet:
 
         return graph
 
-    def get_graph(self, features: [AIXMFeature], offset: int, limit: int) -> Graph:
+    def get_graph(self, features: Generator[AIXMFeature], offset: int, limit: int) -> Graph:
         """
+        Creates a graph for a collection of features.
 
+        :param features:
         :param offset:
         :param limit:
         :return:
@@ -259,8 +300,10 @@ class AIXMDataSet:
         for i, feature in enumerate(features):
             if i < offset:
                 continue
-            if limit is not None and i > limit:
+
+            if i > limit:
                 break
+
             graph += self.get_graph_for_feature(feature=feature)
 
         return graph
