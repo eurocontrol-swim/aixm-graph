@@ -62,16 +62,16 @@
       </div>
 
       <div class="col s1">
-        <p class="right">{{ paginationSummary }}</p>
+        <p class="right pagination-summary">{{ paginationSummary }}</p>
       </div>
 
       <div class="col s1">
         <div :class="{hide: singleFeature !== null}">
-          <a class="waves-effect waves-light btn btn-small red lighten-2"
+          <a class="waves-effect waves-light btn btn-small red lighten-2 pagination-button"
              @click="getPrevPage" :disabled="prevOffset === null">
             <i class="material-icons">chevron_left</i>
           </a>
-          <a class="waves-effect waves-light btn btn-small red lighten-2 right"
+          <a class="waves-effect waves-light btn btn-small red lighten-2 right pagination-button"
              @click="getNextPage" :disabled="nextOffset === null">
             <i class="material-icons">chevron_right</i>
           </a>
@@ -432,4 +432,11 @@ export default {
   left: -9999px;
 }
 
+.btn.pagination-button {
+  padding: 0 5px;
+}
+
+p.pagination-summary {
+  font-size: 13px;
+}
 </style>
