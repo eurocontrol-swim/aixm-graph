@@ -31,16 +31,17 @@
 
 <template>
   <div>
-     <li @click="featureTypeSelected" class="feature-item">
-        <a class="waves-effect collection-item active" href="#!" >
-             {{ featureType.name}} ({{ featureType.totalCount }})
-          <i class="material-icons"
-             :style="featureType.featuresNumWithBrokenXlinks > 0 ? {color: '#ee6e73'}
-                                                                 : {color: '#26a69a'}">
-             {{ icon }}
-          </i>
-        </a>
-     </li>
+    <li @click="featureTypeSelected"
+        class="feature-item">
+      <a class="waves-effect collection-item active " href="#!" :title="title">
+        <i v-if="featureType.featuresNumWithBrokenXlinks > 0"
+            class="material-icons"
+            id=report-icon>
+            feedback
+        </i>
+            {{ featureType.name}} ({{ featureType.totalCount }})
+      </a>
+    </li>
   </div>
 </template>
 
@@ -56,8 +57,14 @@ export default {
     },
   },
   computed: {
-    icon() {
-      return this.featureType.featuresNumWithBrokenXlinks > 0 ? 'report' : 'done';
+    title() {
+      if (this.featureType.featuresNumWithBrokenXlinks > 0) {
+        const num = this.featureType.featuresNumWithBrokenXlinks;
+
+        return num === 1 ? `${num} ${this.featureType.name} feature has broken xlinks`
+          : `${num} ${this.featureType.name} features have broken xlinks`;
+      }
+      return '';
     },
   },
 };
@@ -73,5 +80,10 @@ export default {
 .feature-item > a > i.material-icons{
     height: 35px;
     line-height: 35px;
+}
+
+#report-icon {
+  color: #f85f07;
+  float: right;
 }
 </style>

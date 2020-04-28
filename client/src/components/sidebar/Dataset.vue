@@ -75,7 +75,7 @@
                         All
                         <input type="checkbox" v-model="brokenFeatureTypesCheckbox">
                         <span class="lever"></span>
-                        Only with broken links
+                        Only with report
                       </label>
                     </div>
                   </a>
