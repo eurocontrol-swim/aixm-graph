@@ -149,16 +149,6 @@ export default {
               ),
             );
           });
-          // const featureTypes = res.data.data.feature_types;
-          // Object.keys(featureTypes).forEach((featureTypeName) => {
-          //   this.dataset.featureTypes.push(
-          //     new FeatureTypeModel(
-          //       featureTypeName,
-          //       featureTypes[featureTypeName].size,
-          //       featureTypes[featureTypeName].has_broken_xlinks,
-          //     ),
-          //   );
-          // });
         })
         .catch((error) => {
           this.loaderText = '';
@@ -182,11 +172,11 @@ export default {
       return this.dataset.featureTypes.length > 0 ? `(${this.totalFeaturesCount}) Features` : 'No features yet...';
     },
     totalFeaturesCount() {
-      return this.dataset.featureTypes.map((fg) => fg.totalCount).reduce((a, b) => a + b, 0);
+      return this.dataset.featureTypes.map((ft) => ft.totalCount).reduce((a, b) => a + b, 0);
     },
     displayableFeatureTypes() {
       if (this.brokenFeatureTypesCheckbox) {
-        return this.dataset.featureTypes.filter((fg) => fg.hasBrokenXlinks);
+        return this.dataset.featureTypes.filter((ft) => ft.featuresNumWithBrokenXlinks > 0);
       }
       return this.dataset.featureTypes;
     },

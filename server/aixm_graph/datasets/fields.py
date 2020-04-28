@@ -75,9 +75,17 @@ class Field:
         :param element:
         :return: Field
         """
-        return cls(name=QName(element).localname, text=element.text, attrib=element.attrib, prefix=element.prefix)
+        return cls(name=QName(element).localname,
+                   text=element.text,
+                   attrib=element.attrib,
+                   prefix=element.prefix)
 
     def to_lxml(self, nsmap: Dict[str, str]) -> etree.Element:
+        """
+
+        :param nsmap: the nsmap of the dataset
+        :return:
+        """
         ns = nsmap.get(self.prefix)
         ns = f"{{{ns}}}" if ns else ""
 
@@ -91,6 +99,10 @@ class Field:
 class XLinkField(Field):
 
     def __init__(self, **kwargs) -> None:
+        """
+        Holds info for elements with xlink:href attributes
+        :param kwargs:
+        """
         super().__init__(**kwargs)
         self._uuid = None
         self._broken = False

@@ -36,8 +36,8 @@ import logging
 import os
 from functools import wraps
 from itertools import tee
+from typing import Callable, TypeVar, Tuple, Any, Dict
 
-import flask
 from flask import Blueprint
 from flask import request, current_app as app, send_file
 from werkzeug.utils import secure_filename
@@ -48,11 +48,16 @@ from aixm_graph import utils
 
 _logger = logging.getLogger(__name__)
 
+ResponseType = Tuple[Dict[str, Any], int]
 
 aixm_graph_blueprint = Blueprint('aixm_graph', __name__, url_prefix='/api')
 
 
-def handle_response(f):
+def handle_response(f) -> Callable:
+    """
+    :param f:
+    :return:
+    """
     @wraps(f)
     def decorator(*args, **kwargs):
         result = {}
@@ -73,7 +78,11 @@ def handle_response(f):
 
 @aixm_graph_blueprint.route('/datasets', methods=['GET'])
 @handle_response
-def get_datasets():
+def get_datasets() -> ResponseType:
+    """
+    Retrieves and the returns the id and name of all available datasets
+    :return:
+    """
     datasets = cache.get_datasets()
 
     return [
@@ -87,9 +96,10 @@ def get_datasets():
 
 @aixm_graph_blueprint.route('/datasets/<dataset_id>/feature_types', methods=['GET'])
 @handle_response
-def get_dataset_feature_types(dataset_id: str):
+def get_dataset_feature_types(dataset_id: str) -> ResponseType:
     """
-
+    Retrieves info for the available feature types of the dataset i.e. name, how many features
+    it has and how many of them have broken xlink references.
     :param dataset_id:
     :return:
     """
@@ -98,7 +108,7 @@ def get_dataset_feature_types(dataset_id: str):
     if dataset is None:
         raise NotFoundError(f'Dataset with id {dataset_id} does not exist')
 
-    if not dataset._feature_type_stats:
+    if not dataset.feature_type_stats:
         dataset.process()
 
     feature_types = [
@@ -116,10 +126,13 @@ def get_dataset_feature_types(dataset_id: str):
     }, 200
 
 
-@aixm_graph_blueprint.route('/datasets/<dataset_id>/feature_types/<feature_type_name>/graph', methods=['GET'])
+@aixm_graph_blueprint.route(
+    '/datasets/<dataset_id>/feature_types/<feature_type_name>/graph', methods=['GET'])
 @handle_response
-def get_graph_for_feature_type(dataset_id: str, feature_type_name: str):
+def get_graph_for_feature_type(dataset_id: str, feature_type_name: str) -> ResponseType:
     """
+    Generates the graph for a specific feature type paginated based on the offset and limit provided
+    in the URL query.
 
     :param dataset_id:
     :param feature_type_name:
@@ -150,14 +163,15 @@ def get_graph_for_feature_type(dataset_id: str, feature_type_name: str):
         'size': size,
         'graph': graph.to_json(),
         'next_offset': utils.get_next_offset(offset, limit, size),
-        'prev_offset': utils.get_prev_offset(offset, limit, size),
+        'prev_offset': utils.get_prev_offset(offset, limit),
     }, 200
 
 
 @aixm_graph_blueprint.route('/datasets/<dataset_id>/features/<feature_id>/graph', methods=['GET'])
 @handle_response
-def get_graph_for_feature(dataset_id: str, feature_id: str):
+def get_graph_for_feature(dataset_id: str, feature_id: str) -> ResponseType:
     """
+    Generates the graph for a specific feature of the dataset
 
     :param dataset_id:
     :param feature_id:
@@ -182,8 +196,10 @@ def get_graph_for_feature(dataset_id: str, feature_id: str):
 
 @aixm_graph_blueprint.route('/upload', methods=['POST'])
 @handle_response
-def upload_aixm():
+def upload_aixm_dataset() -> ResponseType:
     """
+    Uploads a dataset after applying some validation.
+    The max size of the file is handled by nginx.
 
     :return:
     """
@@ -208,8 +224,10 @@ def upload_aixm():
 
 
 @aixm_graph_blueprint.route('/datasets/<dataset_id>/download', methods=['GET'])
-def download(dataset_id: str):
+def download_skeleton(dataset_id: str):
     """
+    Returns the generated skeleton of the dataset as an attachment in the response so it can be
+    downloaded as a file in the browser.
 
     :param dataset_id:
     :return:

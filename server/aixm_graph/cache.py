@@ -37,6 +37,7 @@ from typing import List
 
 from aixm_graph.datasets.datasets import AIXMDataSet
 
+"""Acts as in memory database holding the datasets' information to be used by the API"""
 CACHE = {
     'datasets': {}
 }

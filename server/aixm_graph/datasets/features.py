@@ -45,35 +45,45 @@ class Feature(Field):
     config = {}
 
     def __init__(self, *args, **kwargs):
+        """
+        Feature holds the information found in a single version (time slice for AIXM) feature
+        element.
+        :param args:
+        :param kwargs:
+        """
         super().__init__(*args, **kwargs)
 
         self.id = None
 
-        self._data_fields = []
-        self._xlinks = []
-        self._extensions = []
+        self._data_fields: List[Field] = []
+        self._xlinks: List[XLinkField] = []
+        self._extensions: List[Extension] = []
 
-    def add_extension(self, extension):
+    def add_extension(self, extension: Extension):
+        """
+
+        :param extension:
+        """
         self._extensions.append(extension)
 
     @property
-    def data_fields(self):
+    def data_fields(self) -> List[Field]:
         return self._data_fields
 
     @property
-    def xlinks(self):
+    def xlinks(self) -> List[XLinkField]:
         return self._xlinks
 
     @property
-    def extensions(self):
+    def extensions(self) -> List[Extension]:
         return self._extensions
 
     @property
-    def associations(self):
+    def associations(self) -> List[Field]:
         return self.xlinks + self.extensions
 
     @property
-    def has_broken_xlinks(self):
+    def has_broken_xlinks(self) -> bool:
         return any(xlink.is_broken for xlink in self._xlinks)
 
     def matches_field_value(self, filter_key: str) -> bool:
@@ -83,6 +93,10 @@ class Feature(Field):
 class AIXMFeature(Feature):
 
     def __init__(self, *args, **kwargs):
+        """
+        Represents a feature element as it is found in an AIXM dataset. The information is
+        encaptulated in one or more time slices which serve as different versions of the feature.
+        """
         super().__init__(*args, **kwargs)
 
         # the time slice of an AIXM feature is treated as a feature version of it, thus a feature
@@ -91,24 +105,26 @@ class AIXMFeature(Feature):
         self.gml_identifier = None
 
     @property
-    def data_fields(self):
+    def data_fields(self) -> List[Field]:
         return [field for ts in self.time_slices.values() for field in ts.data_fields]
 
     @property
-    def xlinks(self):
+    def xlinks(self) -> List[XLinkField]:
         return [xlink for ts in self.time_slices.values() for xlink in ts.xlinks]
 
     @property
-    def extensions(self):
+    def extensions(self) -> List[Extension]:
         return [extension for ts in self.time_slices.values() for extension in ts.extensions]
 
     @property
-    def has_broken_xlinks(self):
-        return any(slice.has_broken_xlinks for _, slice in self.time_slices.items())
+    def has_broken_xlinks(self) -> bool:
+        return any(ts.has_broken_xlinks for _, ts in self.time_slices.items())
 
     def add_extension(self, extension: Extension):
-        extension.name = f'the{extension.name}'
-
+        """
+        Adds the extension to all the versions (time slices) of self
+        :param extension:
+        """
         for _, ts in self.time_slices.items():
             ts.add_extension(extension)
 
@@ -116,17 +132,20 @@ class AIXMFeature(Feature):
         return any(ts.matches_field_value(filter_key) for _, ts in self.time_slices.items())
 
     def to_lxml(self, nsmap: Dict[str, str]) -> etree.Element:
+        """
+
+        :param nsmap:
+        :return:
+        """
         root = etree.Element(f"{{{nsmap[self.prefix]}}}{self.name}",
                              attrib=make_attrib(name='id',
                                                 value=f"urn:uuid:{self.id}",
                                                 ns=nsmap['gml']),
-                                                nsmap=nsmap)
+                             nsmap=nsmap)
 
         identifier = etree.Element(f"{{{nsmap['gml']}}}identifier",
-                                   attrib=make_attrib(name='codeSpace',
-                                                      value="urn:uuid:",
-                                                      ns=""),
-                                                      nsmap=nsmap)
+                                   attrib=make_attrib(name='codeSpace', value="urn:uuid:", ns=""),
+                                   nsmap=nsmap)
 
         identifier.text = self.gml_identifier
         root.append(identifier)
@@ -162,7 +181,9 @@ class AIXMFeatureFactory:
     @staticmethod
     def feature_from_sequence_element(seq_element: etree.Element) -> AIXMFeature:
         """
-        :param seq_element:
+        Creates an AIXMFeature from a sequence element as it is read from the parser.
+
+        :param seq_element: For AIXM datasets the sequence element is `hasMember`
         """
 
         # in AIXM files the feature is the first child of the <hasMember> sequence element
@@ -189,25 +210,35 @@ class AIXMFeatureFactory:
         return feature
 
     @staticmethod
-    def time_slice_from_element(element: etree.Element, field_names: List[str]) -> Tuple[str, Feature]:
+    def time_slice_from_element(element: etree.Element,
+                                field_names: List[str]) -> Tuple[str, Feature]:
         """
 
+        :param field_names:
         :param element:
         :return:
         """
         time_slice = Feature.from_lxml(element)
 
-        time_slice._data_fields = [Field.from_lxml(child) for child in element
-                                   if QName(child).localname in field_names]
-        time_slice._xlinks = [XLinkField.from_lxml(AIXMFeatureFactory.process_xlink_element(xlink=xlink, root=element))
-                              for xlink in element.findall('.//*[@xlink:href]', namespaces=element.nsmap)]
+        time_slice._data_fields = [
+            Field.from_lxml(child)
+            for child in element
+            if QName(child).localname in field_names
+        ]
+
+        time_slice._xlinks = [
+            XLinkField.from_lxml(
+                AIXMFeatureFactory.process_xlink_element(xlink=xlink, ts_element=element)
+            )
+            for xlink in element.findall('.//*[@xlink:href]', namespaces=element.nsmap)
+        ]
 
         version = AIXMFeatureFactory.get_time_slice_element_version(element, time_slice.prefix)
 
         return version, time_slice
 
     @staticmethod
-    def get_time_slice_xpath(feature: AIXMFeature):
+    def get_time_slice_xpath(feature: AIXMFeature) -> str:
         """
 
         :param feature:
@@ -216,8 +247,10 @@ class AIXMFeatureFactory:
         return f'./{feature.prefix}:timeSlice/{feature.prefix}:{feature.name}TimeSlice'
 
     @staticmethod
-    def get_time_slice_element_version(element: etree.Element, prefix: str):
+    def get_time_slice_element_version(element: etree.Element, prefix: str) -> str:
         """
+        The version name of the element if composed by the value of the `sequenceNumber` and/or
+        the value of the `correctionNumber`
 
         :param element:
         :param prefix:
@@ -226,21 +259,25 @@ class AIXMFeatureFactory:
         sequence_number = element.find(f'./{prefix}:sequenceNumber', namespaces=element.nsmap).text
 
         try:
-            correction_number = element.find(f'./{prefix}:correctionNumber', namespaces=element.nsmap).text
+            correction_number = element.find(f'./{prefix}:correctionNumber',
+                                             namespaces=element.nsmap).text
         except AttributeError:
             correction_number = ""
 
-        return ",".join([sequence_number, correction_number]) if correction_number else sequence_number
+        return ",".join([sequence_number, correction_number]) if correction_number \
+            else sequence_number
 
     @staticmethod
-    def process_xlink_element(xlink: etree.Element, root: etree.Element) -> etree.Element:
+    def process_xlink_element(xlink: etree.Element, ts_element: etree.Element) -> etree.Element:
         """
+        Applies custom processing to elements with xlink:href attribute.
 
         :param xlink:
-        :param root:
+        :param ts_element: The timeSlice element where the element with xlink:href attribute was
+                           found
         :return:
         """
-        if xlink.getparent() != root:
+        if xlink.getparent() != ts_element:
             xlink = AIXMFeatureFactory.process_nested_xlink_element(xlink)
 
         return xlink
@@ -248,7 +285,8 @@ class AIXMFeatureFactory:
     @staticmethod
     def process_nested_xlink_element(xlink: etree.Element):
         """
-
+        Applies custom processing to elements with xlink:href attribute that were found deeper in a
+        timeSlice.
         :param xlink:
         :return:
         """
@@ -260,6 +298,29 @@ class AIXMFeatureFactory:
     @staticmethod
     def process_associated_xlink(xlink: etree.Element) -> etree.Element:
         """
+        Applies custom processing for elements with xlink:href attributes that are considered as
+        associated i.e. their name starts with `the`
+
+        Example:
+
+        The below original element has a nested element (theNavaidEquipment) with xlink:href
+        attribute which is associated. After processing the element's name will be appended with the
+        text values of its parent's siblings and this is how it will be kept and later generated in
+        the skeleton file.
+
+        Original:
+
+        <aixm:navaidEquipment>
+            <aixm:NavaidComponent gml:id="N-a8e60416">
+                <aixm:collocationGroup>1</aixm:collocationGroup>
+                <aixm:theNavaidEquipment
+                    xlink:href="urn:uuid:13fe226f-271c-4d36-9f42-190563a963de"/>
+            </aixm:NavaidComponent>
+        </aixm:navaidEquipment>
+
+        In skeleton after processing:
+
+        <aixm:navaidEquipment_1 xlink:href="urn:uuid:13fe226f-271c-4d36-9f42-190563a963de"/>
 
         :param xlink:
         :return:
@@ -272,6 +333,9 @@ class AIXMFeatureFactory:
 
 
 class AIXMFeatureClassRegistry:
+    """It parses the config file and creates classes for each feature type encapsulating the values
+       of the config file for later use.
+    """
     feature_config_attrs = ('abbrev', 'fields', 'color', 'shape',)
     feature_classes: Dict[str, FeatureType] = {}
 

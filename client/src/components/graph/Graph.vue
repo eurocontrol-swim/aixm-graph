@@ -253,7 +253,7 @@ export default {
       this.loadingGraph = true;
       serverApi.getFeatureGraph(this.datasetId, featureId)
         .then((res) => {
-          this.createGraphModel(res.data.data.graph);
+          this.initGraph(res.data.data.graph);
           this.loadingGraph = false;
           this.singleFeature = featureName;
           this.summary = `<strong>${featureName}</strong> with id: <strong>${featureId}</strong>`;
@@ -277,6 +277,7 @@ export default {
       this.datasetId = datasetId;
       this.featureTypeName = featureTypeName;
 
+      this.query = '';
       this.singleFeature = null;
       this.allAssociationsSelected = true;
 

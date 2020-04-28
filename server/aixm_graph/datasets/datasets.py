@@ -124,13 +124,13 @@ class AIXMDataSet:
 
     def filter_features(self,
                         name: str,
-                        field_value: Optional[str] = None) -> Generator[AIXMFeature]:
+                        field_value: Optional[str] = None):
         """
         Filters the features per name and/or field value
 
         :param name:
         :param field_value:
-        :return:
+        :return: Generator[AIXMFeature]
         """
         features = (feature for feature in self.features if feature.name == name)
 
@@ -203,7 +203,7 @@ class AIXMDataSet:
                 target_feature = self._features_dict.get(xlink.uuid)
                 if target_feature:
                     target_feature.add_extension(
-                        Extension.create(name=source_feature.name,
+                        Extension.create(name=f'the{source_feature.name}',
                                          uuid=source_feature.id,
                                          prefix=extension_prefix))
                 else:
@@ -286,11 +286,11 @@ class AIXMDataSet:
 
         return graph
 
-    def get_graph(self, features: Generator[AIXMFeature], offset: int, limit: int) -> Graph:
+    def get_graph(self, features, offset: int, limit: int) -> Graph:
         """
         Creates a graph for a collection of features.
 
-        :param features:
+        :param features: Generator[AIXMFeature]
         :param offset:
         :param limit:
         :return:
