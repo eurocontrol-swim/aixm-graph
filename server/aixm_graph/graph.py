@@ -2,28 +2,30 @@
 Copyright 2020 EUROCONTROL
 ==========================================
 
-Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
-following conditions are met:
+Redistribution and use in source and binary forms, with or without modification, are permitted
+provided that the following conditions are met:
 
-1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following
-   disclaimer.
-2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following
-   disclaimer in the documentation and/or other materials provided with the distribution.
-3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products
-   derived from this software without specific prior written permission.
+1. Redistributions of source code must retain the above copyright notice, this list of conditions
+   and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions
+   and the following disclaimer in the documentation and/or other materials provided with the
+   distribution.
+3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse
+   or promote products derived from this software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
-USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ==========================================
 
-Editorial note: this license is an instance of the BSD license template as provided by the Open Source Initiative:
-http://opensource.org/licenses/BSD-3-Clause
+Editorial note: this license is an instance of the BSD license template as provided by the Open
+Source Initiative: http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
@@ -49,6 +51,20 @@ class Node:
                  assoc_count: int = 0,
                  is_ghost: bool = False
     ):
+        """
+        Holds information of a feature which will be represented as a node in the graph displayed
+        in the frontend.
+        :param id:
+        :param name:
+        :param abbrev:
+        :param fields:
+        :param color:
+        :param shape:
+        :param fields_concat:
+        :param assoc_count:
+        :param is_ghost: indicates whether it's a feature that was supposed to be referenced by
+                         another feature but it was not found in the dataset
+        """
         self.id = id
         self.name = name
         self.abbrev = abbrev
@@ -99,28 +115,46 @@ class Node:
 
 class Edge:
 
-    def __init__(self, source: str, target: str, name: str, broken: Optional[bool] = False):
+    def __init__(self, source: str, target: str, name: str, is_broken: Optional[bool] = False):
+        """
+        Holds information about two features where one references to the other
+
+        :param source:
+        :param target:
+        :param name:
+        :param is_broken: indicates whether one of the features is ghost thus i.e. it was not found
+                          in the dataset
+        """
         self.source = source
         self.target = target
         self.name = name
-        self.broken = broken
+        self.is_broken = is_broken
 
     def __eq__(self, other):
-        return (self.source == other.source and self.target == other.target and self.name == other.name) or \
-               (self.source == other.target and self.target == other.source and self.name == other.name)
+        return (self.source == other.source
+                and self.target == other.target
+                and self.name == other.name) \
+               or \
+               (self.source == other.target
+                and self.target == other.source
+                and self.name == other.name)
 
     def to_json(self):
         return {
             'source': self.source,
             'target': self.target,
             'name': self.name,
-            'is_broken': self.broken
+            'is_broken': self.is_broken
         }
 
 
 class Graph:
 
     def __init__(self, nodes: Optional[List[Node]] = None, edges: Optional[List[Edge]] = None):
+        """
+        :param nodes:
+        :param edges:
+        """
         self.nodes = nodes or []
         self.edges = edges or []
 

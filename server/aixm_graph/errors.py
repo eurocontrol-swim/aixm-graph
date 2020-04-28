@@ -1,4 +1,5 @@
-/* Copyright 2020 EUROCONTROL
+"""
+Copyright 2020 EUROCONTROL
 ==========================================
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -26,99 +27,24 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Editorial note: this license is an instance of the BSD license template as provided by the Open
 Source Initiative: http://opensource.org/licenses/BSD-3-Clause
 
-Details on EUROCONTROL: http://www.eurocontrol.int */
+Details on EUROCONTROL: http://www.eurocontrol.int
+"""
 
-html, body/*, and all other map parent selectors*/ {
-height: 100%;
-width: 100%;
-}
-
-#graph {
-    border: 1px solid lightgray;
-    height: 100%;
-    width: 100%;
-}
-
-.sidenav {
-    width: 380px;
-}
-
-.graph-area {
-    height: 100%;
-}
-
-.graph.col {
-    padding-left: 0px;
-}
-
-nav .brand-logo {
-    font-size: 1.5em;
-    padding-left: 15px;
-}
-
-.row {
-    margin-bottom: 0px;
-}
-
-.sidenav li > a {
-    font-size: 12px;
-}
-
-.sidenav li > a > i.material-icons{
-    margin: 0 10px 0 0;
-}
-
-.sidenav {
-    top: 64px;
-}
-
-.sidenav .divider {
-    margin: 0px;
-}
-
-#report-icon {
-    color: #ee6e73;
-}
-
-#ok-icon {
-    color: #26a69a;
-}
+__author__ = "EUROCONTROL (SWIM)"
 
 
-.progress {
-    margin: 0px;
-}
+class APIError(Exception):
 
-#progress-text {
-    color: white;
-    background-color: cadetblue;
-}
+    def __init__(self, status_code, description=None):
+        self.status_code = status_code
+        self.description = description or ""
 
-table#node-tooltip > td {
-    padding: 0px;
-}
 
-#dropdown-aixm-datasets {
-    min-width: 400px;
-}
+class NotFoundError(APIError):
+    def __init__(self, description):
+        super().__init__(404, description)
 
-.input-field {
-    margin-bottom: 0px;
-}
 
-.graph-loader {
-    margin-left: 45%;
-}
-
-#associations-select {
-    position: absolute;
-    left: 400px;
-}
-
-#associations-select li{
-    padding-left: 20px;
-}
-
-.vis-active:focus {
-    outline: none;
-}
+class BadRequestError(APIError):
+    def __init__(self, description):
+        super().__init__(400, description)

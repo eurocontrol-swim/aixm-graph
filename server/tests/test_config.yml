@@ -1,0 +1,63 @@
+---
+LOGGING:
+  version: 1
+
+  handlers:
+    console:
+      class: logging.StreamHandler
+      formatter: default
+      level: DEBUG
+
+  formatters:
+    default:
+      format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+      class: logging.Formatter
+
+  disable_existing_loggers: false
+
+  root:
+    level: DEBUG
+    handlers: [console]
+
+  loggers:
+    aixm_graph:
+      level: DEBUG
+
+UPLOAD_FOLDER: /tmp
+
+PAGE_LIMIT: 5
+
+FEATURES:
+  AirportHeliport:
+    abbrev: AHP
+    color: '#faebd7'
+    fields:
+      names:
+        - designator
+    shape: square
+  AngleIndication:
+    abbrev: AIN
+    color: '#f0ffff'
+    fields:
+      names:
+    shape: square
+  DesignatedPoint:
+    abbrev: DPN
+    color: '#efdecd'
+    fields:
+      names:
+        - designator
+    shape: diamond
+  OrganisationAuthority:
+    abbrev: ORG
+    color: '#f0f8ff'
+    fields:
+      names:
+        - name
+    shape: triangleDown
+  SpecialDate:
+    abbrev: SPD
+    color: '#f0ffff'
+    fields:
+      names:
+    shape: ellipse

@@ -29,12 +29,49 @@
 
 // Details on EUROCONTROL: http://www.eurocontrol.int
 
-export default class FeatureGroupModel {
-  constructor(name, totalCount, hasBrokenXlinks) {
-    this.name = name;
-    this.totalCount = totalCount;
-    this.hasBrokenXlinks = hasBrokenXlinks;
-  }
+<template>
+  <div>
+     <li @click="featureTypeSelected" class="feature-item">
+        <a class="waves-effect collection-item active" href="#!" >
+             {{ featureType.name}} ({{ featureType.totalCount }})
+          <i class="material-icons"
+             :style="featureType.featuresNumWithBrokenXlinks > 0 ? {color: '#ee6e73'}
+                                                                 : {color: '#26a69a'}">
+             {{ icon }}
+          </i>
+        </a>
+     </li>
+  </div>
+</template>
+
+<script>
+import EventBus from '../event-bus';
+
+export default {
+  name: 'FeatureType',
+  props: ['featureType', 'datasetId'],
+  methods: {
+    featureTypeSelected() {
+      EventBus.$emit('feature-type-selected', this.datasetId, this.featureType.name);
+    },
+  },
+  computed: {
+    icon() {
+      return this.featureType.featuresNumWithBrokenXlinks > 0 ? 'report' : 'done';
+    },
+  },
+};
+</script>
+
+<style scoped>
+
+.feature-item > a {
+    height: 35px;
+    line-height: 35px;
 }
 
-// export { FeatureGroup };
+.feature-item > a > i.material-icons{
+    height: 35px;
+    line-height: 35px;
+}
+</style>

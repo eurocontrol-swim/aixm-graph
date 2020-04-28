@@ -1,4 +1,5 @@
-/* Copyright 2020 EUROCONTROL
+"""
+Copyright 2020 EUROCONTROL
 ==========================================
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -26,99 +27,53 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Editorial note: this license is an instance of the BSD license template as provided by the Open
 Source Initiative: http://opensource.org/licenses/BSD-3-Clause
 
-Details on EUROCONTROL: http://www.eurocontrol.int */
+Details on EUROCONTROL: http://www.eurocontrol.int
+"""
 
-html, body/*, and all other map parent selectors*/ {
-height: 100%;
-width: 100%;
-}
+__author__ = "EUROCONTROL (SWIM)"
 
-#graph {
-    border: 1px solid lightgray;
-    height: 100%;
-    width: 100%;
-}
+import pytest
 
-.sidenav {
-    width: 380px;
-}
-
-.graph-area {
-    height: 100%;
-}
-
-.graph.col {
-    padding-left: 0px;
-}
-
-nav .brand-logo {
-    font-size: 1.5em;
-    padding-left: 15px;
-}
-
-.row {
-    margin-bottom: 0px;
-}
-
-.sidenav li > a {
-    font-size: 12px;
-}
-
-.sidenav li > a > i.material-icons{
-    margin: 0 10px 0 0;
-}
-
-.sidenav {
-    top: 64px;
-}
-
-.sidenav .divider {
-    margin: 0px;
-}
-
-#report-icon {
-    color: #ee6e73;
-}
-
-#ok-icon {
-    color: #26a69a;
-}
+from aixm_graph.utils import make_attrib, get_next_offset, get_prev_offset, filename_is_valid, get_attrib_value
 
 
-.progress {
-    margin: 0px;
-}
+@pytest.mark.parametrize('name, value, ns, expected_attrib', [
+    ('name', 'value', 'ns', {'{ns}{name}': 'value'})
+])
+def test_make_attrib(name, value, ns, expected_attrib):
+    expected_attrib == make_attrib(name, value, ns)
 
-#progress-text {
-    color: white;
-    background-color: cadetblue;
-}
 
-table#node-tooltip > td {
-    padding: 0px;
-}
+@pytest.mark.parametrize('offset, limit, size, expected_next_offset', [
+    (0, 5, 10, 5),
+    (0, 5, 5, None),
+])
+def test_get_next_offset(offset, limit, size, expected_next_offset):
+    assert expected_next_offset == get_next_offset(offset, limit, size)
 
-#dropdown-aixm-datasets {
-    min-width: 400px;
-}
 
-.input-field {
-    margin-bottom: 0px;
-}
+@pytest.mark.parametrize('offset, limit, size, expected_prev_offset', [
+    (0, 5, 10, None),
+    (5, 5, 10, 0),
+])
+def test_get_prev_offset(offset, limit, size, expected_prev_offset):
+    assert expected_prev_offset == get_prev_offset(offset, limit, size)
 
-.graph-loader {
-    margin-left: 45%;
-}
 
-#associations-select {
-    position: absolute;
-    left: 400px;
-}
+@pytest.mark.parametrize('filename, is_valid', [
+    ('invalid', False),
+    ('nodotxml', False),
+    ('invalid.pdf', False),
+    ('valid.xml', True),
+])
+def test_filename_is_valid(filename, is_valid):
+    assert is_valid == filename_is_valid(filename)
 
-#associations-select li{
-    padding-left: 20px;
-}
 
-.vis-active:focus {
-    outline: none;
-}
+@pytest.mark.parametrize('attribs, name, ns, value_prefixes, expected_value', [
+    ({'{ns}attr': 'value'}, 'attr', 'ns', None, 'value'),
+    ({'{ns}attr': '#value'}, 'attr', 'ns', ['#'], 'value'),
+    ({'{ns}attr': '#value'}, 'invalid_attr', 'ns', ['#'], None),
+])
+def test_get_attrib_value(attribs, name, ns, value_prefixes, expected_value):
+    assert expected_value == get_attrib_value(attribs, name, ns, value_prefixes)

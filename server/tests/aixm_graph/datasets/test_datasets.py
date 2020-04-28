@@ -1,4 +1,5 @@
-/* Copyright 2020 EUROCONTROL
+"""
+Copyright 2020 EUROCONTROL
 ==========================================
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -26,99 +27,62 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Editorial note: this license is an instance of the BSD license template as provided by the Open
 Source Initiative: http://opensource.org/licenses/BSD-3-Clause
 
-Details on EUROCONTROL: http://www.eurocontrol.int */
+Details on EUROCONTROL: http://www.eurocontrol.int
+"""
 
-html, body/*, and all other map parent selectors*/ {
-height: 100%;
-width: 100%;
-}
+__author__ = "EUROCONTROL (SWIM)"
 
-#graph {
-    border: 1px solid lightgray;
-    height: 100%;
-    width: 100%;
-}
+import os
 
-.sidenav {
-    width: 380px;
-}
+import pytest
+from pkg_resources import resource_filename
 
-.graph-area {
-    height: 100%;
-}
+from aixm_graph.datasets.datasets import AIXMDataSet
 
-.graph.col {
-    padding-left: 0px;
-}
-
-nav .brand-logo {
-    font-size: 1.5em;
-    padding-left: 15px;
-}
-
-.row {
-    margin-bottom: 0px;
-}
-
-.sidenav li > a {
-    font-size: 12px;
-}
-
-.sidenav li > a > i.material-icons{
-    margin: 0 10px 0 0;
-}
-
-.sidenav {
-    top: 64px;
-}
-
-.sidenav .divider {
-    margin: 0px;
-}
-
-#report-icon {
-    color: #ee6e73;
-}
-
-#ok-icon {
-    color: #26a69a;
-}
+TEST_FILENAME = 'dataset.xml'
+SKELETON_FILENAME = 'skeleton.xml'
 
 
-.progress {
-    margin: 0px;
-}
+@pytest.fixture
+def test_filepath():
+    return resource_filename(__name__, f'../../static/{TEST_FILENAME}')
 
-#progress-text {
-    color: white;
-    background-color: cadetblue;
-}
 
-table#node-tooltip > td {
-    padding: 0px;
-}
+@pytest.fixture
+def test_skeleton_path():
+    return resource_filename(__name__, f'../../static/{SKELETON_FILENAME}')
 
-#dropdown-aixm-datasets {
-    min-width: 400px;
-}
 
-.input-field {
-    margin-bottom: 0px;
-}
+def test_dataset__name(test_filepath):
+    dataset = AIXMDataSet(test_filepath)
 
-.graph-loader {
-    margin-left: 45%;
-}
+    assert TEST_FILENAME == dataset.name
 
-#associations-select {
-    position: absolute;
-    left: 400px;
-}
 
-#associations-select li{
-    padding-left: 20px;
-}
+def test_dataset__process__features_are_retrieved(test_filepath, test_config):
+    dataset = AIXMDataSet(test_filepath)
 
-.vis-active:focus {
-    outline: none;
-}
+    dataset.process()
+
+    features = list(dataset.features)
+
+    assert len(features) > 0
+
+    for feature_name in test_config['FEATURES']:
+        assert feature_name in [f.name for f in features]
+
+
+def test_dataset__generate_skeleton(test_filepath, test_skeleton_path, test_config):
+    dataset = AIXMDataSet(test_filepath)
+
+    dataset.process()
+
+    skeleton_path = dataset.generate_skeleton()
+
+    assert os.path.exists(skeleton_path)
+
+    with open(skeleton_path, 'r') as skeleton:
+        with open(test_skeleton_path, 'r') as test_skeleton:
+            assert skeleton.read() == test_skeleton.read()
+
+    os.remove(skeleton_path)
