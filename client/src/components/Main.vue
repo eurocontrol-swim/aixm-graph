@@ -34,7 +34,9 @@
     <navbar></navbar>
     <dataset></dataset>
     <graph></graph>
+    <alert></alert>
   </div>
+
 </template>
 
 <script>
@@ -42,6 +44,7 @@ import M from 'materialize-css';
 import Navbar from './navbar/Navbar.vue';
 import Dataset from './sidebar/Dataset.vue';
 import Graph from './graph/Graph.vue';
+import Alert from './Alert.vue';
 
 
 export default {
@@ -50,6 +53,7 @@ export default {
     Navbar,
     Dataset,
     Graph,
+    Alert,
   },
   methods: {
     initMateriazeComponents() {
@@ -74,4 +78,5 @@ export default {
 #main {
   height: 100%;
 }
+
 </style>
