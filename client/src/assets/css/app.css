@@ -110,15 +110,6 @@ table#node-tooltip > td {
     margin-left: 45%;
 }
 
-#associations-select {
-    position: absolute;
-    left: 400px;
-}
-
-#associations-select li{
-    padding-left: 20px;
-}
-
 .vis-active:focus {
     outline: none;
 }
