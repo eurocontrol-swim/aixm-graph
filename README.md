@@ -8,7 +8,7 @@ the features and how they connect to each other in the specific dataset.
 At this [link](https://aixm-graph.herokuapp.com/#!) you can have a look at a partial (no upload functionality) demo of 
 the tool and play around with two preloaded AIXM datasets.
 
-## Installing / Getting started
+## Installation
 
 The project can get easily up and running in any machine regardless the running OS with the help of 
 [Docker](https://www.docker.com/).
@@ -21,7 +21,16 @@ The project can get easily up and running in any machine regardless the running 
 >           [post-installation actions](https://docs.docker.com/engine/install/linux-postinstall/):  
 > - Windows users
 >     - [Docker Toolbox on Windows](https://docs.docker.com/toolbox/toolbox_install_windows/) (which installs all the
->   required tools and runs the Docker Engine via VirtualBox)
+>       required tools and runs the Docker Engine via VirtualBox)
+>     - Since Docker runs via VirtualBox, the various app/server sites involved in this demo will 
+>       not be able to be accessed from your host machine unless you apply some port forwarding 
+>       rules. You may find instructions about how to do it 
+>       [here](https://www.simplified.guide/virtualbox/port-forwarding). 
+>       The  rule to apply is:
+>        
+>        | Name | Host port | Guest Port |
+>        |---|---|---|
+>        | aixm-graph | 3000 | 3000 |
 
 
 Steps:
@@ -45,12 +54,18 @@ Run the container
 docker run -d --name aixm_graph -e "PORT=8765" -p 3000:8765 aixm-graph:latest
 ```
 
+Make sure that the container is up and running with `docker ps`. The output should look like: 
+```shell script 
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                            NAMES
+b1c6b3cb3e2b        aixm-graph:latest   "/bin/sh -c 'gunicor…"   2 seconds ago       Up 1 second         80/tcp, 0.0.0.0:3000->8765/tcp   aixm_graph
+```
+
 
 After the steps are successfully completed the project will be available at 
 [http://localhost:3000](http://localhost:3000) 
 
 
-## Developing
+## For developers
 
 The project is divided in two parts: server and client. 
 
@@ -117,7 +132,7 @@ npm run serve
 The client should now be available at [http://localhost:8080](http://localhost:8080)
 
 
-## Deploying / Publishing
+### Deploying / Publishing
 Since the project is packaged with docker there are many options of easily deploying it in the cloud. On of them is 
 [Heroku](https://heroku.com) and below you can find the steps about how to achieve this with the 
 [Container Registry & Runtime](https://devcenter.heroku.com/articles/container-registry-and-runtime) method:
