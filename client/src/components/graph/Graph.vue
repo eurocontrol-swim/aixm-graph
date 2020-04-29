@@ -33,10 +33,6 @@
   <div id="graph-area">
     <div class="row valign-wrapper" :class="{hide: featureTypeName === null}">
 
-      <div class="col s6">
-        <p v-html="summary"></p>
-      </div>
-
       <div class="col s2">
         <div class="input-field" :class="{hide: filterHidden}">
           <input type="text"
@@ -61,11 +57,15 @@
         </div>
       </div>
 
-      <div class="col s1">
-        <p class="right pagination-summary">{{ paginationSummary }}</p>
+      <div class="col s8">
+        <p v-html="summary"></p>
       </div>
 
-      <div class="col s1">
+      <!-- <div class="col s2">
+        <p class="right pagination-summary">{{ paginationSummary }}</p>
+      </div> -->
+
+      <!-- <div class="col s1">
         <div :class="{hide: singleFeature !== null}">
           <a class="waves-effect waves-light btn btn-small red lighten-2 pagination-button"
              @click="getPrevPage" :disabled="prevOffset === null">
@@ -76,7 +76,7 @@
             <i class="material-icons">chevron_right</i>
           </a>
         </div>
-      </div>
+      </div> -->
     </div>
 
         <!--          Graph area-->
@@ -85,6 +85,21 @@
         <div class="indeterminate"></div>
       </div>
       <div class="col s12 valign-wrapper" id="graph" ref="graph"></div>
+
+      <div id="pagination" :class="{hide: singleFeature !== null}">
+        <p class="left pagination-summary">{{ paginationSummary }}</p>
+        <a class="waves-effect waves-light btn btn-small red lighten-2 pagination-button"
+            @click="getPrevPage" :disabled="prevOffset === null">
+          <i class="material-icons">chevron_left</i>
+        </a>
+        <a class="waves-effect waves-light btn btn-small red lighten-2 right pagination-button"
+            @click="getNextPage" :disabled="nextOffset === null">
+          <i class="material-icons">chevron_right</i>
+        </a>
+
+      </div>
+
+      <!-- <div><a class="btn btn-small" id="pagination">alex</a></div> -->
       <div class="collection" id="associations-select" :class="{hide: featureTypeName === null}">
         <a href="#!" class="collection-item active" @click="onClickAllAssociations">
           <i class="material-icons left">{{ allAssociationsIcon }}</i>
@@ -400,6 +415,7 @@ export default {
 
 .graph-area {
     height: 100%;
+    position: relative;
 }
 
 #graph-area {
@@ -416,7 +432,7 @@ export default {
 
 #associations-select {
     position: absolute;
-    left: 400px;
+    left: 20px;
 }
 
 #associations-select li{
@@ -432,11 +448,13 @@ export default {
   left: -9999px;
 }
 
-.btn.pagination-button {
-  padding: 0 5px;
+#pagination {
+  position: absolute;
+  top: 8px;
+  right: 20px;
 }
 
-p.pagination-summary {
-  font-size: 13px;
+a.pagination-button {
+  margin-left: 10px;
 }
 </style>
