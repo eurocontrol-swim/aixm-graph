@@ -103,7 +103,6 @@ import FeatureType from './FeatureType.vue';
 import FeatureTypeModel from '../models/FeatureType';
 import DatasetModel from '../models/Dataset';
 import * as serverApi from '../server-api';
-import * as alert from '../alert';
 
 export default {
   name: 'Dataset',
@@ -127,6 +126,9 @@ export default {
       this.dataset = dataset;
       this.loaderText = 'Processing...';
       this.getFeatureTypes();
+    },
+    onDatasetUploadFailed() {
+      this.loaderText = '';
     },
     onDatasetSelected(dataset) {
       this.dataset = dataset;
@@ -154,7 +156,7 @@ export default {
           this.loaderText = '';
           // eslint-disable-next-line
           console.error(error.response);
-          alert.showError('Failed to process dataset!');
+          EventBus.$emit('alert', 'Failed to process dataset');
         });
     },
   },
@@ -184,6 +186,7 @@ export default {
   mounted() {
     EventBus.$on('dataset-uploading', () => this.onDatasetUploading());
     EventBus.$on('dataset-uploaded', (dataset) => this.onDatasetUploaded(dataset));
+    EventBus.$on('dataset-upload-failed', () => this.onDatasetUploadFailed());
     EventBus.$on('dataset-selected', (dataset) => this.onDatasetSelected(dataset));
   },
 };

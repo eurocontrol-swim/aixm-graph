@@ -116,7 +116,6 @@ import Vue from 'vue';
 import EventBus from '../event-bus';
 import GraphModel from './GraphModel';
 import * as serverApi from '../server-api';
-import * as alert from '../alert';
 
 /*
 NOTE: We keep the graphModel out of the component scope because of differences in vue.js and vis.js
@@ -198,7 +197,7 @@ export default {
           this.loadingGraph = false;
           // eslint-disable-next-line
           console.error(error.response);
-          alert.showError('Failed to get features!');
+          EventBus.$emit('alert', `Failed to get ${this.featureTypeName} features graph`);
         });
     },
     registerAssociations() {
@@ -233,7 +232,7 @@ export default {
           this.loadingGraph = false;
           // eslint-disable-next-line
           console.error(error);
-          alert.showError('Failed to expand graph!');
+          EventBus.$emit('alert', 'Failed to expand graph');
         });
     },
     onRightClickGraphFeature(params) {
@@ -261,7 +260,7 @@ export default {
           this.loadingGraph = false;
           // eslint-disable-next-line
           console.error(error.response);
-          alert.showError('Failed to fetch feature graph!');
+          EventBus.$emit('alert', `Failed to fetch ${featureName}:${featureId} graph`);
         });
     },
     onHoverFeatureNode(params) {
@@ -331,7 +330,7 @@ export default {
           } catch (error) {
           // eslint-disable-next-line
             console.error(error);
-            alert.showError('Failed to update associations!');
+            EventBus.$emit('alert', 'Failed to update associations');
           }
           graphModel.removeNodeById(node.id);
         });
