@@ -32,7 +32,7 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-from typing import Optional, Dict, List, Any
+from typing import Optional, Dict, List, Any, Iterable
 
 import yaml
 
@@ -40,7 +40,7 @@ import yaml
 def get_attrib_value(attribs: Dict[str, str],
                      name: str,
                      ns: str,
-                     value_prefixes: Optional[List[str]] = None) -> str:
+                     value_prefixes: Optional[Iterable[str]] = None) -> str:
     """
     Retrieves the value of an attribute from a dict of `etree.Element` attributes based on its namd
     and namespace. The value could be prefixed by any string so it has to be provided in order to
@@ -66,7 +66,7 @@ def get_attrib_value(attribs: Dict[str, str],
     return result
 
 
-def make_attrib(name, value, ns) -> str:
+def make_attrib(name: str, value: str, ns: str) -> Dict[str, str]:
     """
     Creates a dict entry to be added im the attribs of a `etree.Element`
     :param name:

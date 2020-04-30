@@ -41,8 +41,7 @@ from aixm_graph.datasets.fields import Field, XLinkField, Extension
 from aixm_graph.utils import get_attrib_value, make_attrib
 
 
-class Feature(Field):
-    config = {}
+class AIXMFeatureTimeSlice(Field):
 
     def __init__(self, *args, **kwargs):
         """
@@ -53,7 +52,7 @@ class Feature(Field):
         """
         super().__init__(*args, **kwargs)
 
-        self.id = None
+        self.version = None
 
         self._data_fields: List[Field] = []
         self._xlinks: List[XLinkField] = []
@@ -75,12 +74,12 @@ class Feature(Field):
         return self._xlinks
 
     @property
-    def extensions(self) -> List[Extension]:
-        return self._extensions
-
-    @property
     def associations(self) -> List[Field]:
         return self.xlinks + self.extensions
+
+    @property
+    def extensions(self) -> List[Extension]:
+        return self._extensions
 
     @property
     def has_broken_xlinks(self) -> bool:
@@ -90,46 +89,48 @@ class Feature(Field):
         return any(filter_key.lower() in field.text.lower() for field in self.data_fields)
 
 
-class AIXMFeature(Feature):
+class AIXMFeature(Field):
+    config = {}
 
     def __init__(self, *args, **kwargs):
         """
         Represents a feature element as it is found in an AIXM dataset. The information is
-        encaptulated in one or more time slices which serve as different versions of the feature.
+        encapsulated in one or more time slices which serve as different versions of the feature.
         """
         super().__init__(*args, **kwargs)
 
         # the time slice of an AIXM feature is treated as a feature version of it, thus a feature
         # keeps all its versions in a dict
-        self.time_slices: Dict[str, Feature] = {}
-        self.gml_identifier = None
+        self.time_slices: List[AIXMFeatureTimeSlice] = []
+        self.gml_id = None
+        self.identifier = None
 
     @property
     def data_fields(self) -> List[Field]:
-        return [field for ts in self.time_slices.values() for field in ts.data_fields]
+        return [field for ts in self.time_slices for field in ts.data_fields]
 
     @property
     def xlinks(self) -> List[XLinkField]:
-        return [xlink for ts in self.time_slices.values() for xlink in ts.xlinks]
+        return [xlink for ts in self.time_slices for xlink in ts.xlinks]
 
     @property
     def extensions(self) -> List[Extension]:
-        return [extension for ts in self.time_slices.values() for extension in ts.extensions]
+        return [extension for ts in self.time_slices for extension in ts.extensions]
 
     @property
     def has_broken_xlinks(self) -> bool:
-        return any(ts.has_broken_xlinks for _, ts in self.time_slices.items())
+        return any(ts.has_broken_xlinks for ts in self.time_slices)
 
-    def add_extension(self, extension: Extension):
+    def add_extension(self, extension: Extension) -> None:
         """
-        Adds the extension to all the versions (time slices) of self
+        Adds the extension to all of its time slices
         :param extension:
         """
-        for _, ts in self.time_slices.items():
+        for ts in self.time_slices:
             ts.add_extension(extension)
 
     def matches_field_value(self, filter_key: str) -> bool:
-        return any(ts.matches_field_value(filter_key) for _, ts in self.time_slices.items())
+        return any(ts.matches_field_value(filter_key) for ts in self.time_slices)
 
     def to_lxml(self, nsmap: Dict[str, str]) -> etree.Element:
         """
@@ -139,7 +140,7 @@ class AIXMFeature(Feature):
         """
         root = etree.Element(f"{{{nsmap[self.prefix]}}}{self.name}",
                              attrib=make_attrib(name='id',
-                                                value=f"urn:uuid:{self.id}",
+                                                value=f"uuid.{self.identifier}",
                                                 ns=nsmap['gml']),
                              nsmap=nsmap)
 
@@ -147,10 +148,10 @@ class AIXMFeature(Feature):
                                    attrib=make_attrib(name='codeSpace', value="urn:uuid:", ns=""),
                                    nsmap=nsmap)
 
-        identifier.text = self.gml_identifier
+        identifier.text = self.gml_id
         root.append(identifier)
 
-        for ts in self.time_slices.values():
+        for ts in self.time_slices:
             ts_root = ts.to_lxml(nsmap)
 
             for field in (ts.data_fields + ts.xlinks):
@@ -173,52 +174,18 @@ class AIXMFeature(Feature):
         return root
 
 
-FeatureType = TypeVar('FeatureType', bound=Feature)
-
-
-class AIXMFeatureFactory:
-
-    @staticmethod
-    def feature_from_sequence_element(seq_element: etree.Element) -> AIXMFeature:
-        """
-        Creates an AIXMFeature from a sequence element as it is read from the parser.
-
-        :param seq_element: For AIXM datasets the sequence element is `hasMember`
-        """
-
-        # in AIXM files the feature is the first child of the <hasMember> sequence element
-        feature_element = seq_element[0]
-
-        feature_class = AIXMFeatureClassRegistry.get_feature_class(QName(feature_element).localname)
-
-        feature = feature_class.from_lxml(feature_element)
-
-        feature.id = feature_element.find('./gml:identifier', feature_element.nsmap).text
-        feature.gml_identifier = get_attrib_value(feature_element.attrib,
-                                                  name='id',
-                                                  ns=feature_element.nsmap["gml"],
-                                                  value_prefixes=['uuid.'])
-
-        time_slice_elements = feature_element.findall(AIXMFeatureFactory.get_time_slice_xpath(feature),
-                                                      namespaces=feature_element.nsmap)
-
-        for element in time_slice_elements:
-            version, time_slice = AIXMFeatureFactory.time_slice_from_element(
-                element=element, field_names=feature.config['fields']['names'])
-            feature.time_slices[version] = time_slice
-
-        return feature
+class AIXMFeatureTimeSliceFactory:
 
     @staticmethod
     def time_slice_from_element(element: etree.Element,
-                                field_names: List[str]) -> Tuple[str, Feature]:
+                                field_names: List[str]) -> AIXMFeatureTimeSlice:
         """
 
         :param field_names:
         :param element:
         :return:
         """
-        time_slice = Feature.from_lxml(element)
+        time_slice = AIXMFeatureTimeSlice.from_lxml(element)
 
         time_slice._data_fields = [
             Field.from_lxml(child)
@@ -228,23 +195,15 @@ class AIXMFeatureFactory:
 
         time_slice._xlinks = [
             XLinkField.from_lxml(
-                AIXMFeatureFactory.process_xlink_element(xlink=xlink, ts_element=element)
+                AIXMFeatureTimeSliceFactory.process_xlink_element(xlink=xlink, ts_element=element)
             )
             for xlink in element.findall('.//*[@xlink:href]', namespaces=element.nsmap)
         ]
 
-        version = AIXMFeatureFactory.get_time_slice_element_version(element, time_slice.prefix)
+        time_slice.version = AIXMFeatureTimeSliceFactory.get_time_slice_element_version(
+            element, time_slice.prefix)
 
-        return version, time_slice
-
-    @staticmethod
-    def get_time_slice_xpath(feature: AIXMFeature) -> str:
-        """
-
-        :param feature:
-        :return:
-        """
-        return f'./{feature.prefix}:timeSlice/{feature.prefix}:{feature.name}TimeSlice'
+        return time_slice
 
     @staticmethod
     def get_time_slice_element_version(element: etree.Element, prefix: str) -> str:
@@ -278,7 +237,7 @@ class AIXMFeatureFactory:
         :return:
         """
         if xlink.getparent() != ts_element:
-            xlink = AIXMFeatureFactory.process_nested_xlink_element(xlink)
+            xlink = AIXMFeatureTimeSliceFactory.process_nested_xlink_element(xlink)
 
         return xlink
 
@@ -291,7 +250,7 @@ class AIXMFeatureFactory:
         :return:
         """
         if QName(xlink).localname.startswith('the'):
-            xlink = AIXMFeatureFactory.process_associated_xlink(xlink)
+            xlink = AIXMFeatureTimeSliceFactory.process_associated_xlink(xlink)
 
         return xlink
 
@@ -332,12 +291,53 @@ class AIXMFeatureFactory:
         return etree.Element("_".join(tags), attrib=xlink.attrib, nsmap=xlink.nsmap)
 
 
+class AIXMFeatureFactory:
+
+    @staticmethod
+    def feature_from_sequence_element(seq_element: etree.Element) -> AIXMFeature:
+        """
+        Creates an AIXMFeature from a sequence element as it is read from the parser.
+
+        :param seq_element: For AIXM datasets the sequence element is `hasMember`
+        """
+
+        # in AIXM files the feature is the first child of the <hasMember> sequence element
+        feature_element = seq_element[0]
+
+        feature_class = AIXMFeatureClassRegistry.get_feature_class(QName(feature_element).localname)
+
+        feature = feature_class.from_lxml(feature_element)
+
+        feature.identifier = feature_element.find('./gml:identifier', feature_element.nsmap).text
+        feature.gml_id = get_attrib_value(feature_element.attrib,
+                                          name='id',
+                                          ns=feature_element.nsmap["gml"],
+                                          value_prefixes=['uuid.'])
+
+        time_slice_xpath = f'./{feature.prefix}:timeSlice/{feature.prefix}:{feature.name}TimeSlice'
+
+        time_slice_elements = feature_element.findall(time_slice_xpath,
+                                                      namespaces=feature_element.nsmap)
+
+        feature.time_slices = [
+            AIXMFeatureTimeSliceFactory.time_slice_from_element(
+                element=element,
+                field_names=feature.config['fields']['names'])
+            for element in time_slice_elements
+        ]
+
+        return feature
+
+
+AIXMFeatureClass = TypeVar('AIXMFeatureClass', bound=AIXMFeature)
+
+
 class AIXMFeatureClassRegistry:
-    """It parses the config file and creates classes for each feature type encapsulating the values
-       of the config file for later use.
+    """It parses the config feature entries  and creates classes for each feature type encapsulating
+       the values of the config file for later use.
     """
     feature_config_attrs = ('abbrev', 'fields', 'color', 'shape',)
-    feature_classes: Dict[str, FeatureType] = {}
+    feature_classes: Dict[str, AIXMFeatureClass] = {}
 
     @classmethod
     def load_feature_classes(cls, config: Dict) -> None:

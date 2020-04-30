@@ -1,7 +1,7 @@
-<?xml version='1.0' encoding='ASCII'?>
+<?xml version='1.0' encoding='utf-8'?>
 <message:AIXMBasicMessage xmlns:mxia="http://www.aixm.aero/schema/5.1.1/extensions/mxia" xmlns:message="http://www.aixm.aero/schema/5.1.1/message" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gss="http://www.isotc211.org/2005/gss" xmlns:aixm="http://www.aixm.aero/schema/5.1.1" xmlns:gsr="http://www.isotc211.org/2005/gsr" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:event="http://www.aixm.aero/schema/5.1.1/event" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <message:hasMember>
-    <aixm:AngleIndication gml:id="urn:uuid:feea9acc-b18f-45e0-bf88-c0f001ea4847">
+    <aixm:AngleIndication gml:id="uuid.feea9acc-b18f-45e0-bf88-c0f001ea4847">
       <gml:identifier codeSpace="urn:uuid:">feea9acc-b18f-45e0-bf88-c0f001ea4847</gml:identifier>
       <aixm:timeSlice>
         <aixm:AngleIndicationTimeSlice gml:id="AIN_WOB_015">
@@ -10,7 +10,7 @@
     </aixm:AngleIndication>
   </message:hasMember>
   <message:hasMember>
-    <aixm:DesignatedPoint gml:id="urn:uuid:9fcb360c-6933-46d6-9c85-a337202efe70">
+    <aixm:DesignatedPoint gml:id="uuid.9fcb360c-6933-46d6-9c85-a337202efe70">
       <gml:identifier codeSpace="urn:uuid:">9fcb360c-6933-46d6-9c85-a337202efe70</gml:identifier>
       <aixm:timeSlice>
         <aixm:DesignatedPointTimeSlice gml:id="DPN_ABOLA">
@@ -19,7 +19,7 @@
     </aixm:DesignatedPoint>
   </message:hasMember>
   <message:hasMember>
-    <aixm:AirportHeliport gml:id="urn:uuid:dd062d88-3e64-4a5d-bebd-89476db9ebea">
+    <aixm:AirportHeliport gml:id="uuid.dd062d88-3e64-4a5d-bebd-89476db9ebea">
       <gml:identifier codeSpace="urn:uuid:">dd062d88-3e64-4a5d-bebd-89476db9ebea</gml:identifier>
       <aixm:timeSlice>
         <aixm:AirportHeliportTimeSlice gml:id="AHP_EADH">
@@ -28,7 +28,7 @@
     </aixm:AirportHeliport>
   </message:hasMember>
   <message:hasMember>
-    <aixm:OrganisationAuthority gml:id="urn:uuid:6384a4e0-8497-4f83-8eaa-d73ef549d90e">
+    <aixm:OrganisationAuthority gml:id="uuid.6384a4e0-8497-4f83-8eaa-d73ef549d90e">
       <gml:identifier codeSpace="urn:uuid:">6384a4e0-8497-4f83-8eaa-d73ef549d90e</gml:identifier>
       <aixm:timeSlice>
         <aixm:OrganisationAuthorityTimeSlice gml:id="DONLONSTATE">
@@ -37,7 +37,7 @@
     </aixm:OrganisationAuthority>
   </message:hasMember>
   <message:hasMember>
-    <aixm:SpecialDate gml:id="urn:uuid:20f19a35-401b-45a6-a54e-084122a4cf80">
+    <aixm:SpecialDate gml:id="uuid.20f19a35-401b-45a6-a54e-084122a4cf80">
       <gml:identifier codeSpace="urn:uuid:">20f19a35-401b-45a6-a54e-084122a4cf80</gml:identifier>
       <aixm:timeSlice>
         <aixm:SpecialDateTimeSlice gml:id="HOLIDAYSFORDONLONGOODFRIDAY2014">

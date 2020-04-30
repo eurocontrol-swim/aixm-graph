@@ -57,7 +57,7 @@ def test_get_next_offset(offset, limit, size, expected_next_offset):
     (5, 5, 10, 0),
 ])
 def test_get_prev_offset(offset, limit, size, expected_prev_offset):
-    assert expected_prev_offset == get_prev_offset(offset, limit, size)
+    assert expected_prev_offset == get_prev_offset(offset, limit)
 
 
 @pytest.mark.parametrize('filename, is_valid', [
