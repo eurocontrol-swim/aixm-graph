@@ -80,7 +80,7 @@ class Field:
                    attrib=element.attrib,
                    prefix=element.prefix)
 
-    def to_lxml(self, nsmap: Dict[str, str]) -> etree.Element:
+    def to_lxml(self, nsmap: Dict[str, str], **kwargs) -> etree.Element:
         """
 
         :param nsmap: the nsmap of the dataset
@@ -131,43 +131,6 @@ class XLinkField(Field):
                 self.attrib, name='title', ns=XLINK_NS)
 
         return self._title or ''
-
-
-class LocalField(Field):
-
-    def __init__(self, **kwargs) -> None:
-        """
-        Holds info for elements with gml:id attributes
-        :param kwargs:
-        """
-        super().__init__(**kwargs)
-        self._id = None
-
-    @property
-    def id(self) -> str:
-        if self._id is None:
-            self._id = get_attrib_value(self.attrib, name='id', ns=GML_NS)
-
-        return self._id
-
-    @classmethod
-    def from_lxml(cls, element: etree.Element):
-        """
-
-        :param element:
-        :return:
-        """
-        text = element.text
-        if (text is None or not text.strip()) and len(element) > 0:
-            text = "\n".join([
-                etree.tostring(element_without_namespace(child)).decode('utf-8')
-                for child in element
-            ])
-
-        return cls(name=QName(element).localname,
-                   text=text,
-                   attrib=element.attrib,
-                   prefix=element.prefix)
 
 
 class Extension(Field):

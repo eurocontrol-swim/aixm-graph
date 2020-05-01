@@ -39,7 +39,7 @@ from typing import Optional, Dict
 
 from lxml import etree
 
-from aixm_graph import EXTENSION_PREFIX, EXTENSION_NS
+from aixm_graph import EXTENSION_PREFIX, EXTENSION_NS, GML_NS
 from aixm_graph.datasets.features import AIXMFeatureFactory, AIXMFeature
 from aixm_graph.graph import Graph, Node, Edge
 
@@ -68,7 +68,7 @@ class AIXMDataSet:
         """The below dicts serve as indices for faster access."""
         self._features_per_gml_id: Dict[str, AIXMFeature] = {}
         self._features_per_identifier: Dict[str, AIXMFeature] = {}
-        self._features_per_local_field_id: Dict[str, AIXMFeature] = {}
+        self._features_per_gml_property_id: Dict[str, AIXMFeature] = {}
 
         """Holds the namespace of the sequence element, i.e. `hasMember` to be used in skeleton
            generation
@@ -125,7 +125,7 @@ class AIXMDataSet:
         """
         return self._features_per_gml_id.get(feature_id) \
             or self._features_per_identifier.get(feature_id) \
-            or self._features_per_local_field_id.get(feature_id)
+            or self._features_per_gml_property_id.get(feature_id)
 
     def filter_features(self,
                         name: str,
@@ -205,8 +205,8 @@ class AIXMDataSet:
         if feature.identifier is not None:
             self._features_per_identifier[feature.identifier] = feature
 
-        for local_field in feature.local_fields:
-            self._features_per_local_field_id[local_field.id] = feature
+        for gml in feature.gml_properties:
+            self._features_per_gml_property_id[gml.id] = feature
 
     def _create_reverse_associations(self):
         """
@@ -252,6 +252,22 @@ class AIXMDataSet:
 
         return f"{filename}_skeleton{ext}"
 
+    def get_gml_element(self, element_name: str, element_id: str):
+        """
+
+        :param element_name:
+        :param element_id:
+        :return:
+        """
+        context = etree.iterparse(self._filepath, tag=f'{{*}}{element_name}', events=('end',))
+
+        for _, element in context:
+            if element.attrib.get(f'{{{GML_NS}}}id') == element_id:
+                del context
+                return element
+
+        del context
+
     def generate_skeleton(self) -> str:
         """
         Skeleton is a subset of the original dataset including only the information that was
@@ -266,7 +282,7 @@ class AIXMDataSet:
         for feature in self.features:
             member_el = etree.Element(f'{{{self._sequence_ns}}}{self.sequence_tag}',
                                       nsmap=self._ns_map)
-            feature_el = feature.to_lxml(self._ns_map)
+            feature_el = feature.to_lxml(self._ns_map, gml_prop_callback=self.get_gml_element)
 
             member_el.append(feature_el)
             root.append(member_el)

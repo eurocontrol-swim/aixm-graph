@@ -32,14 +32,23 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-from typing import Dict, Tuple, List, Type, TypeVar
+from collections import namedtuple
+from typing import Dict, List, Type, TypeVar, Callable, Optional
 
 from lxml import etree
 from lxml.etree import QName
 
-from aixm_graph import EXTENSION_PREFIX
-from aixm_graph.datasets.fields import Field, XLinkField, Extension, LocalField
+from aixm_graph import EXTENSION_PREFIX, GML_NS
+from aixm_graph.datasets.fields import Field, XLinkField, Extension
 from aixm_graph.utils import get_attrib_value, make_attrib
+
+
+class GMLProperty:
+
+    def __init__(self, id: str, name: str, serializable: bool = False):
+        self.id = id
+        self.name = name
+        self.serializable = serializable
 
 
 class AIXMFeatureTimeSlice(Field):
@@ -56,9 +65,9 @@ class AIXMFeatureTimeSlice(Field):
         self.version = None
 
         self._data_fields: List[Field] = []
-        self._local_fields: List[LocalField] = []
         self._xlinks: List[XLinkField] = []
         self._extensions: List[Extension] = []
+        self._gml_properties: List[GMLProperty] = []
 
     def add_extension(self, extension: Extension):
         """
@@ -76,8 +85,8 @@ class AIXMFeatureTimeSlice(Field):
         return self._xlinks
 
     @property
-    def local_fields(self) -> List[LocalField]:
-        return self._local_fields
+    def gml_properties(self) -> List[GMLProperty]:
+        return self._gml_properties
 
     @property
     def associations(self) -> List[Field]:
@@ -94,8 +103,6 @@ class AIXMFeatureTimeSlice(Field):
     def matches_field_value(self, filter_key: str) -> bool:
         return any(filter_key.lower() in field.text.lower() for field in self.data_fields)
 
-    def promote_local_to_data(self, local_field: LocalField):
-        self._data_fields.append(local_field)
 
 class AIXMFeature(Field):
     config = {}
@@ -126,8 +133,8 @@ class AIXMFeature(Field):
         return [xlink for ts in self.time_slices for xlink in ts.xlinks]
 
     @property
-    def local_fields(self) -> List[LocalField]:
-        return [local for ts in self.time_slices for local in ts.local_fields]
+    def gml_properties(self) -> List[GMLProperty]:
+        return [gml for ts in self.time_slices for gml in ts.gml_properties]
 
     @property
     def extensions(self) -> List[Extension]:
@@ -151,14 +158,16 @@ class AIXMFeature(Field):
         for ts in self.time_slices:
             ts.add_extension(extension)
 
-        for ts in self.time_slices:
-            for lf in ts.local_fields:
-                if xlink.href == lf.id:
-                    ts.promote_local_to_data(local_field=lf)
+        for gml_prop in self.gml_properties:
+            if gml_prop.id == xlink.href:
+                gml_prop.serializable = True
 
-    def to_lxml(self, nsmap: Dict[str, str]) -> etree.Element:
+    def to_lxml(self,
+                nsmap: Dict[str, str],
+                gml_prop_callback: Optional[Callable] = None, **kwargs) -> etree.Element:
         """
 
+        :param gml_prop_callback:
         :param nsmap:
         :return:
         """
@@ -172,7 +181,7 @@ class AIXMFeature(Field):
                                    attrib=make_attrib(name='codeSpace', value="urn:uuid:", ns=""),
                                    nsmap=nsmap)
 
-        identifier.text = self.id
+        identifier.text = self.identifier
         root.append(identifier)
 
         for ts in self.time_slices:
@@ -180,6 +189,13 @@ class AIXMFeature(Field):
 
             for field in (ts.data_fields + ts.xlinks):
                 ts_root.append(field.to_lxml(nsmap))
+
+            if gml_prop_callback:
+                for gml_prop in ts.gml_properties:
+                    if gml_prop.serializable:
+                        element = gml_prop_callback(element_name=gml_prop.name,
+                                                    element_id=gml_prop.id)
+                        ts_root.append(element)
 
             for extension in ts.extensions:
                 inner_el = extension.to_lxml(nsmap)
@@ -224,9 +240,10 @@ class AIXMFeatureTimeSliceFactory:
             for xlink in element.findall('.//*[@xlink:href]', namespaces=element.nsmap)
         ]
 
-        time_slice._local_fields = [
-            LocalField.from_lxml(local_field)
-            for local_field in element.findall('.//*[@gml:id]', namespaces=element.nsmap)
+        time_slice._gml_properties = [
+            GMLProperty(id=element.attrib[f'{{{GML_NS}}}id'],
+                        name=QName(element).localname)
+            for element in element.findall('.//*[@gml:id]', namespaces=element.nsmap)
         ]
 
         time_slice.version = AIXMFeatureTimeSliceFactory.get_time_slice_element_version(
