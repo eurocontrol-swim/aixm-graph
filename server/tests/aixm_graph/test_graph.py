@@ -45,7 +45,7 @@ def test_node__from_feature():
     time_slice.data_fields.append(Field(name='field', text='text'))
 
     feature = AIXMFeature('name')
-    feature.identifier = '1'
+    feature.id = '1'
     feature.time_slices.append(time_slice)
     feature.config = {
         'abbrev': 'AAA',
@@ -85,7 +85,7 @@ def test_node__to_json():
     time_slice.data_fields.append(Field(name='field', text='text'))
 
     feature = AIXMFeature('name')
-    feature.identifier = '1'
+    feature.id = '1'
     feature.time_slices.append(time_slice)
     feature.config = {
         'abbrev': 'AAA',
@@ -135,7 +135,7 @@ def test_graph__to_json():
     time_slice1.data_fields.append(Field(name='field', text='text'))
 
     feature1 = AIXMFeature('name1')
-    feature1.identifier = '1'
+    feature1.id = '1'
     feature1.time_slices.append(time_slice1)
     feature1.config = {
         'abbrev': 'AAA',
@@ -150,7 +150,7 @@ def test_graph__to_json():
     time_slice2.data_fields.append(Field(name='field', text='text'))
 
     feature2 = AIXMFeature('name2')
-    feature2.identifier = '2'
+    feature2.id = '2'
     feature2.time_slices.append(time_slice2)
     feature2.config = {
         'abbrev': 'AAA',

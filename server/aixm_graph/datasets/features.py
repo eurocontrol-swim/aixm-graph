@@ -37,7 +37,8 @@ from typing import Dict, Tuple, List, Type, TypeVar
 from lxml import etree
 from lxml.etree import QName
 
-from aixm_graph.datasets.fields import Field, XLinkField, Extension
+from aixm_graph import EXTENSION_PREFIX
+from aixm_graph.datasets.fields import Field, XLinkField, Extension, LocalField
 from aixm_graph.utils import get_attrib_value, make_attrib
 
 
@@ -55,6 +56,7 @@ class AIXMFeatureTimeSlice(Field):
         self.version = None
 
         self._data_fields: List[Field] = []
+        self._local_fields: List[LocalField] = []
         self._xlinks: List[XLinkField] = []
         self._extensions: List[Extension] = []
 
@@ -74,6 +76,10 @@ class AIXMFeatureTimeSlice(Field):
         return self._xlinks
 
     @property
+    def local_fields(self) -> List[LocalField]:
+        return self._local_fields
+
+    @property
     def associations(self) -> List[Field]:
         return self.xlinks + self.extensions
 
@@ -88,6 +94,8 @@ class AIXMFeatureTimeSlice(Field):
     def matches_field_value(self, filter_key: str) -> bool:
         return any(filter_key.lower() in field.text.lower() for field in self.data_fields)
 
+    def promote_local_to_data(self, local_field: LocalField):
+        self._data_fields.append(local_field)
 
 class AIXMFeature(Field):
     config = {}
@@ -102,7 +110,11 @@ class AIXMFeature(Field):
         # the time slice of an AIXM feature is treated as a feature version of it, thus a feature
         # keeps all its versions in a dict
         self.time_slices: List[AIXMFeatureTimeSlice] = []
-        self.gml_id = None
+
+        """ the gml:id of the feature"""
+        self.id = None
+
+        """ the identifier of the feature"""
         self.identifier = None
 
     @property
@@ -114,6 +126,10 @@ class AIXMFeature(Field):
         return [xlink for ts in self.time_slices for xlink in ts.xlinks]
 
     @property
+    def local_fields(self) -> List[LocalField]:
+        return [local for ts in self.time_slices for local in ts.local_fields]
+
+    @property
     def extensions(self) -> List[Extension]:
         return [extension for ts in self.time_slices for extension in ts.extensions]
 
@@ -121,16 +137,24 @@ class AIXMFeature(Field):
     def has_broken_xlinks(self) -> bool:
         return any(ts.has_broken_xlinks for ts in self.time_slices)
 
-    def add_extension(self, extension: Extension) -> None:
+    def matches_field_value(self, filter_key: str) -> bool:
+        return any(ts.matches_field_value(filter_key) for ts in self.time_slices)
+
+    def handle_reverse_association(self, xlink: XLinkField, source_feature):
         """
-        Adds the extension to all of its time slices
-        :param extension:
+        :param xlink:
+        :param source_feature: AIXMFeature
         """
+        extension = Extension.create(name=f'the{source_feature.name}',
+                                     href=source_feature.id,
+                                     prefix=EXTENSION_PREFIX)
         for ts in self.time_slices:
             ts.add_extension(extension)
 
-    def matches_field_value(self, filter_key: str) -> bool:
-        return any(ts.matches_field_value(filter_key) for ts in self.time_slices)
+        for ts in self.time_slices:
+            for lf in ts.local_fields:
+                if xlink.href == lf.id:
+                    ts.promote_local_to_data(local_field=lf)
 
     def to_lxml(self, nsmap: Dict[str, str]) -> etree.Element:
         """
@@ -140,7 +164,7 @@ class AIXMFeature(Field):
         """
         root = etree.Element(f"{{{nsmap[self.prefix]}}}{self.name}",
                              attrib=make_attrib(name='id',
-                                                value=f"uuid.{self.identifier}",
+                                                value=f"uuid.{self.id}",
                                                 ns=nsmap['gml']),
                              nsmap=nsmap)
 
@@ -148,7 +172,7 @@ class AIXMFeature(Field):
                                    attrib=make_attrib(name='codeSpace', value="urn:uuid:", ns=""),
                                    nsmap=nsmap)
 
-        identifier.text = self.gml_id
+        identifier.text = self.id
         root.append(identifier)
 
         for ts in self.time_slices:
@@ -198,6 +222,11 @@ class AIXMFeatureTimeSliceFactory:
                 AIXMFeatureTimeSliceFactory.process_xlink_element(xlink=xlink, ts_element=element)
             )
             for xlink in element.findall('.//*[@xlink:href]', namespaces=element.nsmap)
+        ]
+
+        time_slice._local_fields = [
+            LocalField.from_lxml(local_field)
+            for local_field in element.findall('.//*[@gml:id]', namespaces=element.nsmap)
         ]
 
         time_slice.version = AIXMFeatureTimeSliceFactory.get_time_slice_element_version(
@@ -309,10 +338,10 @@ class AIXMFeatureFactory:
         feature = feature_class.from_lxml(feature_element)
 
         feature.identifier = feature_element.find('./gml:identifier', feature_element.nsmap).text
-        feature.gml_id = get_attrib_value(feature_element.attrib,
-                                          name='id',
-                                          ns=feature_element.nsmap["gml"],
-                                          value_prefixes=['uuid.'])
+        feature.id = get_attrib_value(feature_element.attrib,
+                                      name='id',
+                                      ns=feature_element.nsmap["gml"],
+                                      value_prefixes=['uuid.'])
 
         time_slice_xpath = f'./{feature.prefix}:timeSlice/{feature.prefix}:{feature.name}TimeSlice'
 

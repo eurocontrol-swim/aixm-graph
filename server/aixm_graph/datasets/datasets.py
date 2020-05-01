@@ -35,12 +35,12 @@ import os
 from collections import defaultdict
 from functools import reduce
 from itertools import islice
-from typing import Optional, Dict, Generator
+from typing import Optional, Dict
 
 from lxml import etree
 
+from aixm_graph import EXTENSION_PREFIX, EXTENSION_NS
 from aixm_graph.datasets.features import AIXMFeatureFactory, AIXMFeature
-from aixm_graph.datasets.fields import Extension
 from aixm_graph.graph import Graph, Node, Edge
 
 
@@ -48,7 +48,6 @@ class AIXMDataSet:
     feature_factory = AIXMFeatureFactory
     basic_message_tag = 'AIXMBasicMessage'
     sequence_tag = 'hasMember'
-    extension_ns = {'mxia': "http://www.aixm.aero/schema/5.1.1/extensions/mxia"}
 
     def __init__(self, filepath: str) -> None:
         """
@@ -66,16 +65,18 @@ class AIXMDataSet:
 
         self._filepath: str = filepath
 
-        """Holds the features of the dataset per id in a hashtable for faster access"""
-        self._features_dict: Dict[str, AIXMFeature] = {}
+        """The below dicts serve as indices for faster access."""
+        self._features_per_gml_id: Dict[str, AIXMFeature] = {}
+        self._features_per_identifier: Dict[str, AIXMFeature] = {}
+        self._features_per_local_field_id: Dict[str, AIXMFeature] = {}
 
         """Holds the namespace of the sequence element, i.e. `hasMember` to be used in skeleton
            generation
         """
         self._sequence_ns: str = ''
 
-        """Is updated with the namespaces of each element"""
-        self._ns_map: Dict[str, str] = self.extension_ns
+        """Is updated with the namespaces of each element and initialized with the extension ns"""
+        self._ns_map: Dict[str, str] = {EXTENSION_PREFIX: EXTENSION_NS}
 
         self._skeleton_filepath: Optional[str] = None
 
@@ -93,7 +94,7 @@ class AIXMDataSet:
 
         :return: Generator[Feature]
         """
-        for _, feature in self._features_dict.items():
+        for _, feature in self._features_per_gml_id.items():
             yield feature
 
     @property
@@ -122,7 +123,9 @@ class AIXMDataSet:
         :param feature_id:
         :return:
         """
-        return self._features_dict.get(feature_id)
+        return self._features_per_gml_id.get(feature_id) \
+            or self._features_per_identifier.get(feature_id) \
+            or self._features_per_local_field_id.get(feature_id)
 
     def filter_features(self,
                         name: str,
@@ -150,7 +153,7 @@ class AIXMDataSet:
             - generate stats to be used in front-end
         :return: AIXMDataSet
         """
-        return self._parse()._create_extensions()._compute_feature_type_stats()
+        return self._parse()._create_reverse_associations()._compute_feature_type_stats()
 
     def _parse(self):
         """
@@ -179,7 +182,8 @@ class AIXMDataSet:
 
                 feature = self.feature_factory.feature_from_sequence_element(
                     seq_element=sequence_element)
-                self._features_dict[feature.identifier] = feature
+
+                self._index_feature(feature)
 
                 # clean up obsolete elements
                 sequence_element.clear()
@@ -191,7 +195,20 @@ class AIXMDataSet:
 
         return self
 
-    def _create_extensions(self):
+    def _index_feature(self, feature: AIXMFeature) -> None:
+        """
+
+        :param feature:
+        """
+        self._features_per_gml_id[feature.id] = feature
+
+        if feature.identifier is not None:
+            self._features_per_identifier[feature.identifier] = feature
+
+        for local_field in feature.local_fields:
+            self._features_per_local_field_id[local_field.id] = feature
+
+    def _create_reverse_associations(self):
         """
         For each xlink reference found in a feature, an extension (xlink) is created to the
         referred featured pointing back to it. If the referred feature is not found then the xlink
@@ -199,20 +216,14 @@ class AIXMDataSet:
 
         :return: AIXMDataSet
         """
-        extension_prefix = list(self.extension_ns.keys())[0]
-
         for source_feature in self.features:
             for xlink in source_feature.xlinks:
-                target_feature = self._features_dict.get(xlink.href)
-                if target_feature:
-                    target_feature.add_extension(
-                        Extension.create(name=f'the{source_feature.name}',
-                                         href=source_feature.identifier,
-                                         prefix=extension_prefix))
-                elif xlink.is_local:
-                    pass
-                else:
+                target_feature = self.get_feature_by_id(xlink.href)
+
+                if target_feature is None:
                     xlink.set_broken()
+                else:
+                    target_feature.handle_reverse_association(xlink, source_feature)
 
         return self
 
@@ -282,15 +293,16 @@ class AIXMDataSet:
 
         for time_slice in feature.time_slices:
             for association in time_slice.associations:
-                target = self._features_dict.get(association.href)
+                target = self.get_feature_by_id(association.href)
+
                 if target is not None:
                     node = Node.from_feature(target)
-                    edge = Edge(source=feature.identifier,
-                                target=target.identifier,
+                    edge = Edge(source=feature.id,
+                                target=target.id,
                                 name=time_slice.version)
                 else:
                     node = Node.from_broken_xlink(association)
-                    edge = Edge(source=feature.identifier,
+                    edge = Edge(source=feature.id,
                                 target=association.href,
                                 name=time_slice.version,
                                 is_broken=True)

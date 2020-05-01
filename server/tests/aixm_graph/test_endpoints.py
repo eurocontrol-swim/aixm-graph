@@ -155,7 +155,7 @@ def test_get_graph_for_feature_type__no_errors__200(mock_get_dataset_by_id, test
     dataset = AIXMDataSet('filepath')
     graph = Graph()
     dataset.id = 'some_id'
-    dataset._features_dict = {'1': AIXMFeature('TestFeature1'), '2': AIXMFeature('TestFeature2')}
+    dataset._features_per_gml_id = {'1': AIXMFeature('TestFeature1'), '2': AIXMFeature('TestFeature2')}
     dataset.get_graph = Mock(return_value=graph)
 
     mock_get_dataset_by_id.return_value = dataset
@@ -193,7 +193,7 @@ def test_get_graph_for_feature_type__with_filter__200(
 
     dataset = AIXMDataSet('filepath')
     dataset.id = 'some_id'
-    dataset._features_dict = {'feature1_id': feature1, 'feature2_id': AIXMFeature('TestFeature2')}
+    dataset._features_per_gml_id = {'feature1_id': feature1, 'feature2_id': AIXMFeature('TestFeature2')}
     dataset.get_graph = Mock(return_value=graph)
 
     mock_get_dataset_by_id.return_value = dataset
@@ -241,7 +241,7 @@ def test_get_graph_for_feature__no_errors__200(mock_get_dataset_by_id, test_clie
     dataset = AIXMDataSet('filepath')
     graph = Graph()
     dataset.id = 'some_id'
-    dataset._features_dict = {'1': AIXMFeature('TestFeature1'), '2': AIXMFeature('TestFeature2')}
+    dataset._features_per_gml_id = {'1': AIXMFeature('TestFeature1'), '2': AIXMFeature('TestFeature2')}
     dataset.get_graph_for_feature = Mock(return_value=graph)
 
     mock_get_dataset_by_id.return_value = dataset

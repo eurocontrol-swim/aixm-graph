@@ -81,7 +81,7 @@ class Node:
     @classmethod
     def from_feature(cls, feature: AIXMFeature):
         return cls(
-            id=feature.identifier,
+            id=feature.id,
             name=feature.name,
             abbrev=feature.config['abbrev'],
             fields=[
@@ -97,7 +97,12 @@ class Node:
 
     @classmethod
     def from_broken_xlink(cls, xlink: XLinkField):
-        return cls(id=xlink.href, name=xlink.name, abbrev=xlink.name, is_ghost=True)
+        return cls(
+            id=xlink.href,
+            name=f'{xlink.name} - {xlink.title}',
+            abbrev=xlink.name,
+            is_ghost=True
+        )
 
     def to_json(self):
         return {

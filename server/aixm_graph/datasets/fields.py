@@ -37,8 +37,8 @@ from typing import Dict, Optional
 from lxml import etree
 from lxml.etree import QName
 
-from aixm_graph.utils import get_attrib_value, make_attrib
-from aixm_graph import XLINK_NS
+from aixm_graph.utils import get_attrib_value, make_attrib, element_without_namespace
+from aixm_graph import XLINK_NS, GML_NS
 
 
 class Field:
@@ -106,11 +106,8 @@ class XLinkField(Field):
         """
         super().__init__(**kwargs)
         self._href = None
+        self._title = None
         self._broken = False
-
-    @property
-    def is_local(self):
-        return self.attrib[f'{{{XLINK_NS}}}href'].startswith('#')
 
     @property
     def is_broken(self):
@@ -126,6 +123,51 @@ class XLinkField(Field):
                 self.attrib, name='href', ns=XLINK_NS, value_prefixes=self.prefixes)
 
         return self._href
+
+    @property
+    def title(self) -> str:
+        if self._title is None:
+            self._title = get_attrib_value(
+                self.attrib, name='title', ns=XLINK_NS)
+
+        return self._title or ''
+
+
+class LocalField(Field):
+
+    def __init__(self, **kwargs) -> None:
+        """
+        Holds info for elements with gml:id attributes
+        :param kwargs:
+        """
+        super().__init__(**kwargs)
+        self._id = None
+
+    @property
+    def id(self) -> str:
+        if self._id is None:
+            self._id = get_attrib_value(self.attrib, name='id', ns=GML_NS)
+
+        return self._id
+
+    @classmethod
+    def from_lxml(cls, element: etree.Element):
+        """
+
+        :param element:
+        :return:
+        """
+        text = element.text
+        if (text is None or not text.strip()) and len(element) > 0:
+            text = "\n".join([
+                etree.tostring(element_without_namespace(child)).decode('utf-8')
+                for child in element
+            ])
+
+        return cls(name=QName(element).localname,
+                   text=text,
+                   attrib=element.attrib,
+                   prefix=element.prefix)
 
 
 class Extension(Field):
