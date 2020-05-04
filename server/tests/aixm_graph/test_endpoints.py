@@ -188,7 +188,7 @@ def test_get_graph_for_feature_type__with_filter__200(
 
     feature1 = AIXMFeature('TestFeature1')
     feature1_time_slice1 = AIXMFeatureTimeSlice(name='timeSlice')
-    feature1_time_slice1.data_fields.append(Field(name='field', text=field_value))
+    feature1_time_slice1._data_fields.append(Field(name='field', text=field_value))
     feature1.time_slices.append(feature1_time_slice1)
 
     dataset = AIXMDataSet('filepath')
@@ -282,7 +282,7 @@ def test_upload_aixm__not_allowed_file__returns_400(test_client):
     assert response.status_code == 400
 
     response_data = json.loads(response.data)
-    assert response_data['error'] == 'File is not allowed'
+    assert response_data['error'] == 'File not allowed. Allowed files: [.xml]'
 
 
 @mock.patch('aixm_graph.cache.get_dataset_by_name')

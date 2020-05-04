@@ -32,6 +32,7 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
+from itertools import chain
 from typing import List, Optional, Union, Any, Dict
 
 from aixm_graph.datasets.features import AIXMFeature
@@ -92,14 +93,18 @@ class Node:
             color=feature.config['color'],
             shape=feature.config['shape'],
             fields_concat=feature.config['fields']['concat'],
-            assoc_count=len(feature.xlinks + feature.extensions)
+            assoc_count=sum(1 for _ in chain(feature.xlinks, feature.extensions))
         )
 
     @classmethod
     def from_broken_xlink(cls, xlink: XLinkField):
+        name = xlink.name
+        if xlink.title:
+            name = f'{name} - {xlink.title}'
+
         return cls(
             id=xlink.href,
-            name=f'{xlink.name} - {xlink.title}',
+            name=name,
             abbrev=xlink.name,
             is_ghost=True
         )

@@ -37,8 +37,8 @@ from typing import Dict, Optional
 from lxml import etree
 from lxml.etree import QName
 
-from aixm_graph.utils import get_attrib_value, make_attrib, element_without_namespace
-from aixm_graph import XLINK_NS, GML_NS
+from aixm_graph.utils import get_attrib_value, make_attrib
+from aixm_graph import XLINK_NS
 
 
 class Field:

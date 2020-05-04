@@ -42,7 +42,7 @@ from aixm_graph.graph import Node, Edge, Graph
 
 def test_node__from_feature():
     time_slice = AIXMFeatureTimeSlice(name='timeSlice')
-    time_slice.data_fields.append(Field(name='field', text='text'))
+    time_slice._data_fields.append(Field(name='field', text='text'))
 
     feature = AIXMFeature('name')
     feature.id = '1'
@@ -70,19 +70,20 @@ def test_node__from_feature():
 
 
 def test_node__from_broken_xlink():
-    xlink = XLinkField(name='xlink', attrib={f'{{{XLINK_NS}}}href': 'a1b2c3'})
+    xlink = XLinkField(name='xlink',
+                       attrib={f'{{{XLINK_NS}}}href': 'a1b2c3', f'{{{XLINK_NS}}}title': 'some title'})
 
     node = Node.from_broken_xlink(xlink)
 
     assert node.id == 'a1b2c3'
-    assert node.name == 'xlink'
+    assert node.name == 'xlink - some title'
     assert node.abbrev == 'xlink'
     assert node.is_ghost is True
 
 
 def test_node__to_json():
     time_slice = AIXMFeatureTimeSlice(name='timeSlice')
-    time_slice.data_fields.append(Field(name='field', text='text'))
+    time_slice._data_fields.append(Field(name='field', text='text'))
 
     feature = AIXMFeature('name')
     feature.id = '1'
@@ -132,7 +133,7 @@ def test_edge__to_json(edge, expected_json):
 
 def test_graph__to_json():
     time_slice1 = AIXMFeatureTimeSlice(name='timeSlice')
-    time_slice1.data_fields.append(Field(name='field', text='text'))
+    time_slice1._data_fields.append(Field(name='field', text='text'))
 
     feature1 = AIXMFeature('name1')
     feature1.id = '1'
@@ -147,7 +148,7 @@ def test_graph__to_json():
     }
 
     time_slice2 = AIXMFeatureTimeSlice(name='timeSlice')
-    time_slice2.data_fields.append(Field(name='field', text='text'))
+    time_slice2._data_fields.append(Field(name='field', text='text'))
 
     feature2 = AIXMFeature('name2')
     feature2.id = '2'

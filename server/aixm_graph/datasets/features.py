@@ -32,8 +32,8 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-from collections import namedtuple
-from typing import Dict, List, Type, TypeVar, Callable, Optional
+from itertools import chain
+from typing import Dict, List, Type, TypeVar, Callable, Optional, Iterator
 
 from lxml import etree
 from lxml.etree import QName
@@ -46,6 +46,14 @@ from aixm_graph.utils import get_attrib_value, make_attrib
 class GMLProperty:
 
     def __init__(self, id: str, name: str, serializable: bool = False):
+        """
+        Holds information about an element within a feature which has a gml:id attribute, thus is
+        possible to be referred by another feature
+
+        :param id:
+        :param name:
+        :param serializable: indicates whether it will be included in the skeleton
+        """
         self.id = id
         self.name = name
         self.serializable = serializable
@@ -77,24 +85,24 @@ class AIXMFeatureTimeSlice(Field):
         self._extensions.append(extension)
 
     @property
-    def data_fields(self) -> List[Field]:
-        return self._data_fields
+    def data_fields(self) -> Iterator[Field]:
+        return (f for f in self._data_fields)
 
     @property
-    def xlinks(self) -> List[XLinkField]:
-        return self._xlinks
+    def xlinks(self) -> Iterator[XLinkField]:
+        return (x for x in self._xlinks)
 
     @property
-    def gml_properties(self) -> List[GMLProperty]:
-        return self._gml_properties
+    def gml_properties(self) -> Iterator[GMLProperty]:
+        return (g for g in self._gml_properties)
 
     @property
-    def associations(self) -> List[Field]:
-        return self.xlinks + self.extensions
+    def associations(self) -> Iterator[Field]:
+        return (a for a in chain(self.xlinks, self.extensions))
 
     @property
-    def extensions(self) -> List[Extension]:
-        return self._extensions
+    def extensions(self) -> Iterator[Extension]:
+        return (e for e in self._extensions)
 
     @property
     def has_broken_xlinks(self) -> bool:
@@ -125,20 +133,20 @@ class AIXMFeature(Field):
         self.identifier = None
 
     @property
-    def data_fields(self) -> List[Field]:
-        return [field for ts in self.time_slices for field in ts.data_fields]
+    def data_fields(self) -> Iterator[Field]:
+        return (field for ts in self.time_slices for field in ts.data_fields)
 
     @property
-    def xlinks(self) -> List[XLinkField]:
-        return [xlink for ts in self.time_slices for xlink in ts.xlinks]
+    def xlinks(self) -> Iterator[XLinkField]:
+        return (xlink for ts in self.time_slices for xlink in ts.xlinks)
 
     @property
-    def gml_properties(self) -> List[GMLProperty]:
-        return [gml for ts in self.time_slices for gml in ts.gml_properties]
+    def gml_properties(self) -> Iterator[GMLProperty]:
+        return (gml for ts in self.time_slices for gml in ts.gml_properties)
 
     @property
-    def extensions(self) -> List[Extension]:
-        return [extension for ts in self.time_slices for extension in ts.extensions]
+    def extensions(self) -> Iterator[Extension]:
+        return (extension for ts in self.time_slices for extension in ts.extensions)
 
     @property
     def has_broken_xlinks(self) -> bool:
@@ -187,24 +195,21 @@ class AIXMFeature(Field):
         for ts in self.time_slices:
             ts_root = ts.to_lxml(nsmap)
 
-            for field in (ts.data_fields + ts.xlinks):
+            for field in chain(ts.data_fields, ts.xlinks):
                 ts_root.append(field.to_lxml(nsmap))
 
+            # gml properties are not stored in the feature for performance reasons so they are
+            # retrieved directly from the original dataset using a callback passed down from the
+            # respective AIXMDataSet
             if gml_prop_callback:
                 for gml_prop in ts.gml_properties:
                     if gml_prop.serializable:
-                        element = gml_prop_callback(element_name=gml_prop.name,
-                                                    element_id=gml_prop.id)
+                        element = gml_prop_callback(tag=gml_prop.name,
+                                                    gml_id=gml_prop.id)
                         ts_root.append(element)
 
             for extension in ts.extensions:
-                inner_el = extension.to_lxml(nsmap)
-                outer_el = etree.Element(f"{{{nsmap[extension.prefix]}}}{self.name}Extension")
-                wrapper = etree.Element(f"{{{nsmap[self.prefix]}}}extension")
-
-                outer_el.append(inner_el)
-                wrapper.append(outer_el)
-                ts_root.append(wrapper)
+                ts_root.append(self.create_extension_element(extension, nsmap))
 
             time_slice_container = etree.Element(f"{{{nsmap[ts.prefix]}}}timeSlice", nsmap=nsmap)
             time_slice_container.append(ts_root)
@@ -212,6 +217,36 @@ class AIXMFeature(Field):
             root.append(time_slice_container)
 
         return root
+
+    def create_extension_element(self, extension: Extension, nsmap: dict) -> etree.Element:
+        """
+        Example:
+
+        A RouteSegment feature refers to a Route feature via an xlink:href :
+
+        <aixm:routeFormed xlink:href="urn:uuid:a14a8751-5428-46bc-a2d1-32ef84d37b5c" xlink:title="UA4"/>
+
+        The respective extension that will be created in the Route feature will have the following
+        structure:
+
+        <aixm:extension>
+            <mxia:RouteExtension>
+                <mxia:theRouteSegment xlink:href="urn:uuid:bc430a08-bb5d-48dd-8ef0-85ff50dcfb9d"/>
+            </mxia:RouteExtension>
+        </aixm:extension>
+
+        :param extension:
+        :param nsmap:
+        :return:
+        """
+        reverse_association = extension.to_lxml(nsmap)
+        wrapper = etree.Element(f"{{{nsmap[extension.prefix]}}}{self.name}Extension")
+        result = etree.Element(f"{{{nsmap[self.prefix]}}}extension")
+
+        wrapper.append(reverse_association)
+        result.append(wrapper)
+
+        return result
 
 
 class AIXMFeatureTimeSliceFactory:

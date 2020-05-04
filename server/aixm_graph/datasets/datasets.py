@@ -252,17 +252,18 @@ class AIXMDataSet:
 
         return f"{filename}_skeleton{ext}"
 
-    def get_gml_element(self, element_name: str, element_id: str):
+    def get_gml_element(self, tag: str, gml_id: str):
         """
+        Retrieves an element by tag and gml:id
 
-        :param element_name:
-        :param element_id:
+        :param tag:
+        :param gml_id:
         :return:
         """
-        context = etree.iterparse(self._filepath, tag=f'{{*}}{element_name}', events=('end',))
+        context = etree.iterparse(self._filepath, tag=f'{{*}}{tag}', events=('end',))
 
         for _, element in context:
-            if element.attrib.get(f'{{{GML_NS}}}id') == element_id:
+            if element.attrib.get(f'{{{GML_NS}}}id') == gml_id:
                 del context
                 return element
 
