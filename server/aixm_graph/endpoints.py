@@ -36,7 +36,7 @@ import logging
 import os
 from functools import wraps
 from itertools import tee
-from typing import Callable, TypeVar, Tuple, Any, Dict
+from typing import Callable, TypeVar, Tuple, Any, Dict, Union, List
 
 from flask import Blueprint
 from flask import request, current_app as app, send_file
@@ -48,7 +48,7 @@ from aixm_graph import utils
 
 _logger = logging.getLogger(__name__)
 
-ResponseType = Tuple[Dict[str, Any], int]
+ResponseType = Tuple[Union[List[Dict[str, Any]], Dict[str, Any]], int]
 
 aixm_graph_blueprint = Blueprint('aixm_graph', __name__, url_prefix='/api')
 
@@ -86,11 +86,11 @@ def get_datasets() -> ResponseType:
     datasets = cache.get_datasets()
 
     return [
-        {
-            "dataset_name": dataset.name,
-            "dataset_id": dataset.id
-        }
-        for dataset in datasets
+       {
+           "dataset_name": dataset.name,
+           "dataset_id": dataset.id
+       }
+       for dataset in datasets
     ], 200
 
 
@@ -151,9 +151,10 @@ def get_graph_for_feature_type(dataset_id: str, feature_type_name: str) -> Respo
         raise NotFoundError(f'Dataset has not feature type with name {feature_type_name}')
 
     # filter features returns a generator and we need it twice here, hence the use of tee
-    features, _features = tee(dataset.filter_features(name=feature_type_name, field_value=field_value))
+    features, _features = tee(dataset.filter_features(name=feature_type_name,
+                                                      field_value=field_value))
 
-    graph = dataset.get_graph(features=features, offset=offset, limit=(limit + offset) - 1)
+    graph = dataset.get_graph(features=features, offset=offset, limit=limit + offset)
 
     size = sum(1 for _ in _features)
 

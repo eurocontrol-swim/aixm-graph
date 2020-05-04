@@ -50,13 +50,13 @@ class Field:
                  prefix: Optional[str] = None) -> None:
         """
         The purpose of this class is to keep the essential information of an `etree.Element`.
-        The namespace information is discarded because it is repeated in all the `etree.Element` instances of a parsed
-        file, thus not redundant memory is used.
+        The namespace information is discarded because it is repeated in all the `etree.Element`
+        instances of a parsed file, thus not redundant memory is used.
 
-        Additionally the `attrib` attribute is deep copied (below) in order to avoid keeping reference to it and
-        consequently to the parent element. All those elements are supposed to be deleted by the parser
-        `server.datasets.AIXMDataSet.parse` after having been read in order to avoid memory overflow in case of huge
-        files with thousands of elements.
+        Additionally the `attrib` attribute is deep copied (below) in order to avoid keeping
+        reference to it and consequently to the parent element. All those elements are supposed to
+        be deleted by the parser `server.datasets.AIXMDataSet.parse` after having been read in order
+        to avoid memory overflow in case of huge files with thousands of elements.
 
         :param name:
         :param text:
@@ -80,7 +80,7 @@ class Field:
                    attrib=element.attrib,
                    prefix=element.prefix)
 
-    def to_lxml(self, nsmap: Dict[str, str]) -> etree.Element:
+    def to_lxml(self, nsmap: Dict[str, str], **kwargs) -> etree.Element:
         """
 
         :param nsmap: the nsmap of the dataset
@@ -97,6 +97,7 @@ class Field:
 
 
 class XLinkField(Field):
+    prefixes = ('urn:uuid:', 'urn:uuid.', 'uuid.', '#',)
 
     def __init__(self, **kwargs) -> None:
         """
@@ -104,7 +105,8 @@ class XLinkField(Field):
         :param kwargs:
         """
         super().__init__(**kwargs)
-        self._uuid = None
+        self._href = None
+        self._title = None
         self._broken = False
 
     @property
@@ -115,28 +117,36 @@ class XLinkField(Field):
         self._broken = True
 
     @property
-    def uuid(self) -> str:
-        if self._uuid is None:
-            self._uuid = get_attrib_value(
-                self.attrib, name='href', ns=XLINK_NS, value_prefixes=['urn:uuid:', 'urn:uuid.', 'uuid.'])
+    def href(self) -> str:
+        if self._href is None:
+            self._href = get_attrib_value(
+                self.attrib, name='href', ns=XLINK_NS, value_prefixes=self.prefixes)
 
-        return self._uuid
+        return self._href
+
+    @property
+    def title(self) -> str:
+        if self._title is None:
+            self._title = get_attrib_value(
+                self.attrib, name='title', ns=XLINK_NS)
+
+        return self._title or ''
 
 
 class Extension(Field):
 
     @classmethod
-    def create(cls, name: str, uuid: str, prefix: str):
+    def create(cls, name: str, href: str, prefix: str):
         """
 
         :param name:
-        :param uuid:
+        :param href:
         :param prefix:
         :return: Extension
         """
         extension = cls(name=name,
-                        attrib=make_attrib(name='href', value=f"urn:uuid:{uuid}", ns=XLINK_NS),
+                        attrib=make_attrib(name='href', value=f"urn:uuid:{href}", ns=XLINK_NS),
                         prefix=prefix)
-        extension.uuid = uuid
+        extension.href = href
 
         return extension

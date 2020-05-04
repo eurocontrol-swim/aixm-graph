@@ -41,7 +41,7 @@ import pytest
 from werkzeug.datastructures import FileStorage
 
 from aixm_graph.datasets.datasets import AIXMDataSet
-from aixm_graph.datasets.features import AIXMFeature, Feature
+from aixm_graph.datasets.features import AIXMFeature, AIXMFeatureTimeSlice
 from aixm_graph.datasets.fields import Field
 from aixm_graph.graph import Graph
 
@@ -155,7 +155,7 @@ def test_get_graph_for_feature_type__no_errors__200(mock_get_dataset_by_id, test
     dataset = AIXMDataSet('filepath')
     graph = Graph()
     dataset.id = 'some_id'
-    dataset._features_dict = {'1': AIXMFeature('TestFeature1'), '2': AIXMFeature('TestFeature2')}
+    dataset._features_per_gml_id = {'1': AIXMFeature('TestFeature1'), '2': AIXMFeature('TestFeature2')}
     dataset.get_graph = Mock(return_value=graph)
 
     mock_get_dataset_by_id.return_value = dataset
@@ -174,7 +174,7 @@ def test_get_graph_for_feature_type__no_errors__200(mock_get_dataset_by_id, test
     assert response_data['prev_offset'] is None
 
 
-@pytest.mark.parametrize('field_value, query, extected_results_size', [
+@pytest.mark.parametrize('field_value, query, expected_results_size', [
     ('some_value', 'some', 1),
     ('some_value', 'ome', 1),
     ('some_value', 'some-', 0),
@@ -183,17 +183,17 @@ def test_get_graph_for_feature_type__no_errors__200(mock_get_dataset_by_id, test
 ])
 @mock.patch('aixm_graph.cache.get_dataset_by_id')
 def test_get_graph_for_feature_type__with_filter__200(
-        mock_get_dataset_by_id, test_client, field_value, query, extected_results_size):
+        mock_get_dataset_by_id, test_client, field_value, query, expected_results_size):
     graph = Graph()
 
     feature1 = AIXMFeature('TestFeature1')
-    feature1_time_slice1 = Feature(name='timeSlice')
-    feature1_time_slice1.data_fields.append(Field(name='field', text=field_value))
-    feature1.time_slices['ts_version_1'] = feature1_time_slice1
+    feature1_time_slice1 = AIXMFeatureTimeSlice(name='timeSlice')
+    feature1_time_slice1._data_fields.append(Field(name='field', text=field_value))
+    feature1.time_slices.append(feature1_time_slice1)
 
     dataset = AIXMDataSet('filepath')
     dataset.id = 'some_id'
-    dataset._features_dict = {'feature1_id': feature1, 'feature2_id': AIXMFeature('TestFeature2')}
+    dataset._features_per_gml_id = {'feature1_id': feature1, 'feature2_id': AIXMFeature('TestFeature2')}
     dataset.get_graph = Mock(return_value=graph)
 
     mock_get_dataset_by_id.return_value = dataset
@@ -206,7 +206,7 @@ def test_get_graph_for_feature_type__with_filter__200(
     response_data = json.loads(response.data)['data']
     assert response_data['offset'] == 0
     assert response_data['limit'] == 5
-    assert response_data['size'] == extected_results_size
+    assert response_data['size'] == expected_results_size
     assert response_data['graph'] == graph.to_json()
     assert response_data['next_offset'] is None
     assert response_data['prev_offset'] is None
@@ -241,7 +241,7 @@ def test_get_graph_for_feature__no_errors__200(mock_get_dataset_by_id, test_clie
     dataset = AIXMDataSet('filepath')
     graph = Graph()
     dataset.id = 'some_id'
-    dataset._features_dict = {'1': AIXMFeature('TestFeature1'), '2': AIXMFeature('TestFeature2')}
+    dataset._features_per_gml_id = {'1': AIXMFeature('TestFeature1'), '2': AIXMFeature('TestFeature2')}
     dataset.get_graph_for_feature = Mock(return_value=graph)
 
     mock_get_dataset_by_id.return_value = dataset
@@ -282,7 +282,7 @@ def test_upload_aixm__not_allowed_file__returns_400(test_client):
     assert response.status_code == 400
 
     response_data = json.loads(response.data)
-    assert response_data['error'] == 'File is not allowed'
+    assert response_data['error'] == 'File not allowed. Allowed files: [.xml]'
 
 
 @mock.patch('aixm_graph.cache.get_dataset_by_name')

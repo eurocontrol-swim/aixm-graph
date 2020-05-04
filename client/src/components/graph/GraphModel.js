@@ -138,7 +138,7 @@ export default class GraphModel {
         + '<td style="padding: 0px 10px;"></td>'
       + '</tr>'
       + '<tr>'
-        + '<td style="padding: 0px;"><strong>UUID</strong></td>'
+        + '<td style="padding: 0px;"><strong>ID</strong></td>'
         + `<td style="padding: 0px 10px;">${node.id} (Ctrl-C to copy)</td>`
       + '</tr>';
 
