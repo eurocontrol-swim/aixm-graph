@@ -1,4 +1,4 @@
-# AIXM Graph v1.0
+# AIXM Graph v1.1
 > Visualizing AIXM feature associations
 
 AIXM Graph is a tool that aims at visualizing the various features that can be found in an [AIXM](http://aixm.aero/) 
@@ -8,7 +8,7 @@ the features and how they connect to each other in the specific dataset.
 At this [link](https://aixm-graph.herokuapp.com/#!) you can have a look at a partial (no upload functionality) demo of 
 the tool and play around with two preloaded AIXM datasets.
 
-## Installing / Getting started
+## Installation
 
 The project can get easily up and running in any machine regardless the running OS with the help of 
 [Docker](https://www.docker.com/).
@@ -21,7 +21,16 @@ The project can get easily up and running in any machine regardless the running 
 >           [post-installation actions](https://docs.docker.com/engine/install/linux-postinstall/):  
 > - Windows users
 >     - [Docker Toolbox on Windows](https://docs.docker.com/toolbox/toolbox_install_windows/) (which installs all the
->   required tools and runs the Docker Engine via VirtualBox)
+>       required tools and runs the Docker Engine via VirtualBox)
+>     - Since Docker runs via VirtualBox, the various app/server sites involved in this demo will 
+>       not be able to be accessed from your host machine unless you apply some port forwarding 
+>       rules. You may find instructions about how to do it 
+>       [here](https://www.simplified.guide/virtualbox/port-forwarding). 
+>       The  rule to apply is:
+>        
+>        | Name | Host port | Guest Port |
+>        |---|---|---|
+>        | aixm-graph | 3000 | 3000 |
 
 
 Steps:
@@ -45,12 +54,45 @@ Run the container
 docker run -d --name aixm_graph -e "PORT=8765" -p 3000:8765 aixm-graph:latest
 ```
 
+Make sure that the container is up and running with `docker ps`. The output should look like: 
+```shell script 
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                            NAMES
+b1c6b3cb3e2b        aixm-graph:latest   "/bin/sh -c 'gunicor…"   2 seconds ago       Up 1 second         80/tcp, 0.0.0.0:3000->8765/tcp   aixm_graph
+```
+
 
 After the steps are successfully completed the project will be available at 
 [http://localhost:3000](http://localhost:3000) 
 
+> NOTE for Windows users:
+>
+> In case the above link does not work, you can use the IP used by Virtual Box. This can be found 
+> while starting the docker interactive shell: 
+>
+> ![alt text](./docs/img/docker.png)
+>
+> In the above case the tool can be accessed by http://192.168.99.100:3000. Needless to mention
+> that you'll need to replace the IP with yours.
 
-## Developing
+
+### Update project
+In case a new version of the tool is available you can update via the following steps:
+
+Update the git repository (from the roop directory of the project)
+```shell script
+git pull --rebase origin master
+```
+
+Stop/remove the relevant container in case AIXM Graph already runs
+```shell script
+docker rm -f aixm_graph
+```
+
+Then you can follow the installation steps from `Build the image` onward.
+
+
+
+## For developers
 
 The project is divided in two parts: server and client. 
 
@@ -117,7 +159,7 @@ npm run serve
 The client should now be available at [http://localhost:8080](http://localhost:8080)
 
 
-## Deploying / Publishing
+### Deploying / Publishing
 Since the project is packaged with docker there are many options of easily deploying it in the cloud. On of them is 
 [Heroku](https://heroku.com) and below you can find the steps about how to achieve this with the 
 [Container Registry & Runtime](https://devcenter.heroku.com/articles/container-registry-and-runtime) method:
@@ -208,8 +250,22 @@ Each `xml` element/feature is parsed and stored along with it's [pre-configured]
 Typically, a feature holds references (`xlink:href`) to other features it's associated with. However, this association 
 has one direction in a typical AIXM dataset. In order to facilitate the creation of the graph and illustrate better the 
 associations among the features we generate bi-directional connections on all of them. In other words, a feature will 
-keep in memory references for all the other features that keep a reference to it. In case a reference of a xlink is not
-found it will be marked as broken.
+keep in memory references for all the other features which keep a reference to it. The procedure goes as following:
+```shell script
+for each xlink of a feature
+    for each other target_feature check:
+        if (
+            the xlink:href matches the gml:id of the target_feature
+            or the xlink:href matches the identifier of the target_feature
+            or the xlink:href matches the gml:id of any of the properties of the target_feature
+        )
+        then:
+            an extension (reverse association) is created in the target_feature
+        otherwise:
+            the xlink is marked as broken     
+            
+             
+```
 
 > Keep in mind that the uploading and the processing of the dataset depends heavily on its size. Although the procedure
 > has been optimized and the whole processing/storing happens in memory, the final memory footprint equals more or less 
@@ -233,11 +289,14 @@ elements. Lastly its name will be same as the original dataset's postfixed with 
 `<original_filename>_skeleton.xml`.
 
 #### Features
-Next comes the features' area. The total number is reported in the title of the area, i.e. `(145) Features` and all the 
-extracted features are listed below grouped by name. Each feature group reports the total number of its features as well
-as whether there were found broken xlinks, i.e. references that were not found in the dataset. If broken xlinks were found
-the feature group will be marked with ![alt text](./docs/img/nok.png) otherwise with ![alt text](./docs/img/ok.png).
+Next comes the features' area. The total number is reported in the title of the area, i.e. `(146) Features` and all the 
+extracted features are listed below grouped by name, each one reporting the total number of its features. In case one or
+more features of a group has broken links then a report icon ![alt text](./docs/img/report.png) will be displayed alongside.
+Upon mouse hover more details will be revealed about the broken xlinks.
 
+Right below the title there is a switch filter allowing the user to display all the feature groups or only those ones
+with a report. 
+ 
 Every feature group is clickable and as soon as any of them is clicked the respective graph will be displayed on the
 [graph area](#graph-area).
 
@@ -260,9 +319,6 @@ soon as `Enter` is pressed.
 In case a feature group contains too many features they will be limited by the selected `Features per page` from the top
 bar. The current available options are `5, 10, 15, 20`.
  
-##### Next/Prev page
-Lastly, in case the are more pages to display (i.e. more features) the user can navigate through them by clicking on the 
-`Next` or `Prev` buttons.
  
 #### <a name="graph-area-graph"></a> Graph
 The graph is represented by nodes and edges. The nodes represent the features of the selected feature group as well as 
@@ -313,6 +369,11 @@ The edges that connect the association features with the selected feature are na
 associations were found in and more specifically by its `sequenceNumber` and/or its `correctionNumber`. If an edge 
 connects a feature with a broken association it will be dashed.
 
+##### Next/Prev page
+Lastly, in case the are more pages to display (i.e. more features) the user can navigate through them by clicking on the 
+`Next` or `Prev` buttons.
+
+
 #### <a name="pruning-associations"></a> Pruning association features
 For every feature group that is selected, along with its graph there is also displayed a table with all the different
 associations grouped by name. This table is placed at the top left corner of the graph and every
@@ -326,14 +387,14 @@ checkbox at the header of the table.
 - **Upload dataset**: at top-right corner button.
 - **Navigate through datasets**: at top-right corner dropdown list.
 - **Download skeleton**: at dataset area (left side) under the name of the dataset.
-- **Filter feature groups by broken xlinks**: at dataset area (left side) under the Features title.
+- **Filter feature groups by report**: at dataset area (left side) under the Features title.
 - **Load graph for a specific feature group**: click on a feature group at the dataset area.
 - **Manipulate the graph**
     - **via the top bar of graph area:**
         - filter the features on their key field values (type filter key and press `Enter`)
         - select the features per page to display.
-        - navigate to next/previous pages, if any.
     - **via the graph:**
+        - navigate to next/previous pages, if any.
         - click on a feature node whose label starts with `[+]` to expand it with its associations.
         - right-click on a feature node to display it in single feature mode.
     - **via the associations table:**

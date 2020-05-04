@@ -32,17 +32,19 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-from typing import Optional, Dict, List, Any
+import io
+from typing import Optional, Dict, List, Any, Iterable
 
 import yaml
+from lxml import etree
 
 
 def get_attrib_value(attribs: Dict[str, str],
                      name: str,
                      ns: str,
-                     value_prefixes: Optional[List[str]] = None) -> str:
+                     value_prefixes: Optional[Iterable[str]] = None) -> Optional[str]:
     """
-    Retrieves the value of an attribute from a dict of `etree.Element` attributes based on its namd
+    Retrieves the value of an attribute from a dict of `etree.Element` attributes based on its name
     and namespace. The value could be prefixed by any string so it has to be provided in order to
     not be considered in the returned value.
 
@@ -66,7 +68,7 @@ def get_attrib_value(attribs: Dict[str, str],
     return result
 
 
-def make_attrib(name, value, ns) -> str:
+def make_attrib(name: str, value: str, ns: str) -> Dict[str, str]:
     """
     Creates a dict entry to be added im the attribs of a `etree.Element`
     :param name:
@@ -134,7 +136,7 @@ def validate_file_form(file_form: Dict):
         raise ValueError('No selected file')
 
     if not filename_is_valid(file.filename):
-        raise ValueError('File is not allowed')
+        raise ValueError('File not allowed. Allowed files: [.xml]')
 
     return file
 

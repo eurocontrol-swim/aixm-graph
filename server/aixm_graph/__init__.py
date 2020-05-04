@@ -33,3 +33,6 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 __author__ = "EUROCONTROL (SWIM)"
 
 XLINK_NS = "http://www.w3.org/1999/xlink"
+GML_NS = "http://www.opengis.net/gml/3.2"
+EXTENSION_PREFIX = 'mxia'
+EXTENSION_NS = 'http://www.aixm.aero/schema/5.1.1/extensions/mxia'

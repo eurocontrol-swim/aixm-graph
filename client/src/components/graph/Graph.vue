@@ -33,10 +33,6 @@
   <div id="graph-area">
     <div class="row valign-wrapper" :class="{hide: featureTypeName === null}">
 
-      <div class="col s6">
-        <p v-html="summary"></p>
-      </div>
-
       <div class="col s2">
         <div class="input-field" :class="{hide: filterHidden}">
           <input type="text"
@@ -61,21 +57,8 @@
         </div>
       </div>
 
-      <div class="col s1">
-        <p class="right">{{ paginationSummary }}</p>
-      </div>
-
-      <div class="col s1">
-        <div :class="{hide: singleFeature !== null}">
-          <a class="waves-effect waves-light btn btn-small red lighten-2"
-             @click="getPrevPage" :disabled="prevOffset === null">
-            <i class="material-icons">chevron_left</i>
-          </a>
-          <a class="waves-effect waves-light btn btn-small red lighten-2 right"
-             @click="getNextPage" :disabled="nextOffset === null">
-            <i class="material-icons">chevron_right</i>
-          </a>
-        </div>
+      <div class="col s8">
+        <p v-html="summary"></p>
       </div>
     </div>
 
@@ -85,6 +68,21 @@
         <div class="indeterminate"></div>
       </div>
       <div class="col s12 valign-wrapper" id="graph" ref="graph"></div>
+
+      <div id="pagination" :class="{hide: singleFeature !== null}">
+        <p class="left pagination-summary">{{ paginationSummary }}</p>
+        <a class="waves-effect waves-light btn btn-small red lighten-2 pagination-button"
+            @click="getPrevPage" :disabled="prevOffset === null">
+          <i class="material-icons">chevron_left</i>
+        </a>
+        <a class="waves-effect waves-light btn btn-small red lighten-2 right pagination-button"
+            @click="getNextPage" :disabled="nextOffset === null">
+          <i class="material-icons">chevron_right</i>
+        </a>
+
+      </div>
+
+      <!-- <div><a class="btn btn-small" id="pagination">alex</a></div> -->
       <div class="collection" id="associations-select" :class="{hide: featureTypeName === null}">
         <a href="#!" class="collection-item active" @click="onClickAllAssociations">
           <i class="material-icons left">{{ allAssociationsIcon }}</i>
@@ -118,7 +116,6 @@ import Vue from 'vue';
 import EventBus from '../event-bus';
 import GraphModel from './GraphModel';
 import * as serverApi from '../server-api';
-import * as alert from '../alert';
 
 /*
 NOTE: We keep the graphModel out of the component scope because of differences in vue.js and vis.js
@@ -200,7 +197,7 @@ export default {
           this.loadingGraph = false;
           // eslint-disable-next-line
           console.error(error.response);
-          alert.showError('Failed to get features!');
+          EventBus.$emit('alert', `Failed to get ${this.featureTypeName} features graph`);
         });
     },
     registerAssociations() {
@@ -235,7 +232,7 @@ export default {
           this.loadingGraph = false;
           // eslint-disable-next-line
           console.error(error);
-          alert.showError('Failed to expand graph!');
+          EventBus.$emit('alert', 'Failed to expand graph');
         });
     },
     onRightClickGraphFeature(params) {
@@ -263,7 +260,7 @@ export default {
           this.loadingGraph = false;
           // eslint-disable-next-line
           console.error(error.response);
-          alert.showError('Failed to fetch feature graph!');
+          EventBus.$emit('alert', `Failed to fetch ${featureName}:${featureId} graph`);
         });
     },
     onHoverFeatureNode(params) {
@@ -333,7 +330,7 @@ export default {
           } catch (error) {
           // eslint-disable-next-line
             console.error(error);
-            alert.showError('Failed to update associations!');
+            EventBus.$emit('alert', 'Failed to update associations');
           }
           graphModel.removeNodeById(node.id);
         });
@@ -400,6 +397,7 @@ export default {
 
 .graph-area {
     height: 100%;
+    position: relative;
 }
 
 #graph-area {
@@ -416,7 +414,7 @@ export default {
 
 #associations-select {
     position: absolute;
-    left: 400px;
+    left: 20px;
 }
 
 #associations-select li{
@@ -432,4 +430,13 @@ export default {
   left: -9999px;
 }
 
+#pagination {
+  position: absolute;
+  top: 8px;
+  right: 20px;
+}
+
+a.pagination-button {
+  margin-left: 10px;
+}
 </style>

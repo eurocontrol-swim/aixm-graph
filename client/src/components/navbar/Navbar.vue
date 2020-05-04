@@ -90,7 +90,6 @@ import DatasetsList from './DatasetsList.vue';
 import EventBus from '../event-bus';
 import DatasetModel from '../models/Dataset';
 import * as serverApi from '../server-api';
-import * as alert from '../alert';
 
 export default {
   name: 'Navbar',
@@ -113,7 +112,7 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line
           console.error(error.response);
-          alert.showError('Failed to retrieve datasets!');
+          EventBus.$emit('alert', 'Failed to retrieve datasets!');
         });
     },
     uploadDataset() {
@@ -134,7 +133,8 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line
           console.error(error.response);
-          alert.showError('Failed to upload dataset!');
+          EventBus.$emit('alert', 'Failed to upload dataset');
+          EventBus.$emit('dataset-upload-failed');
         });
     },
   },

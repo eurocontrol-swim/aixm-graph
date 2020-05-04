@@ -33,12 +33,14 @@ __author__ = "EUROCONTROL (SWIM)"
 
 import os
 from collections import defaultdict
-from typing import Optional, Dict, Generator
+from functools import reduce
+from itertools import islice
+from typing import Optional, Dict
 
 from lxml import etree
 
+from aixm_graph import EXTENSION_PREFIX, EXTENSION_NS, GML_NS
 from aixm_graph.datasets.features import AIXMFeatureFactory, AIXMFeature
-from aixm_graph.datasets.fields import Extension
 from aixm_graph.graph import Graph, Node, Edge
 
 
@@ -46,7 +48,6 @@ class AIXMDataSet:
     feature_factory = AIXMFeatureFactory
     basic_message_tag = 'AIXMBasicMessage'
     sequence_tag = 'hasMember'
-    extension_ns = {'mxia': "http://www.aixm.aero/schema/5.1.1/extensions/mxia"}
 
     def __init__(self, filepath: str) -> None:
         """
@@ -64,16 +65,18 @@ class AIXMDataSet:
 
         self._filepath: str = filepath
 
-        """Holds the features of the dataset per id in a hashtable for faster access"""
-        self._features_dict: Dict[str, AIXMFeature] = {}
+        """The below dicts serve as indices for faster access."""
+        self._features_per_gml_id: Dict[str, AIXMFeature] = {}
+        self._features_per_identifier: Dict[str, AIXMFeature] = {}
+        self._features_per_gml_property_id: Dict[str, AIXMFeature] = {}
 
         """Holds the namespace of the sequence element, i.e. `hasMember` to be used in skeleton
            generation
         """
         self._sequence_ns: str = ''
 
-        """Is updated with the namespaces of each element"""
-        self._ns_map: Dict[str, str] = self.extension_ns
+        """Is updated with the namespaces of each element and initialized with the extension ns"""
+        self._ns_map: Dict[str, str] = {EXTENSION_PREFIX: EXTENSION_NS}
 
         self._skeleton_filepath: Optional[str] = None
 
@@ -91,7 +94,7 @@ class AIXMDataSet:
 
         :return: Generator[Feature]
         """
-        for _, feature in self._features_dict.items():
+        for _, feature in self._features_per_gml_id.items():
             yield feature
 
     @property
@@ -120,7 +123,9 @@ class AIXMDataSet:
         :param feature_id:
         :return:
         """
-        return self._features_dict.get(feature_id)
+        return self._features_per_gml_id.get(feature_id) \
+            or self._features_per_identifier.get(feature_id) \
+            or self._features_per_gml_property_id.get(feature_id)
 
     def filter_features(self,
                         name: str,
@@ -148,7 +153,7 @@ class AIXMDataSet:
             - generate stats to be used in front-end
         :return: AIXMDataSet
         """
-        return self._parse()._create_extensions()._compute_feature_type_stats()
+        return self._parse()._create_reverse_associations()._compute_feature_type_stats()
 
     def _parse(self):
         """
@@ -175,8 +180,10 @@ class AIXMDataSet:
                 if not self._sequence_ns:
                     self._sequence_ns = sequence_element.nsmap[sequence_element.prefix]
 
-                feature = self.feature_factory.feature_from_sequence_element(seq_element=sequence_element)
-                self._features_dict[feature.id] = feature
+                feature = self.feature_factory.feature_from_sequence_element(
+                    seq_element=sequence_element)
+
+                self._index_feature(feature)
 
                 # clean up obsolete elements
                 sequence_element.clear()
@@ -188,7 +195,20 @@ class AIXMDataSet:
 
         return self
 
-    def _create_extensions(self):
+    def _index_feature(self, feature: AIXMFeature) -> None:
+        """
+
+        :param feature:
+        """
+        self._features_per_gml_id[feature.id] = feature
+
+        if feature.identifier is not None:
+            self._features_per_identifier[feature.identifier] = feature
+
+        for gml in feature.gml_properties:
+            self._features_per_gml_property_id[gml.id] = feature
+
+    def _create_reverse_associations(self):
         """
         For each xlink reference found in a feature, an extension (xlink) is created to the
         referred featured pointing back to it. If the referred feature is not found then the xlink
@@ -196,18 +216,14 @@ class AIXMDataSet:
 
         :return: AIXMDataSet
         """
-        extension_prefix = list(self.extension_ns.keys())[0]
-
         for source_feature in self.features:
             for xlink in source_feature.xlinks:
-                target_feature = self._features_dict.get(xlink.uuid)
-                if target_feature:
-                    target_feature.add_extension(
-                        Extension.create(name=f'the{source_feature.name}',
-                                         uuid=source_feature.id,
-                                         prefix=extension_prefix))
-                else:
+                target_feature = self.get_feature_by_id(xlink.href)
+
+                if target_feature is None:
                     xlink.set_broken()
+                else:
+                    target_feature.handle_reverse_association(xlink, source_feature)
 
         return self
 
@@ -236,6 +252,23 @@ class AIXMDataSet:
 
         return f"{filename}_skeleton{ext}"
 
+    def get_gml_element(self, tag: str, gml_id: str):
+        """
+        Retrieves an element by tag and gml:id
+
+        :param tag:
+        :param gml_id:
+        :return:
+        """
+        context = etree.iterparse(self._filepath, tag=f'{{*}}{tag}', events=('end',))
+
+        for _, element in context:
+            if element.attrib.get(f'{{{GML_NS}}}id') == gml_id:
+                del context
+                return element
+
+        del context
+
     def generate_skeleton(self) -> str:
         """
         Skeleton is a subset of the original dataset including only the information that was
@@ -248,15 +281,19 @@ class AIXMDataSet:
 
         root = etree.Element(f"{{{self._sequence_ns}}}{self.basic_message_tag}", nsmap=self._ns_map)
         for feature in self.features:
-            member_el = etree.Element(f'{{{self._sequence_ns}}}{self.sequence_tag}', nsmap=self._ns_map)
-            feature_el = feature.to_lxml(self._ns_map)
+            member_el = etree.Element(f'{{{self._sequence_ns}}}{self.sequence_tag}',
+                                      nsmap=self._ns_map)
+            feature_el = feature.to_lxml(self._ns_map, gml_prop_callback=self.get_gml_element)
 
             member_el.append(feature_el)
             root.append(member_el)
 
         self._skeleton_filepath = self.make_skeleton_path()
         with open(self._skeleton_filepath, 'w') as f:
-            f.write(etree.tostring(root, xml_declaration=True, pretty_print=True).decode('utf-8'))
+            f.write(etree.tostring(root,
+                                   encoding='utf-8',
+                                   xml_declaration=True,
+                                   pretty_print=True).decode('utf-8'))
 
         return self._skeleton_filepath
 
@@ -271,15 +308,21 @@ class AIXMDataSet:
         graph = Graph()
         graph.add_nodes(Node.from_feature(feature))
 
-        for time_slice_id, time_slice in feature.time_slices.items():
+        for time_slice in feature.time_slices:
             for association in time_slice.associations:
-                target = self._features_dict.get(association.uuid)
+                target = self.get_feature_by_id(association.href)
+
                 if target is not None:
                     node = Node.from_feature(target)
-                    edge = Edge(source=feature.id, target=target.id, name=time_slice_id)
+                    edge = Edge(source=feature.id,
+                                target=target.id,
+                                name=time_slice.version)
                 else:
                     node = Node.from_broken_xlink(association)
-                    edge = Edge(source=feature.id, target=association.uuid, name=time_slice_id, is_broken=True)
+                    edge = Edge(source=feature.id,
+                                target=association.href,
+                                name=time_slice.version,
+                                is_broken=True)
 
                 graph.add_nodes(node)
                 graph.add_edges(edge)
@@ -295,15 +338,8 @@ class AIXMDataSet:
         :param limit:
         :return:
         """
-        # features = self.filter_features(feature_name, filter_field)
-        graph = Graph()
-        for i, feature in enumerate(features):
-            if i < offset:
-                continue
-
-            if i > limit:
-                break
-
-            graph += self.get_graph_for_feature(feature=feature)
-
-        return graph
+        return reduce(
+            lambda g, f: g + self.get_graph_for_feature(f),
+            islice(features, offset, limit),
+            Graph()
+        )
