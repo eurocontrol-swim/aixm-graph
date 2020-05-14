@@ -38,7 +38,7 @@ Steps:
 Get the repository
 
 ```shell script
-git clone git@github.com:eurocontrol-swim/aixm-graph.git
+git clone https://github.com/eurocontrol-swim/aixm-graph.git
 cd aixm-graph
 ```
 
