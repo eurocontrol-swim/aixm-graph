@@ -89,6 +89,7 @@ FEATURES:
     fields:
       names:
         - designator
+        - type
     shape: square
   AirportHeliportCollocation:
     abbrev: AHC
@@ -472,6 +473,7 @@ FEATURES:
     fields:
       names:
         - name
+        - type
     shape: triangleDown
   PassengerLoadingBridge:
     abbrev: PLB
@@ -579,6 +581,7 @@ FEATURES:
     fields:
       names:
         - designator
+        - role
     shape: ellipse
   RunwayDirection:
     abbrev: RDN
@@ -821,6 +824,7 @@ FEATURES:
     color: '#8db600'
     fields:
       names:
+        - name
         - designator
         - type
     shape: box
