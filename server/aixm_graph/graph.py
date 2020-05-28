@@ -77,7 +77,7 @@ class Node:
         self.is_ghost = is_ghost
 
     def __eq__(self, other):
-        return self.id == other.id and self.name == other.name and self.abbrev == other.abbrev
+        return self.id == other.id
 
     @classmethod
     def from_feature(cls, feature: AIXMFeature):
