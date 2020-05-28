@@ -185,8 +185,8 @@ export default class GraphModel {
 
   static getEnhancedEdge = (origEdge) => {
     const directions = {
-      'target': 'to',
-      'source': 'from',
+      target: 'to',
+      source: 'from',
     };
 
     const enhanced = {
@@ -202,6 +202,7 @@ export default class GraphModel {
 
     return enhanced;
   }
+
   static getEnhancedEdge = (origEdge) => ({
     from: origEdge.source,
     to: origEdge.target,
