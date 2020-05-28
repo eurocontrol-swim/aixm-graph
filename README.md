@@ -366,8 +366,10 @@ is connected with.
 
 ##### Edges
 The edges that connect the association features with the selected feature are named by the `timeSlice` those 
-associations were found in and more specifically by its `sequenceNumber` and/or its `correctionNumber`. If an edge 
-connects a feature with a broken association it will be dashed.
+associations were found in and more specifically by its `sequenceNumber` and/or its `correctionNumber`. 
+If the association is direct (found under the feature) the edge will be directed from the feature to
+its association. Otherwise, if the association is reverse the direction of the edge will be from the association
+to the feature. Lastly, if an edge connects a feature with a broken association it will be dashed. 
 
 ##### Next/Prev page
 Lastly, in case the are more pages to display (i.e. more features) the user can navigate through them by clicking on the 

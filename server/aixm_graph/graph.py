@@ -124,8 +124,15 @@ class Node:
 
 
 class Edge:
+    _directions = ['source', 'target']
 
-    def __init__(self, source: str, target: str, name: str, is_broken: Optional[bool] = False):
+    def __init__(self,
+                 source: str,
+                 target: str,
+                 name: str,
+                 direction: Optional[str] = None,
+                 is_broken: Optional[bool] = False
+    ):
         """
         Holds information about two features where one references to the other
 
@@ -138,6 +145,11 @@ class Edge:
         self.source = source
         self.target = target
         self.name = name
+
+        if direction not in self._directions:
+            raise ValueError(f"direction should be one of {self._directions}")
+        self.direction = direction
+
         self.is_broken = is_broken
 
     def __eq__(self, other):
@@ -154,6 +166,7 @@ class Edge:
             'source': self.source,
             'target': self.target,
             'name': self.name,
+            'direction': self.direction,
             'is_broken': self.is_broken
         }
 

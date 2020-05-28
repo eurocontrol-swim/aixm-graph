@@ -35,12 +35,13 @@ import os
 from collections import defaultdict
 from functools import reduce
 from itertools import islice
-from typing import Optional, Dict
+from typing import Optional, Dict, Union
 
 from lxml import etree
 
 from aixm_graph import EXTENSION_PREFIX, EXTENSION_NS, GML_NS
 from aixm_graph.datasets.features import AIXMFeatureFactory, AIXMFeature
+from aixm_graph.datasets.fields import XLinkField, Extension
 from aixm_graph.graph import Graph, Node, Edge
 
 
@@ -299,6 +300,14 @@ class AIXMDataSet:
 
         return self._skeleton_filepath
 
+    def _get_edge_direction(self, association: Union[XLinkField, Extension]) -> str:
+        directions = {
+            XLinkField: 'target',
+            Extension: 'source'
+        }
+
+        return directions.get(type(association))
+
     def get_graph_for_feature(self, feature: AIXMFeature) -> Graph:
         """
         Creates a graph (nodes, edges) for the given feature. The nodes will include the feature and
@@ -313,17 +322,20 @@ class AIXMDataSet:
         for time_slice in feature.time_slices:
             for association in time_slice.associations:
                 target = self.get_feature_by_id(association.href)
+                direction=self._get_edge_direction(association)
 
                 if target is not None:
                     node = Node.from_feature(target)
                     edge = Edge(source=feature.id,
                                 target=target.id,
+                                direction=direction,
                                 name=time_slice.version)
                 else:
                     node = Node.from_broken_xlink(association)
                     edge = Edge(source=feature.id,
                                 target=association.href,
                                 name=time_slice.version,
+                                direction=direction,
                                 is_broken=True)
 
                 graph.add_nodes(node)

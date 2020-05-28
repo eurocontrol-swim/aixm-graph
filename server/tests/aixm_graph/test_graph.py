@@ -117,12 +117,14 @@ def test_node__to_json():
             source='source',
             target='target',
             name='name',
+            direction='source',
             is_broken=True
         ),
         {
             'source': 'source',
             'target': 'target',
             'name': 'name',
+            'direction': 'source',
             'is_broken': True
         }
     )
@@ -165,7 +167,7 @@ def test_graph__to_json():
     node1 = Node.from_feature(feature1)
     node2 = Node.from_feature(feature2)
 
-    edge = Edge(source='1', target='2', name='name')
+    edge = Edge(source='1', target='2', name='name', direction='source')
 
     graph = Graph()
     graph.add_nodes([node1, node2])
@@ -200,6 +202,7 @@ def test_graph__to_json():
             'source': '1',
             'target': '2',
             'name': 'name',
+            'direction': 'source',
             'is_broken': False
         }]
     } == graph.to_json()
