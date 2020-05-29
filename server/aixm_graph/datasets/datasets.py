@@ -35,12 +35,13 @@ import os
 from collections import defaultdict
 from functools import reduce
 from itertools import islice
-from typing import Optional, Dict
+from typing import Optional, Dict, Union
 
 from lxml import etree
 
 from aixm_graph import EXTENSION_PREFIX, EXTENSION_NS, GML_NS
 from aixm_graph.datasets.features import AIXMFeatureFactory, AIXMFeature
+from aixm_graph.datasets.fields import XLinkField, Extension
 from aixm_graph.graph import Graph, Node, Edge
 
 
@@ -70,8 +71,8 @@ class AIXMDataSet:
         self._features_per_identifier: Dict[str, AIXMFeature] = {}
         self._features_per_gml_property_id: Dict[str, AIXMFeature] = {}
 
-        """Holds the namespace of the sequence element, i.e. `hasMember` to be used in skeleton
-           generation
+        """Holds the namespace of the sequence element (if any), i.e. `hasMember` to be used 
+           in skeleton generation
         """
         self._sequence_ns: str = ''
 
@@ -175,9 +176,10 @@ class AIXMDataSet:
         for event, sequence_element in context:
             if event == 'start-ns':
                 ns_code, ns_link = sequence_element
-                self._ns_map[ns_code] = ns_link
+                if ns_code:
+                    self._ns_map[ns_code] = ns_link
             elif event == 'end':
-                if not self._sequence_ns:
+                if sequence_element.prefix and not self._sequence_ns:
                     self._sequence_ns = sequence_element.nsmap[sequence_element.prefix]
 
                 feature = self.feature_factory.feature_from_sequence_element(
@@ -271,18 +273,19 @@ class AIXMDataSet:
 
     def generate_skeleton(self) -> str:
         """
-        Skeleton is a subset of the original dataset including only the information that was
-        extracted by it plus the created extensions
+        Skeleton is a subset of the original dataset including only the information that
+        was extracted by it plus the created extensions
 
         :return: the path of the generated skeleton file
         """
         if self._skeleton_filepath:
             return self._skeleton_filepath
 
-        root = etree.Element(f"{{{self._sequence_ns}}}{self.basic_message_tag}", nsmap=self._ns_map)
+        prefix = f"{{{self._sequence_ns}}}" if self._sequence_ns else ""
+        root = etree.Element(f"{prefix}{self.basic_message_tag}", nsmap=self._ns_map)
+
         for feature in self.features:
-            member_el = etree.Element(f'{{{self._sequence_ns}}}{self.sequence_tag}',
-                                      nsmap=self._ns_map)
+            member_el = etree.Element(f'{prefix}{self.sequence_tag}', nsmap=self._ns_map)
             feature_el = feature.to_lxml(self._ns_map, gml_prop_callback=self.get_gml_element)
 
             member_el.append(feature_el)
@@ -296,6 +299,14 @@ class AIXMDataSet:
                                    pretty_print=True).decode('utf-8'))
 
         return self._skeleton_filepath
+
+    def _get_edge_direction(self, association: Union[XLinkField, Extension]) -> str:
+        directions = {
+            XLinkField: 'target',
+            Extension: 'source'
+        }
+
+        return directions.get(type(association))
 
     def get_graph_for_feature(self, feature: AIXMFeature) -> Graph:
         """
@@ -311,17 +322,20 @@ class AIXMDataSet:
         for time_slice in feature.time_slices:
             for association in time_slice.associations:
                 target = self.get_feature_by_id(association.href)
+                direction=self._get_edge_direction(association)
 
                 if target is not None:
                     node = Node.from_feature(target)
                     edge = Edge(source=feature.id,
                                 target=target.id,
+                                direction=direction,
                                 name=time_slice.version)
                 else:
                     node = Node.from_broken_xlink(association)
                     edge = Edge(source=feature.id,
                                 target=association.href,
                                 name=time_slice.version,
+                                direction=direction,
                                 is_broken=True)
 
                 graph.add_nodes(node)

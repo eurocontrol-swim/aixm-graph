@@ -268,12 +268,15 @@ class AIXMFeatureTimeSliceFactory:
             if QName(child).localname in field_names
         ]
 
-        time_slice._xlinks = [
+        xlinks = [
             XLinkField.from_lxml(
                 AIXMFeatureTimeSliceFactory.process_xlink_element(xlink=xlink, ts_element=element)
             )
             for xlink in element.findall('.//*[@xlink:href]', namespaces=element.nsmap)
         ]
+
+        # discard xlinks with no href
+        time_slice._xlinks = [xlink for xlink in xlinks if xlink.href]
 
         time_slice._gml_properties = [
             GMLProperty(id=element.attrib[f'{{{GML_NS}}}id'],

@@ -183,11 +183,32 @@ export default class GraphModel {
     };
   });
 
+  static getEnhancedEdge = (origEdge) => {
+    const directions = {
+      target: 'to',
+      source: 'from',
+    };
+
+    const enhanced = {
+      from: origEdge.source,
+      to: origEdge.target,
+      label: origEdge.name,
+      dashes: origEdge.is_broken,
+    };
+
+    if (origEdge.direction !== null) {
+      enhanced.arrows = directions[origEdge.direction];
+    }
+
+    return enhanced;
+  }
+
   static getEnhancedEdge = (origEdge) => ({
     from: origEdge.source,
     to: origEdge.target,
     label: origEdge.name,
     dashes: origEdge.is_broken,
+    arrows: origEdge.direction === 'source' ? 'from' : 'to',
   });
 
   static getEnhancedData = (origData) => {

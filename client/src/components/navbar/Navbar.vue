@@ -67,7 +67,7 @@
     <!-- navbar -->
     <nav class="nav  blue lighten-1">
       <div class="nav-wrapper">
-        <a href="#" class="brand-logo">AIXM Graph </a>
+        <a href="#" class="brand-logo">AIXM Graph v{{ version }}</a>
         <ul class="right hide-on-med-and-down">
           <li>
             <datasets-list :datasets="datasets"></datasets-list>
@@ -86,6 +86,8 @@
 
 
 <script>
+// eslint-disable-next-line
+import Vue from 'vue';
 import DatasetsList from './DatasetsList.vue';
 import EventBus from '../event-bus';
 import DatasetModel from '../models/Dataset';
@@ -138,7 +140,11 @@ export default {
         });
     },
   },
-
+  computed: {
+    version() {
+      return process.env.VUE_APP_VERSION;
+    },
+  },
   created() {
     this.getDatasets();
   },

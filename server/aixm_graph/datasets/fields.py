@@ -97,7 +97,7 @@ class Field:
 
 
 class XLinkField(Field):
-    prefixes = ('urn:uuid:', 'urn:uuid.', 'uuid.', '#',)
+    prefixes = ('urn:uuid:', '#',)
 
     def __init__(self, **kwargs) -> None:
         """
