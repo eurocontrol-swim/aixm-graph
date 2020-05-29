@@ -1,4 +1,4 @@
-# AIXM Graph v1.1
+# AIXM Graph v1.2.0
 > Visualizing AIXM feature associations
 
 AIXM Graph is a tool that aims at visualizing the various features that can be found in an [AIXM](http://aixm.aero/) 
