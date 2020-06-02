@@ -29,37 +29,40 @@ Source Initiative: http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
+import json
 import logging.config
+from typing import Dict, Any
 
 from flask import Flask
 from flask_cors import CORS
 from pkg_resources import resource_filename
 
 from aixm_graph.datasets.features import AIXMFeatureClassRegistry
-from aixm_graph.utils import load_config
+from aixm_graph.utils import load_config, load_json
 from aixm_graph.endpoints import aixm_graph_blueprint
 
 __author__ = "EUROCONTROL (SWIM)"
 
 
-def create_app(config_file: str) -> Flask:
-    app = Flask(__name__)
+def create_app(app_config_file: str) -> Flask:
+    app_config = load_config(filename=app_config_file)
 
+    app = Flask(__name__)
     app.register_blueprint(aixm_graph_blueprint)
-    app_config = load_config(filename=config_file)
     app.config.update(app_config)
+    app.features_config_path = resource_filename(__name__, 'features_config.json')
+
+    # generate classes per feature as they're found in the config file
+    AIXMFeatureClassRegistry.load_feature_classes(load_json(app.features_config_path))
 
     logging.config.dictConfig(app.config['LOGGING'])
+
     # enable CORS
-
     CORS(app, resources={r'/*': {'origins': '*'}})
-    # generate classes per feature as they're found in the config file
-
-    AIXMFeatureClassRegistry.load_feature_classes(app.config['FEATURES'])
 
     return app
 
 
 if __name__ == '__main__':
-    app = create_app(config_file=resource_filename(__name__, 'config.yml'))
+    app = create_app(app_config_file=resource_filename(__name__, 'config.yml'))
     app.run(host="0.0.0.0", port=5000)

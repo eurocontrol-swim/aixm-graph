@@ -44,11 +44,7 @@ class Node:
     def __init__(self,
                  id: str,
                  name: str,
-                 abbrev: str,
                  fields: Optional[List[Dict[str, str]]] = None,
-                 color: Optional[str] = None,
-                 shape: Optional[str] = None,
-                 fields_concat: bool = False,
                  assoc_count: int = 0,
                  is_ghost: bool = False
     ):
@@ -57,22 +53,14 @@ class Node:
         in the frontend.
         :param id:
         :param name:
-        :param abbrev:
         :param fields:
-        :param color:
-        :param shape:
-        :param fields_concat:
         :param assoc_count:
         :param is_ghost: indicates whether it's a feature that was supposed to be referenced by
                          another feature but it was not found in the dataset
         """
         self.id = id
         self.name = name
-        self.abbrev = abbrev
-        self.color = color
-        self.shape = shape
         self.fields = fields or []
-        self.fields_concat = fields_concat
         self.assoc_count = assoc_count
         self.is_ghost = is_ghost
 
@@ -84,15 +72,11 @@ class Node:
         return cls(
             id=feature.id,
             name=feature.name,
-            abbrev=feature.config['abbrev'],
             fields=[
                 {field.name: field.text}
                 for ts in feature.time_slices
                 for field in ts.data_fields
             ],
-            color=feature.config['color'],
-            shape=feature.config['shape'],
-            fields_concat=feature.config['fields']['concat'],
             assoc_count=sum(1 for _ in chain(feature.xlinks, feature.extensions))
         )
 
@@ -105,7 +89,6 @@ class Node:
         return cls(
             id=xlink.href,
             name=name,
-            abbrev=xlink.name,
             is_ghost=True
         )
 
@@ -113,11 +96,7 @@ class Node:
         return {
             'id': self.id,
             'name': self.name,
-            'abbrev': self.abbrev,
             'fields': self.fields,
-            'color': self.color,
-            'shape': self.shape,
-            'fields_concat': self.fields_concat,
             'is_ghost': self.is_ghost,
             'assoc_count': self.assoc_count
         }

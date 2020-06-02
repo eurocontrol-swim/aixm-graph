@@ -63,6 +63,8 @@ const getFeatureGraph = (datasetId, featureId) => axios.get(
   `/api/datasets/${datasetId}/features/${featureId}/graph`, config,
 );
 
+const getFeaturesConfig = () => axios.get('/api/config', config);
+
 const getDownloadSkeletonURL = (datasetId) => `${config.baseURL}/api/datasets/${datasetId}/download`;
 
 export {
@@ -71,5 +73,6 @@ export {
   getFeatureTypes,
   getFeatureTypeGraph,
   getFeatureGraph,
+  getFeaturesConfig,
   getDownloadSkeletonURL,
 };

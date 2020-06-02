@@ -1,0 +1,1137 @@
+{
+  "AerialRefuelling": {
+    "abbrev": "ARF",
+    "color": "#f0f8ff",
+    "shape": "square",
+    "fields": {
+      "concat": true,
+      "names": [
+        "designatorPrefix",
+        "designatorNumber",
+        "designatorSuffix",
+        "designatorDirection"
+      ]
+    }
+  },
+  "AeronauticalGroundLight": {
+    "abbrev": "AGL",
+    "color": "#efdecd",
+    "shape": "square",
+    "fields": {
+      "names": [
+        "type",
+        "name"
+      ]
+    }
+  },
+  "AirTrafficControlService": {
+    "abbrev": "ATC",
+    "color": "#f4c2c2",
+    "shape": "square",
+    "fields": {
+      "names": [
+        "location",
+        "type"
+      ]
+    }
+  },
+  "AirTrafficManagementService": {
+    "abbrev": "ATM",
+    "color": "#fae7b5",
+    "shape": "square",
+    "fields": {
+      "names": null
+    }
+  },
+  "AircraftGroundService": {
+    "abbrev": "ACG",
+    "color": "#ffbf00",
+    "shape": "square",
+    "fields": {
+      "names": [
+        "type"
+      ]
+    }
+  },
+  "AircraftStand": {
+    "abbrev": "AST",
+    "color": "#a4c639",
+    "shape": "square",
+    "fields": {
+      "names": [
+        "designator",
+        "type"
+      ]
+    }
+  },
+  "AirportClearanceService": {
+    "abbrev": "ACS",
+    "color": "#cd9575",
+    "shape": "square",
+    "fields": {
+      "names": [
+        "name"
+      ]
+    }
+  },
+  "AirportHeliport": {
+    "abbrev": "AHP",
+    "color": "#faebd7",
+    "shape": "square",
+    "fields": {
+      "names": [
+        "designator",
+        "type"
+      ]
+    }
+  },
+  "AirportHeliportCollocation": {
+    "abbrev": "AHC",
+    "color": "#8db600",
+    "shape": "square",
+    "fields": {
+      "names": null
+    }
+  },
+  "AirportHotSpot": {
+    "abbrev": "AHT",
+    "color": "#fbceb1",
+    "shape": "square",
+    "fields": {
+      "names": [
+        "designator"
+      ]
+    }
+  },
+  "AirportProtectionAreaMarking": {
+    "abbrev": "APM",
+    "color": "#7fffd4",
+    "shape": "square",
+    "fields": {
+      "names": null
+    }
+  },
+  "AirportSuppliesService": {
+    "abbrev": "ASV",
+    "color": "#e9d66b",
+    "shape": "square",
+    "fields": {
+      "names": [
+        "fuelSupply",
+        "oilSupply",
+        "nitrogenSupply",
+        "oxygenSupply"
+      ]
+    }
+  },
+  "Airspace": {
+    "abbrev": "ASE",
+    "color": "#ff9966",
+    "shape": "square",
+    "fields": {
+      "names": [
+        "designator",
+        "type"
+      ]
+    }
+  },
+  "AirspaceBorderCrossing": {
+    "abbrev": "ABC",
+    "color": "#89cff0",
+    "shape": "square",
+    "fields": {
+      "names": null
+    }
+  },
+  "AltimeterSource": {
+    "abbrev": "ALT",
+    "color": "#bcd4e6",
+    "shape": "square",
+    "fields": {
+      "names": null
+    }
+  },
+  "AngleIndication": {
+    "abbrev": "AIN",
+    "color": "#f0ffff",
+    "shape": "square",
+    "fields": {
+      "names": null
+    }
+  },
+  "ApproachLightingSystem": {
+    "abbrev": "APL",
+    "color": "#f0f8ff",
+    "shape": "hexagon",
+    "fields": {
+      "names": null
+    }
+  },
+  "Apron": {
+    "abbrev": "APN",
+    "color": "#efdecd",
+    "shape": "hexagon",
+    "fields": {
+      "names": [
+        "name"
+      ]
+    }
+  },
+  "ApronElement": {
+    "abbrev": "AEL",
+    "color": "#ffbf00",
+    "shape": "hexagon",
+    "fields": {
+      "names": [
+        "type"
+      ]
+    }
+  },
+  "ApronLightSystem": {
+    "abbrev": "ALS",
+    "color": "#a4c639",
+    "shape": "hexagon",
+    "fields": {
+      "names": [
+        "color"
+      ]
+    }
+  },
+  "ApronMarking": {
+    "abbrev": "AMK",
+    "color": "#cd9575",
+    "shape": "hexagon",
+    "fields": {
+      "names": null
+    }
+  },
+  "ArrestingGear": {
+    "abbrev": "AGR",
+    "color": "#faebd7",
+    "shape": "hexagon",
+    "fields": {
+      "names": [
+        "location",
+        "length",
+        "width",
+        "status"
+      ]
+    }
+  },
+  "ArrivalFeederLeg": {
+    "abbrev": "AFL",
+    "color": "#fbceb1",
+    "shape": "hexagon",
+    "fields": {
+      "names": [
+        "length"
+      ]
+    }
+  },
+  "ArrivalLeg": {
+    "abbrev": "ARL",
+    "color": "#8db600",
+    "shape": "hexagon",
+    "fields": {
+      "names": [
+        "length"
+      ]
+    }
+  },
+  "AuthorityForAirspace": {
+    "abbrev": "AFA",
+    "color": "#7fffd4",
+    "shape": "hexagon",
+    "fields": {
+      "names": [
+        "type"
+      ]
+    }
+  },
+  "Azimuth": {
+    "abbrev": "AZM",
+    "color": "#e9d66b",
+    "shape": "hexagon",
+    "fields": {
+      "names": [
+        "designator",
+        "type"
+      ]
+    }
+  },
+  "ChangeOverPoint": {
+    "abbrev": "COP",
+    "color": "#ff9966",
+    "shape": "hexagon",
+    "fields": {
+      "names": null
+    }
+  },
+  "CheckpointINS": {
+    "abbrev": "CNS",
+    "color": "#89cff0",
+    "shape": "hexagon",
+    "fields": {
+      "names": [
+        "category",
+        "position"
+      ]
+    }
+  },
+  "CheckpointVOR": {
+    "abbrev": "CVO",
+    "color": "#f4c2c2",
+    "shape": "hexagon",
+    "fields": {
+      "names": [
+        "category",
+        "position"
+      ]
+    }
+  },
+  "CirclingArea": {
+    "abbrev": "CIA",
+    "color": "#fae7b5",
+    "shape": "hexagon",
+    "fields": {
+      "names": null
+    }
+  },
+  "DME": {
+    "abbrev": "DME",
+    "color": "#cd9575",
+    "shape": "diamond",
+    "fields": {
+      "names": [
+        "type",
+        "designator"
+      ]
+    }
+  },
+  "DeicingArea": {
+    "abbrev": "DAA",
+    "color": "#bcd4e6",
+    "shape": "hexagon",
+    "fields": {
+      "names": null
+    }
+  },
+  "DeicingAreaMarking": {
+    "abbrev": "DAM",
+    "color": "#f0ffff",
+    "shape": "hexagon",
+    "fields": {
+      "names": null
+    }
+  },
+  "DepartureLeg": {
+    "abbrev": "DLG",
+    "color": "#f0f8ff",
+    "shape": "diamond",
+    "fields": {
+      "names": null
+    }
+  },
+  "DesignatedPoint": {
+    "abbrev": "DPN",
+    "color": "#efdecd",
+    "shape": "diamond",
+    "fields": {
+      "names": [
+        "designator"
+      ]
+    }
+  },
+  "DirectionFinder": {
+    "abbrev": "DFN",
+    "color": "#ffbf00",
+    "shape": "diamond",
+    "fields": {
+      "names": null
+    }
+  },
+  "DistanceIndication": {
+    "abbrev": "DIN",
+    "color": "#a4c639",
+    "shape": "diamond",
+    "fields": {
+      "names": null
+    }
+  },
+  "Elevation": {
+    "abbrev": "ELV",
+    "color": "#faebd7",
+    "shape": "diamond",
+    "fields": {
+      "names": null
+    }
+  },
+  "FinalLeg": {
+    "abbrev": "FLG",
+    "color": "#8db600",
+    "shape": "diamond",
+    "fields": {
+      "names": null
+    }
+  },
+  "FireFightingService": {
+    "abbrev": "FFS",
+    "color": "#fbceb1",
+    "shape": "diamond",
+    "fields": {
+      "names": null
+    }
+  },
+  "FlightRestriction": {
+    "abbrev": "FRS",
+    "color": "#7fffd4",
+    "shape": "diamond",
+    "fields": {
+      "names": null
+    }
+  },
+  "FloatingDockSite": {
+    "abbrev": "FGD",
+    "color": "#e9d66b",
+    "shape": "diamond",
+    "fields": {
+      "names": null
+    }
+  },
+  "GeoBorder": {
+    "abbrev": "GBR",
+    "color": "#ff9966",
+    "shape": "diamond",
+    "fields": {
+      "names": [
+        "type"
+      ]
+    }
+  },
+  "Glidepath": {
+    "abbrev": "GPT",
+    "color": "#89cff0",
+    "shape": "diamond",
+    "fields": {
+      "names": [
+        "designator"
+      ]
+    }
+  },
+  "GroundTrafficControlService": {
+    "abbrev": "GTC",
+    "color": "#f4c2c2",
+    "shape": "diamond",
+    "fields": {
+      "names": null
+    }
+  },
+  "GuidanceLine": {
+    "abbrev": "GLN",
+    "color": "#fae7b5",
+    "shape": "diamond",
+    "fields": {
+      "names": [
+        "type",
+        "designator"
+      ]
+    }
+  },
+  "GuidanceLineLightSystem": {
+    "abbrev": "GLL",
+    "color": "#bcd4e6",
+    "shape": "diamond",
+    "fields": {
+      "names": null
+    }
+  },
+  "GuidanceLineMarking": {
+    "abbrev": "GLM",
+    "color": "#f0ffff",
+    "shape": "diamond",
+    "fields": {
+      "names": null
+    }
+  },
+  "HoldingAssessment": {
+    "abbrev": "HAS",
+    "color": "#f0f8ff",
+    "shape": "triangle",
+    "fields": {
+      "names": null
+    }
+  },
+  "HoldingPattern": {
+    "abbrev": "HPT",
+    "color": "#efdecd",
+    "shape": "triangle",
+    "fields": {
+      "names": null
+    }
+  },
+  "InformationService": {
+    "abbrev": "ISV",
+    "color": "#ffbf00",
+    "shape": "triangle",
+    "fields": {
+      "names": null
+    }
+  },
+  "InitialLeg": {
+    "abbrev": "ILG",
+    "color": "#a4c639",
+    "shape": "triangle",
+    "fields": {
+      "names": null
+    }
+  },
+  "InstrumentApproachProcedure": {
+    "abbrev": "IAP",
+    "color": "#cd9575",
+    "shape": "triangle",
+    "fields": {
+      "names": null
+    }
+  },
+  "IntermediateLeg": {
+    "abbrev": "INL",
+    "color": "#faebd7",
+    "shape": "triangle",
+    "fields": {
+      "names": null
+    }
+  },
+  "Localizer": {
+    "abbrev": "LLZ",
+    "color": "#8db600",
+    "shape": "triangle",
+    "fields": {
+      "names": [
+        "designator"
+      ]
+    }
+  },
+  "MarkerBeacon": {
+    "abbrev": "MBC",
+    "color": "#fbceb1",
+    "shape": "triangle",
+    "fields": {
+      "names": [
+        "designator"
+      ]
+    }
+  },
+  "MarkingBuoy": {
+    "abbrev": "MKB",
+    "color": "#7fffd4",
+    "shape": "triangle",
+    "fields": {
+      "names": [
+        "type",
+        "designator"
+      ]
+    }
+  },
+  "MissedApproachLeg": {
+    "abbrev": "MAL",
+    "color": "#e9d66b",
+    "shape": "triangle",
+    "fields": {
+      "names": null
+    }
+  },
+  "NDB": {
+    "abbrev": "NDB",
+    "color": "#fae7b5",
+    "shape": "triangle",
+    "fields": {
+      "names": [
+        "keys"
+      ]
+    }
+  },
+  "Navaid": {
+    "abbrev": "NAV",
+    "color": "#ff9966",
+    "shape": "triangle",
+    "fields": {
+      "names": [
+        "type",
+        "designator"
+      ]
+    }
+  },
+  "NavigationArea": {
+    "abbrev": "NAA",
+    "color": "#89cff0",
+    "shape": "triangle",
+    "fields": {
+      "names": [
+        "navigationAreaType",
+        "sector"
+      ]
+    }
+  },
+  "NavigationAreaRestriction": {
+    "abbrev": "NAN",
+    "color": "#f4c2c2",
+    "shape": "triangle",
+    "fields": {
+      "names": [
+        "type"
+      ]
+    }
+  },
+  "NonMovementArea": {
+    "abbrev": "NMA",
+    "color": "#bcd4e6",
+    "shape": "triangle",
+    "fields": {
+      "names": null
+    }
+  },
+  "ObstacleArea": {
+    "abbrev": "OAR",
+    "color": "#f0ffff",
+    "shape": "triangle",
+    "fields": {
+      "names": null
+    }
+  },
+  "OrganisationAuthority": {
+    "abbrev": "ORG",
+    "color": "#f0f8ff",
+    "shape": "triangleDown",
+    "fields": {
+      "names": [
+        "name",
+        "type"
+      ]
+    }
+  },
+  "PassengerLoadingBridge": {
+    "abbrev": "PLB",
+    "color": "#efdecd",
+    "shape": "triangleDown",
+    "fields": {
+      "names": null
+    }
+  },
+  "PassengerService": {
+    "abbrev": "PSV",
+    "color": "#ffbf00",
+    "shape": "triangleDown",
+    "fields": {
+      "names": null
+    }
+  },
+  "PilotControlledLighting": {
+    "abbrev": "PCG",
+    "color": "#a4c639",
+    "shape": "triangleDown",
+    "fields": {
+      "names": null
+    }
+  },
+  "PrecisionApproachRadar": {
+    "abbrev": "PAR",
+    "color": "#cd9575",
+    "shape": "triangleDown",
+    "fields": {
+      "names": null
+    }
+  },
+  "PrimarySurveillanceRadar": {
+    "abbrev": "PSR",
+    "color": "#faebd7",
+    "shape": "triangleDown",
+    "fields": {
+      "names": [
+        "location"
+      ]
+    }
+  },
+  "ProcedureDME": {
+    "abbrev": "PDM",
+    "color": "#8db600",
+    "shape": "triangleDown",
+    "fields": {
+      "names": null
+    }
+  },
+  "RadioCommunicationChannel": {
+    "abbrev": "RCC",
+    "color": "#fbceb1",
+    "shape": "triangleDown",
+    "fields": {
+      "names": null
+    }
+  },
+  "RadioFrequencyArea": {
+    "abbrev": "RFA",
+    "color": "#7fffd4",
+    "shape": "triangleDown",
+    "fields": {
+      "names": [
+        "type"
+      ]
+    }
+  },
+  "Road": {
+    "abbrev": "ROA",
+    "color": "#e9d66b",
+    "shape": "triangleDown",
+    "fields": {
+      "names": [
+        "designator"
+      ]
+    }
+  },
+  "Route": {
+    "abbrev": "RTE",
+    "color": "#ff9966",
+    "shape": "triangleDown",
+    "fields": {
+      "concat": true,
+      "names": [
+        "designatorPrefix",
+        "designatorNumber",
+        "designatorSecondLetter",
+        "type"
+      ]
+    }
+  },
+  "RouteDME": {
+    "abbrev": "RDM",
+    "color": "#89cff0",
+    "shape": "triangleDown",
+    "fields": {
+      "names": null
+    }
+  },
+  "RouteSegment": {
+    "abbrev": "RSG",
+    "color": "#f4c2c2",
+    "shape": "triangleDown",
+    "fields": {
+      "names": null
+    }
+  },
+  "RulesProcedures": {
+    "abbrev": "RUP",
+    "color": "#fae7b5",
+    "shape": "triangleDown",
+    "fields": {
+      "names": null
+    }
+  },
+  "Runway": {
+    "abbrev": "RWY",
+    "color": "#bcd4e6",
+    "shape": "triangleDown",
+    "fields": {
+      "names": [
+        "designator",
+        "type"
+      ]
+    }
+  },
+  "RunwayBlastPad": {
+    "abbrev": "RBP",
+    "color": "#f0ffff",
+    "shape": "triangleDown",
+    "fields": {
+      "names": null
+    }
+  },
+  "RunwayCentrelinePoint": {
+    "abbrev": "RCP",
+    "color": "#f0f8ff",
+    "shape": "ellipse",
+    "fields": {
+      "names": [
+        "designator",
+        "role"
+      ]
+    }
+  },
+  "RunwayDirection": {
+    "abbrev": "RDN",
+    "color": "#efdecd",
+    "shape": "ellipse",
+    "fields": {
+      "names": [
+        "designator"
+      ]
+    }
+  },
+  "RunwayDirectionLightSystem": {
+    "abbrev": "RLS",
+    "color": "#ffbf00",
+    "shape": "ellipse",
+    "fields": {
+      "names": null
+    }
+  },
+  "RunwayElement": {
+    "abbrev": "REL",
+    "color": "#a4c639",
+    "shape": "ellipse",
+    "fields": {
+      "names": null
+    }
+  },
+  "RunwayMarking": {
+    "abbrev": "RMG",
+    "color": "#cd9575",
+    "shape": "ellipse",
+    "fields": {
+      "names": null
+    }
+  },
+  "RunwayProtectArea": {
+    "abbrev": "RPA",
+    "color": "#faebd7",
+    "shape": "ellipse",
+    "fields": {
+      "names": [
+        "type"
+      ]
+    }
+  },
+  "RunwayProtectAreaLightSystem": {
+    "abbrev": "RPL",
+    "color": "#8db600",
+    "shape": "ellipse",
+    "fields": {
+      "names": null
+    }
+  },
+  "RunwayVisualRange": {
+    "abbrev": "RVR",
+    "color": "#fbceb1",
+    "shape": "ellipse",
+    "fields": {
+      "names": null
+    }
+  },
+  "SDF": {
+    "abbrev": "SDF",
+    "color": "#e9d66b",
+    "shape": "ellipse",
+    "fields": {
+      "names": [
+        "designator"
+      ]
+    }
+  },
+  "SafeAltitudeArea": {
+    "abbrev": "SAA",
+    "color": "#7fffd4",
+    "shape": "ellipse",
+    "fields": {
+      "names": null
+    }
+  },
+  "SeaplaneLandingArea": {
+    "abbrev": "SLA",
+    "color": "#ff9966",
+    "shape": "ellipse",
+    "fields": {
+      "names": null
+    }
+  },
+  "SeaplaneRampSite": {
+    "abbrev": "SPR",
+    "color": "#89cff0",
+    "shape": "ellipse",
+    "fields": {
+      "names": null
+    }
+  },
+  "SearchRescueService": {
+    "abbrev": "SRE",
+    "color": "#f4c2c2",
+    "shape": "ellipse",
+    "fields": {
+      "names": [
+        "type"
+      ]
+    }
+  },
+  "SecondarySurveillanceRadar": {
+    "abbrev": "SSV",
+    "color": "#fae7b5",
+    "shape": "ellipse",
+    "fields": {
+      "names": null
+    }
+  },
+  "SignificantPointInAirspace": {
+    "abbrev": "SPA",
+    "color": "#bcd4e6",
+    "shape": "ellipse",
+    "fields": {
+      "names": null
+    }
+  },
+  "SpecialDate": {
+    "abbrev": "SPD",
+    "color": "#f0ffff",
+    "shape": "ellipse",
+    "fields": {
+      "names": null
+    }
+  },
+  "SpecialNavigationStation": {
+    "abbrev": "SNS",
+    "color": "#f0f8ff",
+    "shape": "dot",
+    "fields": {
+      "names": null
+    }
+  },
+  "SpecialNavigationSystem": {
+    "abbrev": "SNY",
+    "color": "#efdecd",
+    "shape": "dot",
+    "fields": {
+      "names": [
+        "designator",
+        "type"
+      ]
+    }
+  },
+  "StandMarking": {
+    "abbrev": "SMK",
+    "color": "#fbceb1",
+    "shape": "dot",
+    "fields": {
+      "names": null
+    }
+  },
+  "StandardInstrumentArrival": {
+    "abbrev": "SIA",
+    "color": "#ffbf00",
+    "shape": "dot",
+    "fields": {
+      "names": [
+        "designator"
+      ]
+    }
+  },
+  "StandardInstrumentDeparture": {
+    "abbrev": "SID",
+    "color": "#a4c639",
+    "shape": "dot",
+    "fields": {
+      "names": [
+        "designator"
+      ]
+    }
+  },
+  "StandardLevelColumn": {
+    "abbrev": "SLC",
+    "color": "#cd9575",
+    "shape": "dot",
+    "fields": {
+      "names": null
+    }
+  },
+  "StandardLevelSector": {
+    "abbrev": "SLS",
+    "color": "#faebd7",
+    "shape": "dot",
+    "fields": {
+      "names": null
+    }
+  },
+  "StandardLevelTable": {
+    "abbrev": "SLB",
+    "color": "#8db600",
+    "shape": "dot",
+    "fields": {
+      "names": null
+    }
+  },
+  "SurveyControlPoint": {
+    "abbrev": "SCP",
+    "color": "#7fffd4",
+    "shape": "dot",
+    "fields": {
+      "names": [
+        "designator"
+      ]
+    }
+  },
+  "TACAN": {
+    "abbrev": "TCN",
+    "color": "#e9d66b",
+    "shape": "dot",
+    "fields": {
+      "names": [
+        "designator"
+      ]
+    }
+  },
+  "TaxiHoldingPosition": {
+    "abbrev": "THP",
+    "color": "#ff9966",
+    "shape": "dot",
+    "fields": {
+      "names": null
+    }
+  },
+  "TaxiHoldingPositionLightSystem": {
+    "abbrev": "THL",
+    "color": "#89cff0",
+    "shape": "dot",
+    "fields": {
+      "names": null
+    }
+  },
+  "TaxiHoldingPositionMarking": {
+    "abbrev": "THM",
+    "color": "#f4c2c2",
+    "shape": "dot",
+    "fields": {
+      "names": null
+    }
+  },
+  "Taxiway": {
+    "abbrev": "TWY",
+    "color": "#fae7b5",
+    "shape": "dot",
+    "fields": {
+      "names": [
+        "designator",
+        "type"
+      ]
+    }
+  },
+  "TaxiwayElement": {
+    "abbrev": "TWE",
+    "color": "#bcd4e6",
+    "shape": "dot",
+    "fields": {
+      "names": [
+        "type"
+      ]
+    }
+  },
+  "TaxiwayLightSystem": {
+    "abbrev": "TWL",
+    "color": "#f0ffff",
+    "shape": "dot",
+    "fields": {
+      "names": null
+    }
+  },
+  "TaxiwayMarking": {
+    "abbrev": "TWM",
+    "color": "#f0f8ff",
+    "shape": "box",
+    "fields": {
+      "names": null
+    }
+  },
+  "TerminalArrivalArea": {
+    "abbrev": "TAA",
+    "color": "#efdecd",
+    "shape": "box",
+    "fields": {
+      "names": null
+    }
+  },
+  "TouchDownLiftOff": {
+    "abbrev": "TLA",
+    "color": "#ffbf00",
+    "shape": "box",
+    "fields": {
+      "names": [
+        "designator"
+      ]
+    }
+  },
+  "TouchDownLiftOffLightSystem": {
+    "abbrev": "TLS",
+    "color": "#a4c639",
+    "shape": "box",
+    "fields": {
+      "names": null
+    }
+  },
+  "TouchDownLiftOffMarking": {
+    "abbrev": "TLM",
+    "color": "#cd9575",
+    "shape": "box",
+    "fields": {
+      "names": null
+    }
+  },
+  "TouchDownLiftOffSafeArea": {
+    "abbrev": "TSA",
+    "color": "#faebd7",
+    "shape": "box",
+    "fields": {
+      "names": null
+    }
+  },
+  "Unit": {
+    "abbrev": "UNI",
+    "color": "#8db600",
+    "shape": "box",
+    "fields": {
+      "names": [
+        "name",
+        "designator",
+        "type"
+      ]
+    }
+  },
+  "UnplannedHolding": {
+    "abbrev": "UHG",
+    "color": "#fbceb1",
+    "shape": "box",
+    "fields": {
+      "names": null
+    }
+  },
+  "VOR": {
+    "abbrev": "VOR",
+    "color": "#ff9966",
+    "shape": "box",
+    "fields": {
+      "names": [
+        "designator",
+        "type"
+      ]
+    }
+  },
+  "VerticalStructure": {
+    "abbrev": "VST",
+    "color": "#7fffd4",
+    "shape": "box",
+    "fields": {
+      "names": null
+    }
+  },
+  "VisualGlideSlopeIndicator": {
+    "abbrev": "VGI",
+    "color": "#e9d66b",
+    "shape": "box",
+    "fields": {
+      "names": [
+        "type"
+      ]
+    }
+  },
+  "WorkArea": {
+    "abbrev": "WAR",
+    "color": "#89cff0",
+    "shape": "box",
+    "fields": {
+      "names": null
+    }
+  }
+}

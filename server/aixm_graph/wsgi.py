@@ -36,4 +36,4 @@ from pkg_resources import resource_filename
 
 from aixm_graph.app import create_app
 
-app = create_app(config_file=resource_filename(__name__, 'config.yml'))
+app = create_app(app_config_file=resource_filename(__name__, 'config.yml'))

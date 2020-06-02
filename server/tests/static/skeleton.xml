@@ -32,7 +32,7 @@
       <gml:identifier codeSpace="urn:uuid:">6384a4e0-8497-4f83-8eaa-d73ef549d90e</gml:identifier>
       <aixm:timeSlice>
         <aixm:OrganisationAuthorityTimeSlice gml:id="DONLONSTATE">
-					<aixm:name>REPUBLIC OF DONLON</aixm:name><aixm:extension><mxia:OrganisationAuthorityExtension><mxia:theSpecialDate xlink:href="urn:uuid:20f19a35-401b-45a6-a54e-084122a4cf80"></mxia:theSpecialDate></mxia:OrganisationAuthorityExtension></aixm:extension><aixm:extension><mxia:OrganisationAuthorityExtension><mxia:theSpecialDate xlink:href="urn:uuid:20f19a35-401b-45a6-a54e-084122a4cf80"></mxia:theSpecialDate></mxia:OrganisationAuthorityExtension></aixm:extension></aixm:OrganisationAuthorityTimeSlice>
+					<aixm:name>REPUBLIC OF DONLON</aixm:name><aixm:type>STATE</aixm:type><aixm:extension><mxia:OrganisationAuthorityExtension><mxia:theSpecialDate xlink:href="urn:uuid:20f19a35-401b-45a6-a54e-084122a4cf80"></mxia:theSpecialDate></mxia:OrganisationAuthorityExtension></aixm:extension><aixm:extension><mxia:OrganisationAuthorityExtension><mxia:theSpecialDate xlink:href="urn:uuid:20f19a35-401b-45a6-a54e-084122a4cf80"></mxia:theSpecialDate></mxia:OrganisationAuthorityExtension></aixm:extension></aixm:OrganisationAuthorityTimeSlice>
       </aixm:timeSlice>
     </aixm:OrganisationAuthority>
   </message:hasMember>
