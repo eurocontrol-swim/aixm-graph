@@ -385,7 +385,6 @@ export default {
     serverApi.getFeaturesConfig()
       .then((res) => {
         this.featuresConfig = res.data.data;
-        console.log(this.featuresConfig);
       })
       .catch((error) => {
         // eslint-disable-next-line

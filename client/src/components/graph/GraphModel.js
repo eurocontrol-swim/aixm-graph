@@ -174,6 +174,18 @@ export default class GraphModel {
       label += `: ${fields}`;
     }
 
+    let shapeConfig = {};
+    if (origNode.is_ghost) {
+      shapeConfig = { shape: ghostNodeShape };
+    } else if (config.shape === 'image') {
+      shapeConfig = {
+        shape: 'image',
+        image: `/feature_icons/${origNode.name}.png`,
+      };
+    } else {
+      shapeConfig = { shape: config.shape };
+    }
+
     return {
       id: origNode.id,
       name: origNode.name,
@@ -181,7 +193,8 @@ export default class GraphModel {
       associationsNum: origNode.assoc_count,
       title: GraphModel.getNodePopup(origNode),
       color: origNode.is_ghost ? ghostNodeColor : config.color,
-      shape: origNode.is_ghost ? ghostNodeShape : config.shape,
+      ...shapeConfig,
+      // shape: origNode.is_ghost ? ghostNodeShape : config.shape,
     };
   });
 

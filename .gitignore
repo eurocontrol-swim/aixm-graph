@@ -41,4 +41,5 @@ samples
 server/aixm_graph/features_config.json
 client/public/feature_icons
 config/icons/*
+config/features.json
 !config/icons/.gitkeep
