@@ -40,19 +40,17 @@ import pytest
 from pkg_resources import resource_filename
 
 from aixm_graph.app import create_app
-from aixm_graph.datasets.features import AIXMFeatureClassRegistry
 from aixm_graph.utils import load_json
 
 
 @pytest.yield_fixture(scope='session')
 def test_app():
-    config_file = resource_filename(__name__, 'test_config.yml')
-    _app = create_app(app_config_file=config_file)
-    _app.features_config_path = resource_filename(__name__, 'test_features_config.json')
+    app_config_file = resource_filename(__name__, 'test_config.yml')
+    features_config_file = resource_filename(__name__, 'test_features_config.json')
 
-    if _app.testing:
-        _app.pub_app = Mock()
-        _app.swim_publisher = Mock()
+    _app = create_app(app_config_file=app_config_file, features_config_file=features_config_file)
+    _app.features_config_path = features_config_file
+
     ctx = _app.app_context()
     ctx.push()
 

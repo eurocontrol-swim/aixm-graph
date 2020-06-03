@@ -43,6 +43,7 @@ from flask import request, current_app as app, send_file
 from werkzeug.utils import secure_filename
 
 from aixm_graph import cache
+from aixm_graph import config
 from aixm_graph.errors import APIError, NotFoundError, BadRequestError
 from aixm_graph import utils
 from aixm_graph.utils import load_json
@@ -242,5 +243,6 @@ def download_skeleton(dataset_id: str):
 
 
 @aixm_graph_blueprint.route('/config', methods=['GET'])
+@handle_response
 def get_features_config():
-    return load_json(app.features_config_path)
+    return config.parse_features_config(load_json(app.features_config_path)), 200

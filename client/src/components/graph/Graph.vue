@@ -384,13 +384,13 @@ export default {
   created() {
     serverApi.getFeaturesConfig()
       .then((res) => {
-        this.featuresConfig = res.data;
+        this.featuresConfig = res.data.data;
         console.log(this.featuresConfig);
       })
       .catch((error) => {
         // eslint-disable-next-line
-        console.error(error);
-        EventBus.$emit('alert', 'Failed to load config');
+        console.error(error.response.data.error);
+        EventBus.$emit('alert', `Failed to load config: ${error.response.data.error}`);
       });
     EventBus.$on('feature-type-selected', (datasetId, featureTypeName) => {
       this.onFeatureTypeSelected(datasetId, featureTypeName);

@@ -58,7 +58,6 @@ def test_node__from_feature():
     assert node.id == '1'
     assert node.name == 'name'
     assert node.fields == [{'field': 'text'}]
-    assert node.fields_concat is True
     assert node.is_ghost is False
     assert node.assoc_count == 0
 
@@ -92,7 +91,6 @@ def test_node__to_json():
         'id': '1',
         'name': 'name',
         'fields': [{'field': 'text'}],
-        'fields_concat': True,
         'is_ghost': False,
         'assoc_count': 0
     } == node.to_json()
@@ -160,7 +158,6 @@ def test_graph__to_json():
                 'id': '1',
                 'name': 'name1',
                 'fields': [{'field': 'text'}],
-                'fields_concat': True,
                 'is_ghost': False,
                 'assoc_count': 0
             },
@@ -168,7 +165,6 @@ def test_graph__to_json():
                 'id': '2',
                 'name': 'name2',
                 'fields': [{'field': 'text'}],
-                'fields_concat': True,
                 'is_ghost': False,
                 'assoc_count': 0
             }

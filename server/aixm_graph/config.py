@@ -32,8 +32,48 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-from pkg_resources import resource_filename
+import re
+from typing import Dict
 
-from aixm_graph.app import create_app
 
-app = create_app(app_config_file=resource_filename(__name__, 'app_config.yml'))
+ATTRIBUTES = ('abbrev', 'fields', 'color', 'shape',)
+SHAPES = ('dot', 'triangle', 'triangleDown', 'box', 'square', 'diamond', 'hexagon', 'ellipse',
+          'image')
+
+COLOR_RE = re.compile('^#[\da-fA-F]{6}$')
+
+
+def parse_features_config(features_config: Dict) -> Dict:
+    for feature, feature_config in features_config.items():
+        try:
+            parse_feature_config(feature_config)
+        except ValueError as e:
+            raise ValueError(f'Error while parsing {feature} config: {str(e)}')
+
+    return features_config
+
+
+def parse_feature_config(feature_config: Dict) -> None:
+    """
+
+    :param feature_config:
+    :return:
+    """
+
+    for name, value in feature_config.items():
+        if name not in ATTRIBUTES:
+            raise ValueError(f"Invalid config attribute '{name}'")
+
+        if name == 'shape' and value not in SHAPES:
+            raise ValueError(f"Invalid shape value: '{value}'")
+
+        if name == 'abbrev' and len(value) != 3:
+            raise ValueError('abbrev should be 3 characters long')
+
+        if name == 'color' and COLOR_RE.match(value) is None:
+            raise ValueError(f"Invalid color value: '{value}'")
+
+        # assign default values on fields' non-required attributes in case they're omitted
+        if name == 'fields':
+            value['concat'] = value.get('concat', False)
+            value['names'] = value.get('names') or []
