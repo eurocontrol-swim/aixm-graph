@@ -69,7 +69,7 @@ After the steps are successfully completed the project will be available at
 > In case the above link does not work, you can use the IP used by Virtual Box. This can be found 
 > while starting the docker interactive shell: 
 >
-> ![alt text](./docs/img/docker.png)
+> ![alt text](./misc/img/docker.png)
 >
 > In the above case the tool can be accessed by http://192.168.99.100:3000. Needless to mention
 > that you'll need to replace the IP with yours.
@@ -234,7 +234,7 @@ Graph tool as well as instructions about how to interact with it. If you just wa
 jump directly at the [end](#quick-reference) of this section.
 
 
-![alt text](./docs/img/tool-in-action.png "AIXM Graph tool in action")
+![alt text](./misc/img/tool-in-action.png "AIXM Graph tool in action")
 
 ### Navigation bar
 The top bar of the tool offers two different actions. One for uploading/processing an AIXM dataset and one for 
@@ -291,7 +291,7 @@ elements. Lastly its name will be same as the original dataset's postfixed with 
 #### Features
 Next comes the features' area. The total number is reported in the title of the area, i.e. `(146) Features` and all the 
 extracted features are listed below grouped by name, each one reporting the total number of its features. In case one or
-more features of a group has broken links then a report icon ![alt text](./docs/img/report.png) will be displayed alongside.
+more features of a group has broken links then a report icon ![alt text](./misc/img/report.png) will be displayed alongside.
 Upon mouse hover more details will be revealed about the broken xlinks.
 
 Right below the title there is a switch filter allowing the user to display all the feature groups or only those ones
@@ -336,7 +336,7 @@ their associations and the edges indicate their connection in the dataset.
 Each feature group is assigned with a [pre-configured](#configuration) color and shape. Thus each feature as well as 
 its associations are represented as a graph node of a specific shape and color. In case an association is broken 
 (i.e. does not correspond to any feature in the dataset) it will be represented as a red star 
-![alt text](./docs/img/red-star.png). 
+![alt text](./misc/img/red-star.png). 
 
 Additionally, each node will be labeled by a [pre-configured](#configuration) 
 abbreviation along with the values of of its key fields separated by `,`, unless its configured to keep them concatenated.

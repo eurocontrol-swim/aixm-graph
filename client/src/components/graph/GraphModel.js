@@ -35,14 +35,15 @@ const ghostNodeColor = '#FF0000';
 const ghostNodeShape = 'star';
 
 export default class GraphModel {
-  constructor(element, data) {
+  constructor(element, data, config) {
     this.element = element;
     this.data = data;
+    this.config = config;
 
-    this.network = this.createNetwork(element, data);
+    this.network = this.createNetwork(element, data, config);
   }
 
-  createNetwork = (element, origData) => {
+  createNetwork = (element, origData, config) => {
     const options = {
       interaction: {
         hover: true,
@@ -60,7 +61,7 @@ export default class GraphModel {
       },
     };
 
-    const data = GraphModel.getEnhancedData(origData);
+    const data = GraphModel.getEnhancedData(origData, config);
 
     return new Network(element, data, options);
   };
@@ -70,7 +71,7 @@ export default class GraphModel {
   };
 
   update = (origData) => {
-    const data = GraphModel.getEnhancedData(origData);
+    const data = GraphModel.getEnhancedData(origData, this.config);
 
     data.nodes.forEach((node) => {
       this.addNode(node);
@@ -130,7 +131,6 @@ export default class GraphModel {
 
   getNodeById = (nodeId) => this.getNodes().get(nodeId);
 
-  // getNodeIdsByName = (name) => this.getNodes()
   static getNodePopup = (node) => {
     let result = `<table id="node-tooltip" data-node-id="${node.id}">`
       + '<tr style="border-bottom: 1px solid black;">'
@@ -161,15 +161,29 @@ export default class GraphModel {
     return result;
   };
 
-  static getEnhancedNodeClosure = (edges) => ((origNode) => {
+  static getEnhancedNodeClosure = (edges) => ((origNode, config) => {
     const nodeEdges = edges.filter((e) => e.source === origNode.id || e.target === origNode.id);
 
-    let label = origNode.assoc_count > nodeEdges.length ? `[+] ${origNode.abbrev}` : origNode.abbrev;
+    const abbrev = (config !== undefined) ? config.abbrev : origNode.name;
+
+    let label = origNode.assoc_count > nodeEdges.length ? `[+] ${abbrev}` : abbrev;
 
     if (origNode.fields.length > 0) {
-      const sep = origNode.fields_concat ? '' : ',';
+      const sep = config.fields.concat ? '' : ',';
       const fields = origNode.fields.map((k) => Object.values(k)[0]).join(sep);
       label += `: ${fields}`;
+    }
+
+    let shapeConfig = {};
+    if (origNode.is_ghost) {
+      shapeConfig = { shape: ghostNodeShape };
+    } else if (config.shape === 'image') {
+      shapeConfig = {
+        shape: 'image',
+        image: `/feature_icons/${origNode.name}.png`,
+      };
+    } else {
+      shapeConfig = { shape: config.shape };
     }
 
     return {
@@ -178,8 +192,9 @@ export default class GraphModel {
       label,
       associationsNum: origNode.assoc_count,
       title: GraphModel.getNodePopup(origNode),
-      color: origNode.is_ghost ? ghostNodeColor : origNode.color,
-      shape: origNode.is_ghost ? ghostNodeShape : origNode.shape,
+      color: origNode.is_ghost ? ghostNodeColor : config.color,
+      ...shapeConfig,
+      // shape: origNode.is_ghost ? ghostNodeShape : config.shape,
     };
   });
 
@@ -203,20 +218,13 @@ export default class GraphModel {
     return enhanced;
   }
 
-  static getEnhancedEdge = (origEdge) => ({
-    from: origEdge.source,
-    to: origEdge.target,
-    label: origEdge.name,
-    dashes: origEdge.is_broken,
-    arrows: origEdge.direction === 'source' ? 'from' : 'to',
-  });
-
-  static getEnhancedData = (origData) => {
+  static getEnhancedData = (origData, config) => {
     const getEnhancedNode = GraphModel.getEnhancedNodeClosure(origData.edges);
-    const nodes = origData.nodes.map((node) => getEnhancedNode(node));
-    const edges = origData.edges.map((edge) => GraphModel.getEnhancedEdge(edge));
 
-    return { nodes, edges };
+    return {
+      nodes: origData.nodes.map((node) => getEnhancedNode(node, config[node.name])),
+      edges: origData.edges.map((edge) => GraphModel.getEnhancedEdge(edge)),
+    };
   };
 
   getBranchIds = (rootNodeId, incomingBranchIds, excludedNodeIds) => {

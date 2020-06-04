@@ -32,11 +32,10 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-import io
-from typing import Optional, Dict, List, Any, Iterable
+import json
+from typing import Optional, Dict, Any, Iterable
 
 import yaml
-from lxml import etree
 
 
 def get_attrib_value(attribs: Dict[str, str],
@@ -148,3 +147,8 @@ def filename_is_valid(filename):
     :return:
     """
     return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'xml'
+
+
+def load_json(filename: str) -> Dict[str, Any]:
+    with open(filename, 'r') as f:
+        return json.loads(f.read())

@@ -59,7 +59,7 @@ def test_dataset__name(test_filepath):
     assert TEST_FILENAME == dataset.name
 
 
-def test_dataset__process__features_are_retrieved(test_filepath, test_config):
+def test_dataset__process__features_are_retrieved(test_filepath, test_features_config):
     dataset = AIXMDataSet(test_filepath)
 
     dataset.process()
@@ -68,11 +68,11 @@ def test_dataset__process__features_are_retrieved(test_filepath, test_config):
 
     assert len(features) > 0
 
-    for feature_name in test_config['FEATURES']:
-        assert feature_name in [f.name for f in features]
+    for feature in features:
+        assert feature.name in test_features_config.keys()
 
 
-def test_dataset__generate_skeleton(test_filepath, test_skeleton_path, test_config):
+def test_dataset__generate_skeleton(test_filepath, test_skeleton_path, test_app):
     dataset = AIXMDataSet(test_filepath)
 
     dataset.process()

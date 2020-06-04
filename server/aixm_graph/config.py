@@ -32,38 +32,48 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 
 __author__ = "EUROCONTROL (SWIM)"
 
-import sys
-
-from unittest.mock import Mock
-
-import pytest
-from pkg_resources import resource_filename
-
-from aixm_graph.app import create_app
-from aixm_graph.utils import load_json
+import re
+from typing import Dict
 
 
-@pytest.yield_fixture(scope='session')
-def test_app():
-    app_config_file = resource_filename(__name__, 'test_config.yml')
-    features_config_file = resource_filename(__name__, 'test_features_config.json')
+ATTRIBUTES = ('abbrev', 'fields', 'color', 'shape',)
+SHAPES = ('dot', 'triangle', 'triangleDown', 'box', 'square', 'diamond', 'hexagon', 'ellipse',
+          'image')
 
-    _app = create_app(app_config_file=app_config_file, features_config_file=features_config_file)
-    _app.features_config_path = features_config_file
-
-    ctx = _app.app_context()
-    ctx.push()
-
-    yield _app
-
-    ctx.pop()
+COLOR_RE = re.compile('^#[\da-fA-F]{6}$')
 
 
-@pytest.fixture(scope='session')
-def test_client(test_app):
-    return test_app.test_client()
+def parse_features_config(features_config: Dict) -> Dict:
+    for feature, feature_config in features_config.items():
+        try:
+            parse_feature_config(feature_config)
+        except ValueError as e:
+            raise ValueError(f'Error while parsing {feature} config: {str(e)}')
+
+    return features_config
 
 
-@pytest.fixture(scope='session')
-def test_features_config(test_app):
-    return load_json(test_app.features_config_path)
+def parse_feature_config(feature_config: Dict) -> None:
+    """
+
+    :param feature_config:
+    :return:
+    """
+
+    for name, value in feature_config.items():
+        if name not in ATTRIBUTES:
+            raise ValueError(f"Invalid config attribute '{name}'")
+
+        if name == 'shape' and value not in SHAPES:
+            raise ValueError(f"Invalid shape value: '{value}'")
+
+        if name == 'abbrev' and len(value) != 3:
+            raise ValueError('abbrev should be 3 characters long')
+
+        if name == 'color' and COLOR_RE.match(value) is None:
+            raise ValueError(f"Invalid color value: '{value}'")
+
+        # assign default values on fields' non-required attributes in case they're omitted
+        if name == 'fields':
+            value['concat'] = value.get('concat', False)
+            value['names'] = value.get('names') or []

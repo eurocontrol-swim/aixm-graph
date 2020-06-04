@@ -36,15 +36,17 @@ import logging
 import os
 from functools import wraps
 from itertools import tee
-from typing import Callable, TypeVar, Tuple, Any, Dict, Union, List
+from typing import Callable, Tuple, Any, Dict, Union, List
 
 from flask import Blueprint
 from flask import request, current_app as app, send_file
 from werkzeug.utils import secure_filename
 
 from aixm_graph import cache
+from aixm_graph import config
 from aixm_graph.errors import APIError, NotFoundError, BadRequestError
 from aixm_graph import utils
+from aixm_graph.utils import load_json
 
 _logger = logging.getLogger(__name__)
 
@@ -238,3 +240,9 @@ def download_skeleton(dataset_id: str):
     skeleton_filepath = dataset.generate_skeleton()
 
     return send_file(skeleton_filepath, as_attachment=True), 200
+
+
+@aixm_graph_blueprint.route('/config', methods=['GET'])
+@handle_response
+def get_features_config():
+    return config.parse_features_config(load_json(app.features_config_path)), 200

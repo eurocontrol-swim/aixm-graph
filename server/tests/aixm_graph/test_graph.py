@@ -48,9 +48,6 @@ def test_node__from_feature():
     feature.id = '1'
     feature.time_slices.append(time_slice)
     feature.config = {
-        'abbrev': 'AAA',
-        'color': 'blue',
-        'shape': 'square',
         'fields': {
             'concat': True,
         }
@@ -60,11 +57,7 @@ def test_node__from_feature():
 
     assert node.id == '1'
     assert node.name == 'name'
-    assert node.abbrev == 'AAA'
     assert node.fields == [{'field': 'text'}]
-    assert node.color == 'blue'
-    assert node.shape == 'square'
-    assert node.fields_concat is True
     assert node.is_ghost is False
     assert node.assoc_count == 0
 
@@ -77,7 +70,6 @@ def test_node__from_broken_xlink():
 
     assert node.id == 'a1b2c3'
     assert node.name == 'xlink - some title'
-    assert node.abbrev == 'xlink'
     assert node.is_ghost is True
 
 
@@ -89,9 +81,6 @@ def test_node__to_json():
     feature.id = '1'
     feature.time_slices.append(time_slice)
     feature.config = {
-        'abbrev': 'AAA',
-        'color': 'blue',
-        'shape': 'square',
         'fields': {
             'concat': True,
         }
@@ -101,11 +90,7 @@ def test_node__to_json():
     assert {
         'id': '1',
         'name': 'name',
-        'abbrev': 'AAA',
         'fields': [{'field': 'text'}],
-        'color': 'blue',
-        'shape': 'square',
-        'fields_concat': True,
         'is_ghost': False,
         'assoc_count': 0
     } == node.to_json()
@@ -141,9 +126,6 @@ def test_graph__to_json():
     feature1.id = '1'
     feature1.time_slices.append(time_slice1)
     feature1.config = {
-        'abbrev': 'AAA',
-        'color': 'blue',
-        'shape': 'square',
         'fields': {
             'concat': True,
         }
@@ -156,9 +138,6 @@ def test_graph__to_json():
     feature2.id = '2'
     feature2.time_slices.append(time_slice2)
     feature2.config = {
-        'abbrev': 'AAA',
-        'color': 'blue',
-        'shape': 'square',
         'fields': {
             'concat': True,
         }
@@ -178,22 +157,14 @@ def test_graph__to_json():
             {
                 'id': '1',
                 'name': 'name1',
-                'abbrev': 'AAA',
                 'fields': [{'field': 'text'}],
-                'color': 'blue',
-                'shape': 'square',
-                'fields_concat': True,
                 'is_ghost': False,
                 'assoc_count': 0
             },
             {
                 'id': '2',
                 'name': 'name2',
-                'abbrev': 'AAA',
                 'fields': [{'field': 'text'}],
-                'color': 'blue',
-                'shape': 'square',
-                'fields_concat': True,
                 'is_ghost': False,
                 'assoc_count': 0
             }

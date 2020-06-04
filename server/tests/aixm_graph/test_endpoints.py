@@ -315,3 +315,23 @@ def test_upload_aixm__file_is_uploaded__returns_201(mock_validate_file_form, tes
     assert response_data['dataset_name'] == file.filename
 
     file.save.assert_called_once_with(expected_final_filepath)
+
+
+@mock.patch('aixm_graph.config.parse_features_config')
+def test_features_config__parsing_error__returns_500(mock_parse_features_config, test_client):
+    mock_parse_features_config.side_effect = ValueError('error')
+
+    response = test_client.get('/api/config')
+    assert response.status_code == 500
+
+    response_data = json.loads(response.data)
+    assert 'error' == response_data['error']
+
+
+def test_features_config__no_errors(test_client, test_features_config):
+    response = test_client.get('/api/config')
+    assert response.status_code == 200
+
+    response_data = json.loads(response.data)
+    assert isinstance(response_data['data'], dict)
+    assert test_features_config.keys() == response_data['data'].keys()

@@ -146,6 +146,7 @@ export default {
       paginationSummary: '',
       loadingGraph: false,
       currentHoveredFeatureNodeId: null,
+      featuresConfig: {},
     };
   },
   methods: {
@@ -169,7 +170,7 @@ export default {
       this.getFeatureTypeGraph({ offset: 0 });
     },
     createGraphModel(data) {
-      graphModel = new GraphModel(this.$refs.graph, data);
+      graphModel = new GraphModel(this.$refs.graph, data, this.featuresConfig);
       graphModel.on('click', this.onClickGraphFeature);
       graphModel.on('oncontext', this.onRightClickGraphFeature);
       graphModel.on('hoverNode', this.onHoverFeatureNode);
@@ -381,6 +382,15 @@ export default {
     },
   },
   created() {
+    serverApi.getFeaturesConfig()
+      .then((res) => {
+        this.featuresConfig = res.data.data;
+      })
+      .catch((error) => {
+        // eslint-disable-next-line
+        console.error(error.response.data.error);
+        EventBus.$emit('alert', `Failed to load config: ${error.response.data.error}`);
+      });
     EventBus.$on('feature-type-selected', (datasetId, featureTypeName) => {
       this.onFeatureTypeSelected(datasetId, featureTypeName);
     });

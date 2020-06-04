@@ -11,6 +11,9 @@ RUN npm install
 
 COPY ./client .
 
+# remove it in case it was a sym link to an existing dir out of client
+RUN rm -rf ./public/feature_icons 2> /dev/null
+
 RUN npm run build
 
 
@@ -43,6 +46,10 @@ RUN set -x \
     && rm -rf /source
 
 COPY ./server .
+
+# remove it in case it was a sym link to an existing dir out of client
+RUN rm -rf ./aixm_graph/features_config.json 2> /dev/null
+
 CMD gunicorn -w 1 -b 0.0.0.0:5000 aixm_graph.wsgi:app --daemon && \
       sed -i -e 's/$PORT/'"$PORT"'/g' /etc/nginx/conf.d/default.conf && \
       nginx -g 'daemon off;'
