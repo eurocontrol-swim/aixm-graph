@@ -38,6 +38,7 @@ yarn-error.log*
 .idea/dbnavigator.xml
 specs
 samples
+log
 server/aixm_graph/features_config.json
 client/public/feature_icons
 config/features.json
