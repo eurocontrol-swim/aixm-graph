@@ -300,13 +300,19 @@ class AIXMDataSet:
 
         return self._skeleton_filepath
 
-    def _get_edge_direction(self, association: Union[XLinkField, Extension]) -> str:
+    @staticmethod
+    def _get_edge_direction(association: Union[XLinkField, Extension]) -> str:
         directions = {
             XLinkField: 'target',
             Extension: 'source'
         }
 
         return directions.get(type(association))
+
+    @staticmethod
+    def _get_edge_role(association: Union[XLinkField, Extension]) -> str:
+        if isinstance(association, XLinkField):
+            return association.name
 
     def get_graph_for_feature(self, feature: AIXMFeature) -> Graph:
         """
@@ -323,18 +329,21 @@ class AIXMDataSet:
             for association in time_slice.associations:
                 target = self.get_feature_by_id(association.href)
                 direction=self._get_edge_direction(association)
+                role = self._get_edge_role(association)
 
                 if target is not None:
                     node = Node.from_feature(target)
                     edge = Edge(source=feature.id,
                                 target=target.id,
                                 direction=direction,
-                                name=time_slice.version)
+                                name=time_slice.version,
+                                role=role)
                 else:
                     node = Node.from_broken_xlink(association)
                     edge = Edge(source=feature.id,
                                 target=association.href,
                                 name=time_slice.version,
+                                role=role,
                                 direction=direction,
                                 is_broken=True)
 

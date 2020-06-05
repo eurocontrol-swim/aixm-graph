@@ -194,7 +194,6 @@ export default class GraphModel {
       title: GraphModel.getNodePopup(origNode),
       color: origNode.is_ghost ? ghostNodeColor : config.color,
       ...shapeConfig,
-      // shape: origNode.is_ghost ? ghostNodeShape : config.shape,
     };
   });
 
@@ -213,6 +212,10 @@ export default class GraphModel {
 
     if (origEdge.direction !== null) {
       enhanced.arrows = directions[origEdge.direction];
+    }
+
+    if (origEdge.role !== null) {
+      enhanced.title = origEdge.role;
     }
 
     return enhanced;

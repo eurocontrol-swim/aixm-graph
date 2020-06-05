@@ -109,12 +109,15 @@ class Edge:
                  source: str,
                  target: str,
                  name: str,
+                 role: Optional[str] = None,
                  direction: Optional[str] = None,
                  is_broken: Optional[bool] = False
     ):
         """
         Holds information about two features where one references to the other
 
+        :param role:
+        :param direction:
         :param source:
         :param target:
         :param name:
@@ -124,6 +127,7 @@ class Edge:
         self.source = source
         self.target = target
         self.name = name
+        self.role = role
 
         if direction not in self._directions:
             raise ValueError(f"direction should be one of {self._directions}")
@@ -145,6 +149,7 @@ class Edge:
             'source': self.source,
             'target': self.target,
             'name': self.name,
+            'role': self.role,
             'direction': self.direction,
             'is_broken': self.is_broken
         }
