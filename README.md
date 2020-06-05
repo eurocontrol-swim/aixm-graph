@@ -10,8 +10,7 @@ the tool and play around with two preloaded AIXM datasets.
 
 ## Installation
 
-The project can get easily up and running in any machine regardless the running OS with the help of 
-[Docker](https://www.docker.com/).
+AIXM Graph runs under [Docker](https://www.docker.com/) which enables it to run in any machine regardless its OS.
 
 > Before proceeding to the next steps please make sure that you have installed on your machine:
 > - Linux/Mac users
@@ -32,26 +31,34 @@ The project can get easily up and running in any machine regardless the running 
 >        |---|---|---|
 >        | aixm-graph | 3000 | 3000 |
 
+The installation as well as the interaction (start/stop) with the tool etc. can be done with the
+dedicated shell script `aixm.sh`. In case any of the below step goes wrong you can get more info
+about it in `./log/aixm.log`.
+  
+#### Steps:
 
-Steps:
-
-Get the repository
-
+Get the repository:
 ```shell script
 git clone https://github.com/eurocontrol-swim/aixm-graph.git
 cd aixm-graph
 ```
 
-Build the image
-
+Make the script executable:
 ```shell script
-docker build -t aixm-graph:latest .
+chmod +x aixm.sh
 ```
 
-Run the container
-
+Install AIXM Graph:
 ```shell script
-docker run -d --name aixm_graph -e "PORT=8765" -p 3000:8765 aixm-graph:latest
+./aixm.sh install
+```
+Now the docker image should have been build and be ready to run.
+
+## Start/Stop AIXM Graph
+
+AIXM Graph can be started with:
+```shell script
+./aixm.sh start
 ```
 
 Make sure that the container is up and running with `docker ps`. The output should look like: 
@@ -74,22 +81,20 @@ After the steps are successfully completed the project will be available at
 > In the above case the tool can be accessed by http://192.168.99.100:3000. Needless to mention
 > that you'll need to replace the IP with yours.
 
+AIXM Graph can be stopped with:
+```shell script
+./aixm.sh stop
+```
 
-### Update project
+### Update AIXM Graph
 In case a new version of the tool is available you can update via the following steps:
 
-Update the git repository (from the roop directory of the project)
 ```shell script
-git pull --rebase origin master
+./aixm.sh update
 ```
 
-Stop/remove the relevant container in case AIXM Graph already runs
-```shell script
-docker rm -f aixm_graph
-```
-
-Then you can follow the installation steps from `Build the image` onward.
-
+> NOTE: any existing running instance of AIXM graph will be stopped and removed (i.e. existing 
+> loaded datasets will be lost) and a new docker image will be built. 
 
 
 ## For developers
@@ -112,30 +117,37 @@ and the client separately.
 >[conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/) are installed on your system.
 
 
-Create a dedicated environment using conda
+- Create a dedicated environment using conda
+    
+    ```shell script
+    cd server
+    conda env -create --name aixm-graph -f requirements.yml
+    ```
 
-```shell script
-cd server
-conda env -create --name aixm-graph -f requirements.yml
-```
+- Activate the environment
 
-activate the environment
+    ```shell script
+    source activate aixm-graph
+    ```
 
-```shell script
-source activate aixm-graph
-```
+- Install the server package in your env
 
-install the server package in your env
+    ```shell script
+    pip install . 
+    ```
 
-```shell script
-pip install . 
-```
+- Create symlinks for some necessary configuration.
+    
+    A copy of pre-configured features' configuration file can be found at `./misc/features_config.json`. 
+    The symlink should be placed under `./server` and named `features_config.json`
+    Moreover, a custom feature icons directory is required by the `client`. So the symlink should be 
+    placed under `./client/public` and named `feature_icons`.
 
-run the local server
+- Run the local server
 
-```shell script
-python ./aixm_graph/app.py
-```
+    ```shell script
+    python ./aixm_graph/app.py
+    ```
 
 The server should now be able to receive calls at http://localhost:5000
 
@@ -201,32 +213,46 @@ heroku container:release --app <app-name> web
 The app should now be available at [https://<app-name>.herokuapp.com](https://<app-name>.herokuapp.com)
 
 ## <a name="configuration"></a> Configuration
-The tool does not require any specific configuration by the user as everything has been pre-configured. However, its 
-worth looking at the configuration of the AIXM features in case something needs to be changed indeed. It can be found 
-under `aixm-graph/server/aixm_graph/config.yml`.
+AIXM Graph uses a predefined configuration. However, it is possible to update the configuration 
+before or while the tool is running. The relevant files/folders are found under `./config`.
 
+#### Config file
+The configuration file `features.json` contains all the necessary information per feature that will 
+be used during the parsing of the dataset as well as the display of the graph.
 The config entry for each feature looks like:
 
-```yaml
-AerialRefuelling:                  # the name of the feature as it is found in the dataset
-  abbrev: ARF                      # a pre-selected abbreviation
-  color: '#f0f8ff'                 # the color of the graph node that will represent this type of features
-  shape: square                    # the shape of the graph node that will represent this type of features
-  fields:                          # the elements that will be extracted from the timeSlice elements of that feature
-    concat: true                   # determines whether the field values will be displayed concatenated or not
-    names:                         # the list of all the element names
-      - designatorPrefix
-      - designatorNumber
-      - designatorSuffix
-      - designatorDirection
+```json
+{
+  "AerialRefuelling": {
+    "abbrev": "ARF",                 // front-end
+    "color": "#f0f8ff",              // front-end 
+    "shape": "square",               // front-end    
+    "fields": {
+      "concat": true,                // front-end. Indicates whether the values of the fields will be displayed 
+                                     // concatenated or separated by comma. 
+      "names": [                     // back-end. Holds the dataset fields to be kept while parsing it.
+        "designatorPrefix",          
+        "designatorNumber",
+        "designatorSuffix",
+        "designatorDirection"
+      ]
+    }
+  }
+}
 ```
+> NOTE: the available shapes are limited to: `dot, triangle, triangleDown, box, square, diamond, hexagon, ellipse, image`.
 
-> NOTE: if a field name is wrongly configured the parsing of the dataset will fail.
+> NOTE: any front-end related change can take place with a browser refresh, however any back-end 
+> change will require a restart of the tool in order to be activated.
 
-> NOTE: The abbreviation has to be unique otherwise it will lead to confusion.
+#### Custom icons folder
+The features are represented by default with predefined shapes and colors. However, it is possible 
+to use custom images as well. So, in order to use a custom image for a specific feature i.e. 
+`AirportHeliport`, these are the steps to make it happen:
 
-> NOTE: the available shapes are limited to: `dot, triangle, triangleDown, box, square, diamond, hexagon. ellipse`  .
-
+- change the `shape` in its respective configuration to `image`
+- place a `PNG` image file under `./config/icons` named by the feature i.e. `AirportHeliport.png`
+- refresh the browser
 
 ## Features and usage
 In the following sub-sections you can find a detailed description of the layout and the available features of the AIXM 
